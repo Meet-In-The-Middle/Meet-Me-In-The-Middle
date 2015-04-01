@@ -1,0 +1,24 @@
+<!-- <script src="bower_components/lodash/dist/lodash.min.js"></script>
+<script src="bower_components/lodash/dist/lodash.js"></script>
+<script src='//maps.googleapis.com/maps/api/js?sensor=false'></script>
+<script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+<script src="bower_components/angular-google-maps/dist/angular-google-maps.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0rc1/angular-route.min.js"></script>
+
+<div id="map_canvas">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" options="options"></ui-gmap-google-map>
+</div> -->
+
+
+<div ng-include="'components/navbar/navbar.html'"></div>
+    <h1>angular-google-maps example page</h1>
+    <div id="map_canvas">
+    <div data-ng-if="resolved">
+      <ui-gmap-google-map center="map.center" zoom="map.zoom">
+      </ui-gmap-google-map>
+    </div>
+    </div>
+    <div class="angular-google-map-container" data-ng-controller="MapsCtrl">
+      
+    </div>
+ </div>

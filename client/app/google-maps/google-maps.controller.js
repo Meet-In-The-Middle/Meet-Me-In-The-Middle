@@ -10,10 +10,10 @@ angular.module('meetMeInTheMiddleApp')
   });
 }])
 
- .controller('MapsCtrl', ['$scope', '$q', '$http', 'uiGmapGoogleMapApi', 
+ .controller('MapsCtrl', ['$scope', '$q', '$http', 'uiGmapGoogleMapApi', 'socket' //Ko: Client side map specific socket injected
 
 
-  function ($scope, $q, $log, uiGmapGoogleMapApi) {
+  function ($scope, $q, $log, uiGmapGoogleMapApi, socket) {
 
 
         $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4, refresh: {}};

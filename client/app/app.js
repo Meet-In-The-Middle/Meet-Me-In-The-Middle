@@ -4,6 +4,7 @@ angular.module('meetMeInTheMiddleApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
+  // This enables `socket` variable in scope of 'meetMeInTheMiddleApp' i.e. Client side socket
   'btford.socket-io',
   'ui.router',
   'ui.bootstrap',

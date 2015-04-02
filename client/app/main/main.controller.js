@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .controller('MainCtrl', function ($scope, $http, socket) {
+  .controller('MainCtrl', function ($scope, $http, socket) { //Ko: socket.io was made injected at /client/app/app.js line 6
     $scope.awesomeThings = [];
 
     $http.get('/api/things').success(function(awesomeThings) {

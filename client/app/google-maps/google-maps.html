@@ -1,10 +1,84 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
-    <h1>angular-google-maps example page</h1>
-      <div class="angular-google-map-container">
-        <div data-ng-if="resolved">
-          <ui-gmap-google-map center="map.center" zoom="map.zoom">
+<!--   <h1>Google Maps View</h1> 
+  <h2>google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
+  <h3>Calculate your route</h3>
+<div id="calculate-route" name="calculate-route" action="#" method="get">
+  <label for="from">From:</label>
+  <input type="text" id="from" name="from" required="required" placeholder="An address" size="30" />
+  <a id="from-link" href="#">Get my position</a>
+  <br /> 
 
-          </ui-gmap-google-map>
-        </div>
-      </div>
+  <label for="to">To:</label>
+  <input type="text" id="to" name="to" required="required" placeholder="Another address" size="30" />
+  <a id="to-link" href="#">Get my position</a>
+  <br />
+<div>
+<strong>Method of Transit: </strong>
+<select id="mode">
+  <option value="DRIVING">Driving</option>
+  <option value="WALKING">Walking</option>
+  <option value="BICYCLING">Bicycling</option>
+  <option value="TRANSIT">Transit</option>
+</select>
+</div>
+<button class="btn btn-success" ng-click="calcRoute()">Submit</button>
+
+<div id="map_canvas">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+    <marker coords="map.marker"></marker>
+    </ui-gmap-google-map>
+</div> -->
+
+<!--   <h1>Google Maps View</h1> 
+  <h2>google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
+  <button class="btn btn-danger" ng-click="removeMarkers()">Clear Map</button>
+    <button class="btn btn-success" ng-click="refreshMap()">Refresh Map</button>
+    <button class="btn btn-success" ng-click="getMapInstance()">Get Map Instance</button>
+    Show Map: <input type="checkbox" text="Show / Hide Map" ng-model="map.show">
+
+  <h3>Calculate your route</h3>
+  <div id="calculate-route" name="calculate-route" action="#" method="get">
+    <label for="from">From:</label>
+    <input type="text" id="from" name="from" required="required" placeholder="An address" size="30" />
+    <a id="from-link" href="#">Get my position</a>
+    <br /> 
+
+    <label for="to">To:</label>
+    <input type="text" id="to" name="to" required="required" placeholder="Another address" size="30" />
+    <a id="to-link" href="#">Get my position</a>
+    <br />
+     <button class="btn btn-submit" ng-click="getRoute()">Submit</button>
+  </div>
+
+<div id="map_canvas" ng-controller="MapsCtrl">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+        <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+</div> -->
+
+
+<div id="map_canvas" ng-controller="MapsCtrl">
+    <script type="text/ng-template" id="searchbox.tpl.html">
+        <input type="text" class="controls" placeholder="Search Box">
+    </script>
+    <script type="text/ng-template" id="searchbox.tpl.html">
+        <input type="text" input id="pac-input" placeholder="Search Box">
+    </script>
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+        <ui-gmap-search-box template="searchbox.template" events="searchbox.events"></ui-gmap-search-box>
+        <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+</div>
+
+
+
+    <!-- <script type="text/ng-template" id="control.tpl.html">
+        <button class="btn btn-sm btn-primary" ng-class="{'btn-warning': danger}" ng-click="controlClick()">{{controlText}}</button>
+    </script> -->
+
+     <!--  <ui-gmap-map-control template="control.tpl.html" position="top-right" controller="controlCtrl" index="-1"></ui-gmap-map-control> -->
+
+
     

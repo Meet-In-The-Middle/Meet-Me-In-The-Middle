@@ -1,5 +1,5 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
-  <h1>Google Maps View</h1> 
+<!--   <h1>Google Maps View</h1> 
   <h2>google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
   <h3>Calculate your route</h3>
 <div id="calculate-route" name="calculate-route" action="#" method="get">
@@ -27,7 +27,7 @@
     <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
     <marker coords="map.marker"></marker>
     </ui-gmap-google-map>
-</div>
+</div> -->
 
 <!--   <h1>Google Maps View</h1> 
   <h2>google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
@@ -58,7 +58,7 @@
 </div> -->
 
 
-<!-- <div id="map_canvas" ng-controller="MapsCtrl">
+<div id="map_canvas" ng-controller="MapsCtrl">
     <script type="text/ng-template" id="searchbox.tpl.html">
         <input type="text" class="controls" placeholder="Search Box">
     </script>
@@ -70,15 +70,19 @@
         <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
         </ui-gmap-marker>
     </ui-gmap-google-map>
-</div> -->
+    {{"This is Data from client: " + marker.coords.latitude + ", " + marker.coords.longitude}} <br>
+
+    {{marker}}<br>
+    {{"This is Data that was sent to server and came back: " + test}}
+</div>
 
 
-
-    <!-- <script type="text/ng-template" id="control.tpl.html">
+<!-- 
+    <script type="text/ng-template" id="control.tpl.html">
         <button class="btn btn-sm btn-primary" ng-class="{'btn-warning': danger}" ng-click="controlClick()">{{controlText}}</button>
-    </script> -->
+    </script>
 
-     <!--  <ui-gmap-map-control template="control.tpl.html" position="top-right" controller="controlCtrl" index="-1"></ui-gmap-map-control> -->
+ -->     <!--  <ui-gmap-map-control template="control.tpl.html" position="top-right" controller="controlCtrl" index="-1"></ui-gmap-map-control> -->
 
 
     

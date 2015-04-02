@@ -10,11 +10,10 @@ angular.module('meetMeInTheMiddleApp')
   });
 }])
 
- .controller('MapsCtrl', ['$scope', '$q', '$http', 'uiGmapGoogleMapApi', 'socket', //Ko: Client side map specific socket injected
+ .controller('MapsCtrl', ['$scope', '$q', '$http', 'uiGmapGoogleMapApi',  
 
 
-  function ($scope, $q, $log, uiGmapGoogleMapApi, socket) {
-
+  function ($scope, $q, $log, uiGmapGoogleMapApi) {
 
         $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4, refresh: {}};
 
@@ -29,6 +28,7 @@ angular.module('meetMeInTheMiddleApp')
           options: { draggable: true },
           events: {
             dragend: function (marker, eventName, args) {
+                $scope.test1 = "asdfasdf"
               $scope.marker.options = {
                   draggable: true,
                   labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
@@ -39,15 +39,14 @@ angular.module('meetMeInTheMiddleApp')
           }
         };
 
-
         var events = {
           places_changed: function (searchBox) {
+            console.log('asdf');
             var place = searchBox.getPlaces();
             if (!place || place == 'undefined' || place.length == 0) {
                 console.log('no place data :(');
                 return;
             }
-
             $scope.map = {
                 "center": {
                     "latitude": place[0].geometry.location.lat(),
@@ -55,6 +54,7 @@ angular.module('meetMeInTheMiddleApp')
                 },
                 "zoom": 18
             };
+
             $scope.marker = {
                 id: 0,
                 coords: {
@@ -64,6 +64,23 @@ angular.module('meetMeInTheMiddleApp')
             };
           }
         }
+
+        // Connect to socket when the user places pin on the map
+        var socket = io();
+
+        //TODO: define userId
+
+        // Send data whenever user changes pin.
+        $scope.$watch("marker.coords.latitude || marker.coords.longitude", function(newVal, oldVal){
+            socket.emit('move', $scope.marker);
+        });
+
+        // marker = {id:c, coors: { latitude: num, longitude: num}}
+        socket.on('move-pin', function(data){
+          $scope.test = data;
+        });
+
+
         $scope.searchbox = { template:'searchbox.tpl.html', events:events};
 
         uiGmapGoogleMapApi.then(function(maps) {

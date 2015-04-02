@@ -54,5 +54,11 @@ module.exports = function (socketio) {
     // Call onConnect.
     onConnect(socket);
     console.info('[%s] CONNECTED', socket.address);
+
+    //Ko: call on place pin
+    socket.on('test', function(){
+      console.log("testtest");
+    })
   });
+
 };

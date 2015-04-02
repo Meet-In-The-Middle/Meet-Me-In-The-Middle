@@ -4,7 +4,6 @@ angular.module('meetMeInTheMiddleApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'btford.socket-io',
   'ui.router',
   'ui.bootstrap',
   'uiGmapgoogle-maps'
@@ -42,7 +41,6 @@ angular.module('meetMeInTheMiddleApp', [
       }
     };
   })
-
   .run(function ($rootScope, $location, Auth) {
     // Redirect to login if route requires auth and you're not logged in
     $rootScope.$on('$stateChangeStart', function (event, next) {

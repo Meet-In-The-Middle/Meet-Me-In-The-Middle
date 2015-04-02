@@ -37,6 +37,7 @@ module.exports = function (socketio) {
   //   handshake: true
   // }));
 
+//Ko: all server-side socket.io logics go here.
   socketio.on('connection', function (socket) {
     socket.address = socket.handshake.address !== null ?
             socket.handshake.address.address + ':' + socket.handshake.address.port :
@@ -53,5 +54,11 @@ module.exports = function (socketio) {
     // Call onConnect.
     onConnect(socket);
     console.info('[%s] CONNECTED', socket.address);
+
+    //Ko: call on place pin
+    socket.on('test', function(){
+      console.log("testtest");
+    })
   });
+
 };

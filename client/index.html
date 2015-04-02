@@ -66,8 +66,10 @@
       <!-- endbower -->
       <script src="socket.io-client/socket.io.js"></script>
     <!-- endbuild -->
-    <script src="//maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
      <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+     <script src="bower_components/angularjs-google-directions/dist/angularjs-google-directions.min.js"></script>
+     <!-- <script src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false&language=pt&v=3.17"></script> -->
 
 
         <!-- build:js({.tmp,client}) app/app.js -->
@@ -81,6 +83,7 @@
           <script src="app/admin/admin.js"></script>
           <script src="app/google-maps/google-maps.controller.js"></script>
           <script src="app/google-maps/google-maps.js"></script>
+          <script src="app/google-maps/scripts/v3_epoly.js"></script>
           <script src="app/main/main.controller.js"></script>
           <script src="app/main/main.js"></script>
           <script src="components/auth/auth.service.js"></script>

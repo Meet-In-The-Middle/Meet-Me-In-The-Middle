@@ -12,10 +12,11 @@
     "angular-sanitize": ">=1.2.*",
     "angular-bootstrap": "~0.11.0",
     "font-awesome": ">=4.1.0",
-    "lodash": "~2.4.1",
+    "lodash": "~3.5.0",
     "angular-socket-io": "~0.6.0",
     "angular-ui-router": "~0.2.10",
-    "lodash": "~3.5.0"
+    "angular-google-maps": "~2.0.19",
+    "angularjs-google-directions": "*"
   },
   "devDependencies": {
     "angular-mocks": ">=1.2.*",

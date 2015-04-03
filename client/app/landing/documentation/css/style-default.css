@@ -1,0 +1,182 @@
+body, html {height: 100%;}
+body {
+        font-family: 'Raleway', sans-serif;
+        font-size: 16px;
+        line-height: 2em;
+        background: #fff;
+        color: #333;
+}
+a, a:visited {
+        color: #fd6251;
+        text-decoration: none;
+}
+a:hover, a:active, a:focus {
+        color: #fd6251;
+        text-decoration: none;
+}
+
+#main-menu {
+        border-bottom: 1px solid #eee;
+        height: 60px;
+        padding-top: 10px;
+        background: #fff;
+}
+
+#main-menu .logo {
+        font-weight: 900;
+}
+#main-menu .logo img {
+        float: left;
+        margin-right: 15px;
+}
+#main-menu .logo .name {
+        margin-top: 5px;
+        font-size: 1.125em;
+        float: left;
+}
+
+#main-menu .logo .btn-group {
+        float: right;
+        margin-top: 3px;
+}
+
+#content .container {
+        background: #fff;
+        padding-top: 100px;
+        padding-bottom: 100px;
+        font-family: 'PT Serif', serif;
+        font-size: 1.375em;
+        line-height: 1.5em;
+}
+#content a:hover {
+        padding-bottom: 3px;
+        border-bottom: 1px solid #ddd;
+}
+
+h1, h2 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+}
+h3 {
+        font-family: 'Raleway', sans-serif;
+}
+#content article h3 {
+        font-weight: 700;
+        margin-top: 3em;
+}
+
+h1 {
+        font-size: 3em;
+        line-height: .5em;
+}
+header {
+        margin-bottom: 5em;
+        text-align: center;
+}
+header span {
+        color: #fd6251;
+}
+header h3 {font-weight: 500;}
+
+h2 {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        letter-spacing: 1px;
+}
+#content article p {
+        font-size: .9em;
+}
+#content p {
+        margin-bottom: 1.5em;
+}
+#content article {
+        margin-bottom: 4em;
+}
+
+#content code {
+        background: #333;
+        color: #fff;
+        white-space: nowrap;
+}
+#content article ul span,
+#content article p span {
+        font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+        padding: 5px;
+        border: 1px solid #333;
+        border-radius: 5px;
+        margin: 0 5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        font-size: .9em;
+}
+
+#content article pre {
+        margin-bottom: 4em;
+        margin-top: -1em;
+        padding: 15px 10px 0px;
+}
+
+footer {
+        padding: 30px 0;
+        text-align: center;
+        background: #eee;
+        color: #999;
+}
+footer a {
+        color: inherit !important;
+}
+footer a:hover {
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 5px;
+}
+
+
+/* desert scheme ported from vim to google prettify */
+pre.prettyprint { display: block; background-color: #333 }
+pre .nocode { background-color: none; color: #000 }
+pre .str { color: #ffa0a0 } /* string  - pink */
+pre .kwd { color: #f0e68c; font-weight: bold }
+pre .com { color: #87ceeb } /* comment - skyblue */
+pre .typ { color: #98fb98 } /* type    - lightgreen */
+pre .lit { color: #cd5c5c } /* literal - darkred */
+pre .pun { color: #fff }    /* punctuation */
+pre .pln { color: #fff }    /* plaintext */
+pre .tag { color: #f0e68c; font-weight: bold } /* html/xml tag    - lightyellow */
+pre .atn { color: #bdb76b; font-weight: bold } /* attribute name  - khaki */
+pre .atv { color: #ffa0a0 } /* attribute value - pink */
+pre .dec { color: #98fb98 } /* decimal         - lightgreen */
+
+/* Specify class=linenums on a pre to get line numbering */
+ol.linenums { margin-top: 0; margin-bottom: 0; color: #AEAEAE } /* IE indents via margin-left */
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8 { list-style-type: none }
+/* Alternate shading for lines */
+li.L1,li.L3,li.L5,li.L7,li.L9 { }
+
+@media print {
+  pre.prettyprint { background-color: none }
+  pre .str, code .str { color: #060 }
+  pre .kwd, code .kwd { color: #006; font-weight: bold }
+  pre .com, code .com { color: #600; font-style: italic }
+  pre .typ, code .typ { color: #404; font-weight: bold }
+  pre .lit, code .lit { color: #044 }
+  pre .pun, code .pun { color: #440 }
+  pre .pln, code .pln { color: #000 }
+  pre .tag, code .tag { color: #006; font-weight: bold }
+  pre .atn, code .atn { color: #404 }
+  pre .atv, code .atv { color: #060 }
+}
+
+
+@media all and (max-width: 1200px) {
+        h1 {font-size: 2.5em;}
+}
+@media all and (max-width: 670px) {
+        h1 {font-size: 2em; line-height: 1em;}
+}
+@media all and (max-width: 500px) {
+        h1 {font-size: 1.75em;}
+        #content code {white-space: normal;}
+        #main-menu .logo .name {display: none;}
+}
+

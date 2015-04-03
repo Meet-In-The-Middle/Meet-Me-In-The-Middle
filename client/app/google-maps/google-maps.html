@@ -71,9 +71,10 @@
         </ui-gmap-marker>
     </ui-gmap-google-map>
     {{"This is Data from client: " + marker.coords.latitude + ", " + marker.coords.longitude}} <br>
-
-    {{marker}}<br>
-    {{"This is Data that was sent to server and came back: " + test}}
+    <p>Below is Data that was sent to server and came back with other users data in addition to client data; Check by opening new browser tab<br>
+        Top-tier key is socket.id which is unique number assigned to each client
+    </p>
+    <pre>{{test}}</pre>
 </div>
 
 

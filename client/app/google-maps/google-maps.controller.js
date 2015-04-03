@@ -10,9 +10,20 @@ angular.module('meetMeInTheMiddleApp')
     });
 }])
 
- .controller('MapsCtrl', ['$scope', '$q', '$http', 'uiGmapGoogleMapApi',  
+ .controller('MapsCtrl', ['$scope', '$q', '$http', 'uiGmapGoogleMapApi', 'uiGmapIsReady', 
 
-    function ($scope, $q, $log, uiGmapGoogleMapApi) {
+    function ($scope, $q, $log, uiGmapGoogleMapApi, uiGmapIsReady) {
+
+        var instanceMap;
+
+        // directionsService = new maps.DirectionsService();
+        // $scope.directionsDisplay = new maps.DirectionsRenderer();
+        // $scope.infowindow = new maps.InfoWindow();
+        // $scope.polyline = new maps.Polyline({
+        //     path: [],
+        //     strokeColor: '#FF0000',
+        //     strokeWeight: 3
+        //   });
 
         $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4, refresh: {}};
 
@@ -51,7 +62,6 @@ angular.module('meetMeInTheMiddleApp')
         var events = {
           places_changed: function (searchBox) {
             var place = searchBox.getPlaces();
-            console.log(place);
             if (!place || place == 'undefined' || place.length == 0) {
                 console.log('no place data');
                 return;
@@ -87,7 +97,27 @@ angular.module('meetMeInTheMiddleApp')
       uiGmapGoogleMapApi.then(function(maps) {
         $scope.resolved = true;
         $scope.googleVersion = maps.version;
-        maps.visualRefresh = true;        
+        maps.visualRefresh = true;     
+
+        $scope.directionsService = new maps.DirectionsService();
+        $scope.directionsDisplay = new maps.DirectionsRenderer();
+        $scope.infowindow = new maps.InfoWindow();
+        $scope.polyline = new maps.Polyline({
+            path: [],
+            strokeColor: '#FF0000',
+            strokeWeight: 3
+          });
+
+        $scope.midPoint = new google.maps.Marker({
+          //map: instanceMap,
+          title: "start"
+        });
+        
+          uiGmapIsReady.promise(1).then(function(instances) {
+            instanceMap = instances[0].map;   
+            $scope.directionsDisplay.setMap(instanceMap);
+            console.log(instanceMap);
+          });
       });
 
         $scope.locator = function(){
@@ -116,7 +146,9 @@ angular.module('meetMeInTheMiddleApp')
         var socket = io();
         // Send data whenever user changes pin.
         $scope.$watch("marker.coords.latitude || marker.coords.longitude", function(newVal, oldVal){
+          if(newVal !== oldVal){
             socket.emit('move-pin', $scope.marker);
+          }
         });
 
 
@@ -124,12 +156,91 @@ angular.module('meetMeInTheMiddleApp')
         // if current ANY user moves pin;
         //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
         socket.on('move-pin', function(dataCollection){
-            //console.dir(dataCollection);
-            $scope.test = JSON.stringify(dataCollection, null, 2);
-            // $scope.test = dataCollection[socket.id];
+            if(Object.keys(dataCollection).length === 2){
+              for(var sockID in dataCollection){
+                if (socket.id === sockID){
+                  var start = new google.maps.LatLng(dataCollection[sockID].coords.latitude, dataCollection[sockID].coords.longitude);
+                }
+                else{
+                  var end = new google.maps.LatLng(dataCollection[sockID].coords.latitude, dataCollection[sockID].coords.longitude);
+                }
+              }
+              calcRoute(start, end);
+            }
         });
 
         $scope.searchbox = { template:'searchbox.tpl.html', events:events};
+
+
+      var calcRoute = function(start, end){
+
+      var request = {
+        origin: start,
+        destination:end,        
+        travelMode: google.maps.TravelMode.DRIVING
+      };
+              
+      $scope.directionsService.route(request, function(response, status) {
+        //console.log(response);
+          if (status == google.maps.DirectionsStatus.OK) {
+            $scope.polyline.setPath([]);
+            $scope.bounds = new google.maps.LatLngBounds();
+            $scope.directionsDisplay.setDirections(response);
+            var route = response.routes[0];
+            // var summaryPanel = document.getElementById("directions_panel");
+            // summaryPanel.innerHTML = "";
+            var path = response.routes[0].overview_path;
+            var legs = response.routes[0].legs;
+            for (var i=0;i<legs.length;i++) {
+              if (i == 0) { 
+                if($scope.midPoint.title === "start"){
+                  console.log('midpoint first set');
+                  $scope.midPoint.setPosition(legs[i].start_location);
+                  $scope.midPoint.setTitle("midpoint");
+              }else{  
+                 console.log('midpoint exist and needs to be removed');
+                 $scope.midPoint.setMap(null); 
+              }
+              
+        
+                var html = "";
+                var label = "midpoint";
+                var contentString = '<b>'+label+'</b><br>'+html;
+                $scope.midPoint.myname = "midpoint";
+                // google.maps.event.addListener($scope.marker, 'click', function() {
+                //   $scope.infowindow.setContent(contentString+"<br>"+$scope.marker.getPosition().toUrlValue(6)); 
+                //   $scope.infowindow.open(instanceMap,$scope.marker);
+                // });
+              }
+              var steps = legs[i].steps;
+              for (var j=0;j<steps.length;j++) {
+                var nextSegment = steps[j].path;
+                for (var k=0;k<nextSegment.length;k++) {
+                  $scope.polyline.getPath().push(nextSegment[k]);
+                  $scope.bounds.extend(nextSegment[k]);
+                }
+              }
+            }
+            $scope.polyline.setMap(instanceMap); 
+            var totalDist = 0;
+            var totalTime = 0;
+            var myroute = response.routes[0];
+            for (i = 0; i < myroute.legs.length; i++) {
+              totalDist += myroute.legs[i].distance.value;
+              totalTime += myroute.legs[i].duration.value;      
+            }
+            var distance = (50/100) * totalDist;
+            var time = ((50/100) * totalTime/60).toFixed(2);
+            $scope.midPoint.setPosition($scope.polyline.GetPointAtDistance(distance));
+            $scope.midPoint.setTitle("time:"+time);
+            $scope.midPoint.setMap(instanceMap);
+            totalDist = totalDist / 1000.
+            //document.getElementById("total").innerHTML = "total distance is: "+ totalDist + " km<br>total time is: " + (totalTime / 60).toFixed(2) + " minutes";
+            } else {
+              alert("directions response "+status);
+            }
+        }); 
+    }
 
     }])
 
@@ -141,4 +252,279 @@ angular.module('meetMeInTheMiddleApp')
             alert('custom control clicked!');
         };
     });
+
+    
+
+
+
+    /*
+
+
+uiGmapGoogleMapApi.then(function(maps) { 
+      $scope.directionsService = new maps.DirectionsService();
+      $scope.directionsDisplay = new maps.DirectionsRenderer();
+      $scope.infowindow = new maps.InfoWindow();
+      $scope.polyline = new maps.Polyline({
+          path: [],
+          strokeColor: '#FF0000',
+          strokeWeight: 3
+        });
+      
+        uiGmapIsReady.promise(1).then(function(instances) {
+
+          var instanceMap = instances[0].map;
+
+          console.log(instanceMap);
+          $scope.directionsDisplay.setMap(instanceMap);
+
+          $scope.codeAddress = function() {
+            var start = document.getElementById('from').value;
+            var end = document.getElementById('to').value;
+            console.log(start);
+            var request = {
+              origin:start,
+              destination:end,
+              travelMode: google.maps.TravelMode.DRIVING
+            };
+
+            // $scope.directionsService.route(request, function(response, status) {
+            //   if (status == google.maps.DirectionsStatus.OK) {
+            //     console.log('!!!!!!');
+            //     $scope.directionsDisplay.setDirections(response);
+            //   }
+            // });  
+
+    $scope.directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      $scope.polyline.setPath([]);
+      $scope.bounds = new google.maps.LatLngBounds();
+      // startLocation = new Object();
+      // endLocation = new Object();
+      $scope.directionsDisplay.setDirections(response);
+      var route = response.routes[0];
+      var summaryPanel = document.getElementById("directions_panel");
+      summaryPanel.innerHTML = "";
+
+      // For each route, display summary information.
+      var path = response.routes[0].overview_path;
+      var legs = response.routes[0].legs;
+      for (var i=0;i<legs.length;i++) {
+        if (i == 0) { 
+          // startLocation.latlng = legs[i].start_location;
+          // startLocation.address = legs[i].start_address;
+          //marker = createMarker(legs[i].start_location,"midpoint","","green");
+          $scope.marker = new google.maps.Marker({
+            position: legs[i].start_location,
+            map: instanceMap,
+            title: "midpoint",
+            zIndex: Math.round(legs[i].start_location.lat()*-100000)<<5
+          });
+          var html = "";
+          var label = "midpoint";
+          var contentString = '<b>'+label+'</b><br>'+html;
+          $scope.marker.myname = "midpoint";
+
+          google.maps.event.addListener($scope.marker, 'click', function() {
+            $scope.infowindow.setContent(contentString+"<br>"+$scope.marker.getPosition().toUrlValue(6)); 
+            $scope.infowindow.open(instanceMap,$scope.marker);
+          });
+        }
+        //endLocation.latlng = legs[i].end_location;
+        //endLocation.address = legs[i].end_address;
+        var steps = legs[i].steps;
+        for (var j=0;j<steps.length;j++) {
+          var nextSegment = steps[j].path;
+          for (var k=0;k<nextSegment.length;k++) {
+            $scope.polyline.getPath().push(nextSegment[k]);
+            $scope.bounds.extend(nextSegment[k]);
+          }
+        }
+      }
+
+      $scope.polyline.setMap(instances[0].map);
+       
+       var totalDist = 0;
+        var totalTime = 0;
+
+        var myroute = response.routes[0];
+        for (i = 0; i < myroute.legs.length; i++) {
+          totalDist += myroute.legs[i].distance.value;
+          totalTime += myroute.legs[i].duration.value;      
+        }
+        //putMarkerOnRoute(50);
+
+        //function putMarkerOnRoute(percentage) {
+        var distance = (50/100) * totalDist;
+        var time = ((50/100) * totalTime/60).toFixed(2);
+        // if (!marker) {
+        //   marker = createMarker(polyline.GetPointAtDistance(distance),"time: "+time,"marker");
+        // } else {
+          $scope.marker.setPosition($scope.polyline.GetPointAtDistance(distance));
+          $scope.marker.setTitle("time:"+time);
+        //}
+  
+
+        totalDist = totalDist / 1000.
+        document.getElementById("total").innerHTML = "total distance is: "+ totalDist + " km<br>total time is: " + (totalTime / 60).toFixed(2) + " minutes";
+
+
+        } else {
+          alert("directions response "+status);
+        }
+      }); 
+  
+          }
+        });
+    });   
+
+
+    */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+
+
+var directionDisplay;
+var directionsService = new google.maps.DirectionsService();
+var map;
+var polyline = null;
+var infowindow = new google.maps.InfoWindow();
+
+function createMarker(latlng, label, html) {
+  var contentString = '<b>'+label+'</b><br>'+html;
+  var marker = new google.maps.Marker({
+    position: latlng,
+    map: map,
+    title: label,
+    zIndex: Math.round(latlng.lat()*-100000)<<5
+  });
+  marker.myname = label;
+
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(contentString+"<br>"+marker.getPosition().toUrlValue(6)); 
+    infowindow.open(map,marker);
+  });
+  return marker;
+}
+
+function initialize() {
+  directionsDisplay = new google.maps.DirectionsRenderer({suppressMarkers:true});
+  var chicago = new google.maps.LatLng(41.850033, -87.6500523);
+  var myOptions = {
+    zoom: 6,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    center: chicago
+  }
+  map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+  polyline = new google.maps.Polyline({
+    path: [],
+    strokeColor: '#FF0000',
+    strokeWeight: 3
+  });
+  directionsDisplay.setMap(map);
+  calcRoute();
+}
+
+function calcRoute() {
+  var start = document.getElementById("start").value;
+  var end = document.getElementById("end").value;
+  var travelMode = google.maps.DirectionsTravelMode.DRIVING
+
+  var request = {
+      origin: start,
+      destination: end,
+      travelMode: travelMode
+  };
+
+  directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      polyline.setPath([]);
+      var bounds = new google.maps.LatLngBounds();
+      startLocation = new Object();
+      endLocation = new Object();
+      directionsDisplay.setDirections(response);
+      var route = response.routes[0];
+      var summaryPanel = document.getElementById("directions_panel");
+      summaryPanel.innerHTML = "";
+
+      // For each route, display summary information.
+      var path = response.routes[0].overview_path;
+      var legs = response.routes[0].legs;
+      for (i=0;i<legs.length;i++) {
+        if (i == 0) { 
+          startLocation.latlng = legs[i].start_location;
+          startLocation.address = legs[i].start_address;
+          marker = createMarker(legs[i].start_location,"midpoint","","green");
+        }
+        endLocation.latlng = legs[i].end_location;
+        endLocation.address = legs[i].end_address;
+        var steps = legs[i].steps;
+        for (j=0;j<steps.length;j++) {
+          var nextSegment = steps[j].path;
+          for (k=0;k<nextSegment.length;k++) {
+            polyline.getPath().push(nextSegment[k]);
+            bounds.extend(nextSegment[k]);
+          }
+        }
+      }
+
+      polyline.setMap(map);
+
+      computeTotalDistance(response);
+    } else {
+      alert("directions response "+status);
+    }
+  });
+}
+
+var totalDist = 0;
+var totalTime = 0;
+function computeTotalDistance(result) {
+  totalDist = 0;
+  totalTime = 0;
+  var myroute = result.routes[0];
+  for (i = 0; i < myroute.legs.length; i++) {
+    totalDist += myroute.legs[i].distance.value;
+    totalTime += myroute.legs[i].duration.value;      
+  }
+  putMarkerOnRoute(50);
+
+  totalDist = totalDist / 1000.
+  document.getElementById("total").innerHTML = "total distance is: "+ totalDist + " km<br>total time is: " + (totalTime / 60).toFixed(2) + " minutes";
+}
+
+function putMarkerOnRoute(percentage) {
+  var distance = (percentage/100) * totalDist;
+  var time = ((percentage/100) * totalTime/60).toFixed(2);
+  if (!marker) {
+    marker = createMarker(polyline.GetPointAtDistance(distance),"time: "+time,"marker");
+  } else {
+    marker.setPosition(polyline.GetPointAtDistance(distance));
+    marker.setTitle("time:"+time);
+  }
+}
+
+
+
+    */
 

@@ -90,8 +90,6 @@ angular.module('meetMeInTheMiddleApp')
         maps.visualRefresh = true;        
       });
 
-       
-
         $scope.locator = function(){
           navigator.geolocation.getCurrentPosition(
           function(pos) {
@@ -133,11 +131,6 @@ angular.module('meetMeInTheMiddleApp')
 
         $scope.searchbox = { template:'searchbox.tpl.html', events:events};
 
-        uiGmapGoogleMapApi.then(function(maps) {
-            $scope.resolved = true;
-            $scope.googleVersion = maps.version;
-            maps.visualRefresh = true;
-         });
     }])
 
     .controller('controlCtrl', function ($scope) {
@@ -148,7 +141,4 @@ angular.module('meetMeInTheMiddleApp')
             alert('custom control clicked!');
         };
     });
-
-
-
 

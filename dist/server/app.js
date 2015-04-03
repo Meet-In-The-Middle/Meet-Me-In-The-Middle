@@ -20,11 +20,28 @@ if(config.seedDB) { require('./config/seed'); }
 // Setup server
 var app = express();
 var server = require('http').createServer(app);
-var socketio = require('socket.io')(server, {
-  serveClient: (config.env === 'production') ? false : true,
-  path: '/socket.io-client'
-});
-require('./config/socketio')(socketio);
+//Ko: Socket is hooked here
+// var socketio = require('socket.io')(server, {
+//   serveClient: (config.env === 'production') ? false : true,
+//   path: '/socket.io-client'
+// });
+// //Ko: Server-side socket logic is defined here in ./config/socketio.js
+// require('./config/socketio')(socketio);
+var socket = require('socket.io');
+var io = socket(server);
+
+io.on('connection', function(socket){
+
+  socket.on('move-pin', function(data){
+    // do stuff with data received from cliend
+
+    socket.emit('move-pin', data)
+    console.log('TESTING SOCKET.IO' + socket.id)
+
+  })
+})
+
+
 require('./config/express')(app);
 require('./routes')(app);
 
@@ -34,5 +51,4 @@ server.listen(config.port, config.ip, function () {
 });
 
 // Expose app
-//exports = module.exports = app;
 module.exports = app;

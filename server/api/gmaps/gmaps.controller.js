@@ -22,6 +22,8 @@ exports.show = function(req, res) {
 
 // Creates a new Room in the DB.
 exports.create = function(req, res) {
+  console.log('req.body ', req.body);
+  //console.log('req ', req);
   Rooms.create(req.body, function(err, gmaps) {
     if(err) { return handleError(res, err); }
     return res.json(201, gmaps);

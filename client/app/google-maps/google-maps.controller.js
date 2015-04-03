@@ -12,7 +12,6 @@ angular.module('meetMeInTheMiddleApp')
 
  .controller('MapsCtrl', ['$scope', '$q', '$http', 'uiGmapGoogleMapApi',  
 
-
     function ($scope, $q, $log, uiGmapGoogleMapApi) {
 
         $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4, refresh: {}};
@@ -46,6 +45,7 @@ angular.module('meetMeInTheMiddleApp')
                   labelClass: "marker-labels"
               };
             }
+          }
         };
 
         var events = {
@@ -90,8 +90,6 @@ angular.module('meetMeInTheMiddleApp')
         maps.visualRefresh = true;        
       });
 
-       
-
         $scope.locator = function(){
           navigator.geolocation.getCurrentPosition(
           function(pos) {
@@ -110,7 +108,7 @@ angular.module('meetMeInTheMiddleApp')
             alert('Unable to get location: ' + error.message);
           }
         );
-        }  
+      }  
         
 
         //TODO: define userId
@@ -126,18 +124,13 @@ angular.module('meetMeInTheMiddleApp')
         // if current ANY user moves pin;
         //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
         socket.on('move-pin', function(dataCollection){
-            console.dir(dataCollection);
+            //console.dir(dataCollection);
             $scope.test = JSON.stringify(dataCollection, null, 2);
             // $scope.test = dataCollection[socket.id];
         });
 
         $scope.searchbox = { template:'searchbox.tpl.html', events:events};
 
-        uiGmapGoogleMapApi.then(function(maps) {
-            $scope.resolved = true;
-            $scope.googleVersion = maps.version;
-            maps.visualRefresh = true;
-         });
     }])
 
     .controller('controlCtrl', function ($scope) {
@@ -148,7 +141,4 @@ angular.module('meetMeInTheMiddleApp')
             alert('custom control clicked!');
         };
     });
-
-
-
 

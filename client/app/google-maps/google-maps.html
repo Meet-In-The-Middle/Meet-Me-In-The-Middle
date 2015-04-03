@@ -63,9 +63,9 @@
         <input type="text" input id="pac-input" placeholder="Search Box">
     </script>
 
-    <script type="text/ng-template" id="control.tpl.html">
+   <!--  <script type="text/ng-template" id="control.tpl.html">
     <button class="btn btn-sm btn-primary" ng-class="{'btn-warning': danger}" ng-click="controlClick()">{{controlText}}</button>
-    </script>
+    </script> -->
 
     <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
         <ui-gmap-search-box template="searchbox.template" events="searchbox.events"></ui-gmap-search-box>
@@ -82,12 +82,12 @@
             </ui-gmap-window>
         </ui-gmap-marker>
 
-    </ui-gmap-google-map>
+  <!--   </ui-gmap-google-map>
     {{"This is Data from client: " + marker.coords.latitude + ", " + marker.coords.longitude}} <br>
     <p>Below is Data that was sent to server and came back with other users data in addition to client data; Check by opening new browser tab<br>
         Top-tier key is socket.id which is unique number assigned to each client
     </p>
-    <pre>{{test}}</pre>
+    <pre>{{test}}</pre> -->
 
 <ui-gmap-map-control template="control.tpl.html" position="bottom-left" controller="controlCtrl" index="-1"></ui-gmap-map-control>
     </ui-gmap-google-map>

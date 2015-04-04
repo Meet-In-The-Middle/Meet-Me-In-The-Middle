@@ -1,0 +1,17 @@
+.profile-top h3 {
+  display: inline-block;
+}
+
+.profile-top button {
+  float: right;
+}
+
+.profile-image-div {
+  width: 300px;
+  height: 225px;
+  overflow: hidden;
+}
+
+.profile-image-div img {
+  width: 90%;
+}

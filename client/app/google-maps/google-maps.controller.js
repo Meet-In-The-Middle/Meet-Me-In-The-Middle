@@ -108,6 +108,8 @@ angular.module('meetMeInTheMiddleApp')
             strokeWeight: 3
           });
 
+        $scope.testCalls = 0;
+
         $scope.midPoint = new google.maps.Marker({
           //map: instanceMap,
           title: "start"
@@ -156,8 +158,9 @@ angular.module('meetMeInTheMiddleApp')
         // if current ANY user moves pin;
         //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
         socket.on('move-pin', function(dataCollection){
-            if(Object.keys(dataCollection).length === 2){
-              for(var sockID in dataCollection){
+            //Great we got at least two users, lets find that midpoint
+            if(Object.keys(dataCollection).length >= 2){
+              /*for(var sockID in dataCollection){
                 if (socket.id === sockID){
                   var start = new google.maps.LatLng(dataCollection[sockID].coords.latitude, dataCollection[sockID].coords.longitude);
                 }
@@ -166,29 +169,79 @@ angular.module('meetMeInTheMiddleApp')
                 }
               }
               calcRoute(start, end);
-            }
+            }*/
+            calcRoute(dataCollection);
+          }
         });
 
         $scope.searchbox = { template:'searchbox.tpl.html', events:events};
 
 
-      var calcRoute = function(start, end){
+      var calcRoute = function(userData){
+        //User's location
+        var usrLoc;
+        //Calculated midpoint
+        var center;
+        
+        //Initialize the bounds of the polygon
+        var bounds = new google.maps.LatLngBounds();
 
-      var request = {
-        origin: start,
-        destination:end,        
-        travelMode: google.maps.TravelMode.DRIVING
-      };
-              
-      $scope.directionsService.route(request, function(response, status) {
-        //console.log(response);
+        //Get all of the users locations
+        for(var socketID  in userData) {
+          //Add a vertex in the polygon
+          var coord = new google.maps.LatLng(userData[socketID].coords.latitude, userData[socketID].coords.longitude);
+          //When user's socket ID is found, save their locaton
+          if(socketID === socket.id){
+            usrLoc = coord;
+          }
+          console.log(coord);
+          bounds.extend(coord);
+        }
+
+        //Find its center
+        center = bounds.getCenter();
+        console.log(center);
+
+        //Setup the route from the user's current location to then central meetup point
+        var request = {
+          origin: usrLoc,
+          destination: center,        
+          travelMode: google.maps.TravelMode.DRIVING
+        };
+
+        //Get the route      
+        $scope.directionsService.route(request, function(response, status) {
+      
           if (status == google.maps.DirectionsStatus.OK) {
-            $scope.polyline.setPath([]);
+            console.log(response);
+           $scope.polyline.setPath([]);
+            var path = response.routes[0].overview_path;
+            var legs = response.routes[0].legs;
+            
+            var legs = response.routes[0].legs;
+            for (var i=0;i<legs.length;i++) {
+              if (i == 0) { 
+                var steps = legs[i].steps;
+                for (var j=0;j<steps.length;j++) {
+                var nextSegment = steps[j].path;
+                  for (var k=0;k<nextSegment.length;k++) {
+                    $scope.polyline.getPath().push(nextSegment[k]);
+                    //$scope.bounds.extend(nextSegment[k]);
+                  }
+                }
+              }
+            }
+            
+            $scope.polyline.setMap(instanceMap); 
+
+            //$scope.midPoint.setMap(instanceMap);
+
+            
+            /*$scope.polyline.setPath([]);
             $scope.bounds = new google.maps.LatLngBounds();
             $scope.directionsDisplay.setDirections(response);
             var route = response.routes[0];
-            // var summaryPanel = document.getElementById("directions_panel");
-            // summaryPanel.innerHTML = "";
+
             var path = response.routes[0].overview_path;
             var legs = response.routes[0].legs;
             for (var i=0;i<legs.length;i++) {
@@ -213,14 +266,7 @@ angular.module('meetMeInTheMiddleApp')
                 // });
               }
               var steps = legs[i].steps;
-              for (var j=0;j<steps.length;j++) {
-                var nextSegment = steps[j].path;
-                for (var k=0;k<nextSegment.length;k++) {
-                  $scope.polyline.getPath().push(nextSegment[k]);
-                  $scope.bounds.extend(nextSegment[k]);
-                }
-              }
-            }
+              
             $scope.polyline.setMap(instanceMap); 
             var totalDist = 0;
             var totalTime = 0;
@@ -234,7 +280,7 @@ angular.module('meetMeInTheMiddleApp')
             $scope.midPoint.setPosition($scope.polyline.GetPointAtDistance(distance));
             $scope.midPoint.setTitle("time:"+time);
             $scope.midPoint.setMap(instanceMap);
-            totalDist = totalDist / 1000.
+            totalDist = totalDist / 1000.*/
             //document.getElementById("total").innerHTML = "total distance is: "+ totalDist + " km<br>total time is: " + (totalTime / 60).toFixed(2) + " minutes";
             } else {
               alert("directions response "+status);

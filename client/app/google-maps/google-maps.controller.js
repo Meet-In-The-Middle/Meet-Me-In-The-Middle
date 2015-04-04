@@ -93,6 +93,7 @@ angular.module('meetMeInTheMiddleApp')
             };
           }
         }
+        $scope.markers = [];
 
       uiGmapGoogleMapApi.then(function(maps) {
         $scope.resolved = true;
@@ -182,6 +183,8 @@ angular.module('meetMeInTheMiddleApp')
         var usrLoc;
         //Calculated midpoint
         var center;
+        //Markers for other users
+        var markers = [];
         
         //Initialize the bounds of the polygon
         var bounds = new google.maps.LatLngBounds();
@@ -193,14 +196,20 @@ angular.module('meetMeInTheMiddleApp')
           //When user's socket ID is found, save their locaton
           if(socketID === socket.id){
             usrLoc = coord;
-          }
-          console.log(coord);
+          } else {
+            //create a marker for other user(s) and put it in the marker array
+            $scope.markers.push(new google.maps.Marker({
+              id: userData[socketID],
+              position: coord
+            }));
+          } 
+          //console.log(coord);
           bounds.extend(coord);
         }
 
         //Find its center
         center = bounds.getCenter();
-        console.log(center);
+        //console.log(center);
 
         //Setup the route from the user's current location to then central meetup point
         var request = {
@@ -213,7 +222,7 @@ angular.module('meetMeInTheMiddleApp')
         $scope.directionsService.route(request, function(response, status) {
       
           if (status == google.maps.DirectionsStatus.OK) {
-            console.log(response);
+           // console.log(response);
            $scope.polyline.setPath([]);
             var path = response.routes[0].overview_path;
             var legs = response.routes[0].legs;
@@ -232,7 +241,12 @@ angular.module('meetMeInTheMiddleApp')
               }
             }
             
-            $scope.polyline.setMap(instanceMap); 
+            $scope.polyline.setMap(instanceMap);
+
+            console.log($scope.markers);
+
+            //Add the other user(s) marker
+            $scope.markers.forEach(function(marker){marker.setMap(instanceMap);}); 
 
             //$scope.midPoint.setMap(instanceMap);
 

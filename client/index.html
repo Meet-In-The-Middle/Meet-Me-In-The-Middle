@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="app/app.css">
       <!-- injector:css -->
       <link rel="stylesheet" href="app/account/login/login.css">
+      <link rel="stylesheet" href="app/account/profile/profile.css">
       <link rel="stylesheet" href="app/admin/admin.css">
       <link rel="stylesheet" href="app/app.css">
       <link rel="stylesheet" href="app/google-maps/google-maps.css">
@@ -86,10 +87,12 @@
       <script src="bower_components/angular-cookies/angular-cookies.js"></script>
       <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
       <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-      <script src="bower_components/lodash/lodash.js"></script>
+      <script src="bower_components/lodash/dist/lodash.compat.js"></script>
       <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
       <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
       <script src="bower_components/angularjs-google-directions/src/angularjs-google-directions.js"></script>
+      <script src="bower_components/ng-file-upload/angular-file-upload.js"></script>
+      <script src="bower_components/ng-file-upload-shim/angular-file-upload-shim.js"></script>
       <!-- endbower -->
     <!-- endbuild -->
      <!-- <script src="//maps.googleapis.com/maps/api/js?libraries=places&sensor=false&language=pt&v=3.17"></script> -->
@@ -100,6 +103,8 @@
           <!-- injector:js -->
           <script src="app/account/account.js"></script>
           <script src="app/account/login/login.controller.js"></script>
+          <script src="app/account/profile/profile-routes.js"></script>
+          <script src="app/account/profile/profile.controller.js"></script>
           <script src="app/account/settings/settings.controller.js"></script>
           <script src="app/account/signup/signup.controller.js"></script>
           <script src="app/admin/admin.controller.js"></script>
@@ -120,8 +125,12 @@
           <script src="app/landing/js/smoothscroll.js"></script>
           <script src="app/landing/js/validator.js"></script>
           <script src="app/landing/js/zalive.scripts.js"></script>
+          <script src="app/landing/landing-route.js"></script>
+          <script src="app/landing/landingController.js"></script>
           <script src="app/main/main.controller.js"></script>
           <script src="app/main/main.js"></script>
+          <script src="app/services/services.js"></script>
+          <script src="app/test/test-routes.js"></script>
           <script src="components/auth/auth.service.js"></script>
           <script src="components/auth/user.service.js"></script>
           <script src="components/modal/modal.service.js"></script>

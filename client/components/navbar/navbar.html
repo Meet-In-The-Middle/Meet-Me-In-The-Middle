@@ -31,36 +31,36 @@
 
      <nav id="mainmenu" class="navbar navbar-fixed-top main-menu head-menu auto-height" role="navigation" ng-controller="NavbarCtrl">
         <div class="container">
-            
+
             <!-- LOGO CONTAINER -->
             <div class="logo-cont">
                     <a class="navbar-brand" href="/"><!-- SCROLLS TO TOP OF THE PAGE -->
-                        
+
                         <!--PLACE URL OF YOUR LOGO BELOW-->
                         <img src="app/landing/img/logoMidUp.jpg" alt>
-                        
+
                     </a>
-                    
+
             </div>
-            
+
             <!-- MAIN MENU BUTTONS CONTAINER -->
             <div class="buttons-cont">
-                
+
                 <span class="btn btn-primary" ng-show="isAdmin()" ng-class="{active: isActive('/admin')}"><a class="in-button" href="/admin">Admin</a></span>
 
                 <!-- data-toggle="modal" data-target="#joinUs" -->
                 <span class="btn btn-primary" ng-hide="isLoggedIn()" ng-class="{active: isActive('/login')}"><a class="in-button"  href="/login">Login</a></span>
 
                 <span class="btn btn-primary" ng-show="isLoggedIn()"><p class="navbar-text">Hello {{ getCurrentUser().name }}</p> </span>
-                
+
                 <span class="btn btn-primary" ng-show="isLoggedIn()" ng-class="{active: isActive('/settings')}"><a href="/settings" class="in-button" ><span class="glyphicon glyphicon-cog"></span></a></span>
 
                 <!-- DOWNLOAD BUTTON - PLACE LINK TO YOUR APP HERE -->
                 <span class="btn btn-success" ng-hide="isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup" class="in-button" style="color:white;">Sign up</a></span>
-                
+
                 <span class="btn btn-success" ng-show="isLoggedIn()" ng-class="{active: isActive('/logout')}"><a href="" ng-click="logout()" class="in-button" >Logout</a></li>
             </div>
-            
+
             <!-- "BURGER MENU" FOR RESPONSIVE VIEW -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -70,7 +70,7 @@
                     <span class="icon-bar"></span>
                 </button>
             </div>
-            
+
             <!-- MAIN MENU CONTAINER -->
             <div id="navbar" class="navbar-collapse collapse">
                 <div class="navbar-right">
@@ -78,9 +78,10 @@
                         <!-- MAIN MENU POSITIONS -->
                         <li><a href="#about">About</a></li>
                         <li><a href="#team">Team</a></li>
+                        <li ng-hide="!isLoggedIn()"><a href="profile" >Profile</a></li>
                     </ul>
                 </div>
             </div>
-            
+
         </div>
     </nav>

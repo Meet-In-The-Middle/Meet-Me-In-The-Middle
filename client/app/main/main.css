@@ -1,4 +1,4 @@
-.thing-form {
+/*.thing-form {
     margin: 20px 0;
 }
 
@@ -27,4 +27,22 @@
     padding: 30px 0;
     margin-top: 70px;
     border-top: 1px solid #E5E5E5;
+}*/
+
+/*
+    Navbar style
+*/
+.inButton {
+    display: block;
+    height: 100%;
+}
+
+.carousel-team {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.owl-stage {
+    margin: 0 auto;
+
 }

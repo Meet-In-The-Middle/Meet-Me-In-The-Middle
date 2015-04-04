@@ -11,12 +11,25 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- =========================
+          FAV & TOUCH ICONS  
+    ============================== -->
+        <!-- FAVICON FOR DESKTOPS -->
+    <link rel="icon" href="app/landing/img/favicon/favicon.ico">
+    
+    <!-- SET OF FAVICONS FOR APPLE PRODUCTS -->
+    <link rel="apple-touch-icon" href="app/landing/img/favicon/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="app/landing/img/favicon/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="app/landing/img/favicon/apple-touch-icon-114x114.png">
+
     <!-- build:css(client) app/vendor.css -->
       <!-- bower:css -->
       <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
       <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
       <!-- endbower -->
     <!-- endbuild -->
+    <link href='http://fonts.googleapis.com/css?family=Raleway:300,400,600,700,900' rel='stylesheet' type='text/css'>
+
     <!-- build:css({.tmp,client}) app/app.css -->
     <link rel="stylesheet" href="app/app.css">
       <!-- injector:css -->
@@ -27,24 +40,24 @@
       <link rel="stylesheet" href="app/landing/css/animations/animations.css">
       <link rel="stylesheet" href="app/landing/css/icons/elegant.css">
       <link rel="stylesheet" href="app/landing/css/plugins/plugins.css">
-      <link rel="stylesheet" href="app/landing/css/style-blue.css">
-      <link rel="stylesheet" href="app/landing/css/style-coldgrey.css">
       <link rel="stylesheet" href="app/landing/css/style-default.css">
-      <link rel="stylesheet" href="app/landing/css/style-green.css">
-      <link rel="stylesheet" href="app/landing/css/style-pantone2014.css">
-      <link rel="stylesheet" href="app/landing/css/style-pantone2015.css">
-      <link rel="stylesheet" href="app/landing/css/style-pink.css">
-      <link rel="stylesheet" href="app/landing/css/style-yellow.css">
       <link rel="stylesheet" href="app/main/main.css">
       <link rel="stylesheet" href="components/modal/modal.css">
       <!-- endinjector -->
     <!-- endbuild -->
     <script src="/socket.io/socket.io.js"></script>
   </head>
-  <body ng-app="meetMeInTheMiddleApp">
+  <body id="body" class="page-loading" ng-app="meetMeInTheMiddleApp">
     <!--[if lt IE 7]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
+    <!-- =========================
+     PRELOADER
+    ============================== -->
+    <div id="preloader">
+        <div id="loading"></div>
+    </div>
+
 
     <!-- Add your site or application content here -->
     <div ui-view=""></div>

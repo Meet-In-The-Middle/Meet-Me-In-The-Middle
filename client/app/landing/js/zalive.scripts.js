@@ -2,6 +2,8 @@
 //    EVENTS ON PAGE LOADED                             //
 //////////////////////////////////////////////////////  //
 
+window.themeScript = function () {
+
 $(window).load(function() { // makes sure the whole site is loaded
 "use strict";
 
@@ -501,6 +503,6 @@ $(document).ready(function(){
   } // EVENTS ON DESKTOP ENDS HERE
   
 }); // DOCUMENT READY ENDS HERE
-
+};
 
 

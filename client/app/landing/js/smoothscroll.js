@@ -5,7 +5,7 @@
 //  - Balazs Galambosi (maintainer)  
 //  - Michael Herf     (Pulse Algorithm)
  
-(function(){
+window.smoothScroll = function(){
   
 // Scroll Variables (tweakable)
 var defaultOptions = {
@@ -531,5 +531,4 @@ if (wheelEvent && isChrome) {
 	addEvent("mousedown", mousedown);
 	addEvent("load", init);
 }
- 
-})();
+};

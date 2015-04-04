@@ -532,3 +532,5 @@ if (wheelEvent && isChrome) {
 	addEvent("load", init);
 }
 };
+
+smoothScroll();

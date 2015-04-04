@@ -25,3 +25,7 @@
 #pac-input:focus {
   border-color: #4d90fe;
 }
+
+#map_canvas {
+  margin-top: 100px;
+}

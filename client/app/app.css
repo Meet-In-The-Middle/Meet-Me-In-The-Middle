@@ -3,7 +3,7 @@
  * Bootstrap Fonts
  */
 
-@font-face {
+/*@font-face {
     font-family: 'Glyphicons Halflings';
     src: url('../bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot');
     src: url('../bower_components/bootstrap/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
@@ -11,12 +11,12 @@
     url('../bower_components/bootstrap/fonts/glyphicons-halflings-regular.ttf') format('truetype'),
     url('../bower_components/bootstrap/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
 }
-
+*/
 /**
  *Font Awesome Fonts
  */
 
-@font-face {
+/*@font-face {
     font-family: 'FontAwesome';
     src: url('../bower_components/font-awesome/fonts/fontawesome-webfont.eot?v=4.1.0');
     src: url('../bower_components/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.1.0') format('embedded-opentype'),
@@ -26,14 +26,15 @@
     font-weight: normal;
     font-style: normal;
 }
-
+*/
 /**
  * App-wide Styles
  */
 
-.browsehappy {
+/*.browsehappy {
     margin: 0.2em 0;
     background: #ccc;
     color: #000;
     padding: 0.2em 0;
 }
+*/

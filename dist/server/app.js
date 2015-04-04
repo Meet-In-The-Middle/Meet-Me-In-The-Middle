@@ -18,8 +18,16 @@ mongoose.connect(config.mongo.uri, config.mongo.options);
 if(config.seedDB) { require('./config/seed'); }
 
 // Setup server
-var app = express();
-var server = require('http').createServer(app);
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+server.listen(config.port, config.ip, function () {
+  console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
+});
+
+
+//var server = require('http').Server(app);
 //Ko: Socket is hooked here
 // var socketio = require('socket.io')(server, {
 //   serveClient: (config.env === 'production') ? false : true,
@@ -30,14 +38,30 @@ var server = require('http').createServer(app);
 var socket = require('socket.io');
 var io = socket(server);
 
+var dataCollection = {};
 io.on('connection', function(socket){
 
+  // data = {id:c, coors: { latitude: num, longitude: num}}
   socket.on('move-pin', function(data){
-    // do stuff with data received from cliend
+    // If it's new socket.id
+    dataCollection[socket.id] = data;
 
-    socket.emit('move-pin', data)
+    // Sendback all the data
+    //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
+    io.emit('move-pin', dataCollection)
+
+
+    // Testing
     console.log('TESTING SOCKET.IO' + socket.id)
 
+    console.dir(dataCollection);
+
+  });
+
+  // Delete the data after disconnecting.
+  socket.on('disconnect', function(data){
+    delete dataCollection[socket.id];
+    io.emit('move-pin', dataCollection);
   })
 })
 
@@ -46,9 +70,9 @@ require('./config/express')(app);
 require('./routes')(app);
 
 // Start server
-server.listen(config.port, config.ip, function () {
+/*server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
-});
+});*/
 
 // Expose app
 module.exports = app;

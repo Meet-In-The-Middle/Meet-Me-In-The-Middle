@@ -12,6 +12,8 @@ router.delete('/:id', auth.hasRole('admin'), controller.destroy);
 router.get('/me', auth.isAuthenticated(), controller.me);
 router.put('/:id/password', auth.isAuthenticated(), controller.changePassword);
 router.get('/:id', auth.isAuthenticated(), controller.show);
+//router.post('/userimage', auth.isAuthenticated(), controller.updateImageUrl);
+//router.get('/userimage/:id', function(){ console.log(123);},  controller.getImageUrl);
 router.post('/', controller.create);
 
 module.exports = router;

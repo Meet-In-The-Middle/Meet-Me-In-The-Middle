@@ -4,6 +4,7 @@
   "main": "server/app.js",
   "dependencies": {
     "angular-google-maps": "^2.0.19",
+    "azure-storage": "^0.4.3",
     "body-parser": "~1.5.0",
     "composable-middleware": "^0.3.0",
     "compression": "~1.0.1",
@@ -19,6 +20,7 @@
     "method-override": "~1.0.0",
     "mongoose": "~3.8.8",
     "morgan": "~1.0.0",
+    "multer": "^0.1.8",
     "passport": "~0.2.0",
     "passport-facebook": "latest",
     "passport-google-oauth": "latest",

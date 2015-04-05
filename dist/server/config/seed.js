@@ -30,7 +30,9 @@ Thing.find({}).remove(function() {
   });
 });
 
-User.find({}).remove(function() {
+//I set seedDB to false in config/environment/index.js but it was still populating DB
+//so changed User.find({}).remove to .update
+User.find({}).update(function() {
   User.create({
     provider: 'local',
     name: 'Test User',

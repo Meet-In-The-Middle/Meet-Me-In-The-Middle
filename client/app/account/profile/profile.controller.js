@@ -65,5 +65,19 @@ angular.module('meetMeInTheMiddleApp')
       });
     };
 
+    $scope.user.about = "Say something about yourself... like whether your prefer coffee or tea, sugar or agave syrup, paintball or making out";
+    $scope.editorEnabled = false;
+    $scope.enableEditor = function() {
+      $scope.editorEnabled = true;
+      $scope.editableText = $scope.user.about;
+    };
+    $scope.disableEditor = function() {
+      $scope.editorEnabled = false;
+    };
+    $scope.saveText = function() {
+      $scope.user.about = $scope.editableText;
+      $scope.disableEditor();
+    };
+
 
   }]);

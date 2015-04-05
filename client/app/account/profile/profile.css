@@ -1,8 +1,8 @@
-.profile-top h3 {
+.profile-about-me h3 {
   display: inline-block;
 }
 
-.profile-top button {
+.profile-about-me button {
   float: right;
 }
 
@@ -13,5 +13,10 @@
 }
 
 .profile-image-div img {
-  width: 90%;
+  max-width: 62%;
+}
+
+.profile-margin-top {
+  width: 100%;
+  margin-top: 8%;
 }

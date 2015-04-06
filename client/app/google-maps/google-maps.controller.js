@@ -186,7 +186,7 @@ angular.module('meetMeInTheMiddleApp')
         //Calculated midpoint
         var center;
         //Routes the users will take
-        var paths = [];
+        //var paths = [];
         //Markers for other users
         var markers = [];
         //$scope.marker = [];
@@ -234,7 +234,7 @@ angular.module('meetMeInTheMiddleApp')
               strokeColor: '#FF0000',
               strokeWeight: 3
             });*/
-            $scope.polyline.setPath([]);
+            /*$scope.polyline.setPath([]);
             var path = response.routes[0].overview_path;
             var legs = response.routes[0].legs;
             
@@ -253,10 +253,11 @@ angular.module('meetMeInTheMiddleApp')
             }
             //Save the route
             //$scope.polylines.push($scope.polyline);
-            $scope.polyline.setMap(instanceMap);
+            $scope.polyline.setMap(instanceMap);*/
+
             //Add the other user(s) marker
             $scope.markers.forEach(function(marker){marker.setMap(instanceMap);});  
-
+            $scope.directionsDisplay.setDirections(response);
 
           } else {
               alert("directions response "+status);

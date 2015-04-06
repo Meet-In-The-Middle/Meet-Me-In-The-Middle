@@ -20,7 +20,6 @@ if(config.seedDB) { require('./config/seed'); }
 // Setup server
 var app = require('express')();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
 
 server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));

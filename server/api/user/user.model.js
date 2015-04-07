@@ -19,7 +19,8 @@ var UserSchema = new Schema({
   twitter: {},
   google: {},
   github: {},
-  imageUrl: String
+  imageUrl: String,
+  memberOfRooms: []
 });
 
 /**

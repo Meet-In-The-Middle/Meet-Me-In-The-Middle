@@ -73,14 +73,21 @@
 
             <!-- MAIN MENU CONTAINER -->
             <div id="navbar" class="navbar-collapse collapse">
-                <div class="navbar-right">
+                <div class="navbar-left">
                     <ul class="nav navbar-nav">
                         <!-- MAIN MENU POSITIONS -->
                         <li><a href="" ng-click="linkTo('/#about')">About</a></li>
                         <li><a href="" ng-click="linkTo('/#team')">Team</a></li>
-                        <li ng-hide="!isLoggedIn()"><a href="/profile" >Profile</a></li>
                     </ul>
                 </div>
+              <div class="navbar-right">
+                <ul class="nav navbar-nav">
+                  <!-- MAIN MENU POSITIONS -->
+                  <li ng-hide="!isLoggedIn()"><a href="/mymidups" >My MidUps</a></li>
+                  <li ng-hide="!isLoggedIn()"><a href="/profile" >Profile</a></li>
+                </ul>
+              </div>
+
             </div>
 
         </div>

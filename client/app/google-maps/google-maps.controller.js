@@ -25,7 +25,15 @@ angular.module('meetMeInTheMiddleApp')
         //     strokeWeight: 3
         //   });
 
-        $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4, refresh: {}};
+        $scope.map = { 
+          control: {}, 
+          center: { 
+            latitude: 40.1451, 
+            longitude: -99.6680 
+          }, 
+          zoom: 4, 
+          refresh: {}
+        };
 
         $scope.options = {scrollwheel: false, scaleControl: true};
 
@@ -37,7 +45,7 @@ angular.module('meetMeInTheMiddleApp')
             $scope.windowOptions.visible = !$scope.windowOptions.visible;
         };
 
-        $scope.marker = new google.maps.Marker({
+        $scope.marker = {
           id: 0,
           coords: {
             latitude: 52.47491894326404,
@@ -57,7 +65,7 @@ angular.module('meetMeInTheMiddleApp')
               };
             }
           }
-        });
+        };
 
         var events = {
           places_changed: function (searchBox) {

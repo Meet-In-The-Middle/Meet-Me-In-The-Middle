@@ -81,17 +81,9 @@
                 </div>
             </ui-gmap-window>
         </ui-gmap-marker>
-
-  <!--   </ui-gmap-google-map>
-    {{"This is Data from client: " + marker.coords.latitude + ", " + marker.coords.longitude}} <br>
-    <p>Below is Data that was sent to server and came back with other users data in addition to client data; Check by opening new browser tab<br>
-        Top-tier key is socket.id which is unique number assigned to each client
-    </p>
-    <pre>{{test}}</pre> -->
-
-<ui-gmap-map-control template="control.tpl.html" position="bottom-left" controller="controlCtrl" index="-1"></ui-gmap-map-control>
+        <ui-gmap-map-control template="control.tpl.html" position="bottom-left" controller="controlCtrl" index="-1"></ui-gmap-map-control>
     </ui-gmap-google-map>
-    <button class="btn btn-submit" ng-click="locator()">Find Me</button><br/><br/>
-    <br/>
+
+    <button class="btn btn-submit" ng-click="locator()">Find Me</button><br/><br/><br/>
     {{countTest}}
 </div>

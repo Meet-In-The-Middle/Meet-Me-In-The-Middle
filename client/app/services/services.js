@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .factory('UserImage', ['$http', function($http){
+  .factory('MainFactory', ['$http', function($http){
 
       var imageStore = {};
       var loadUserImage = function(userId, cb) {

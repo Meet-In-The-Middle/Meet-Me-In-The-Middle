@@ -2,8 +2,8 @@
 
 angular.module('meetMeInTheMiddleApp')
 
-  .controller('roomsCtrl', ['$scope', '$http', 'Auth', 'UserImage',
-    function ($scope, $http, Auth, UserImage) {
+  .controller('roomsCtrl', ['$scope', '$http', 'Auth', 'MainFactory',
+    function ($scope, $http, Auth, MainFactory) {
     //profile controller methods
     var user = Auth.getCurrentUser();
     console.log('user is ', user);
@@ -11,33 +11,40 @@ angular.module('meetMeInTheMiddleApp')
 
       /**
        * initial page on load to show rooms user belongs to
+       * and to set $scope elements for editable text box to create new room (midup)
         */
     $scope.init = function () {
       $scope.user.name = user.name;
       //load rooms the user is in, ie query DB for users rooms (rooms)
       $scope.getRooms();
-
+      editableTextBox();
     };
 
     $scope.getRooms = function() {
-      UserImage.getRoomsForUser(user._id, function(rooms) {
+      MainFactory.getRoomsForUser(user._id, function(rooms) {
         console.log('rooms is ', rooms);
         $scope.rooms = rooms;
       });
       //return an array of rooms
     }
 
-
-
-    $scope.editorEnabled = false;
-    $scope.enableEditor = function() {
-      $scope.editorEnabled = true;
-      $scope.editableText = $scope.user.about;
-    };
-    $scope.disableEditor = function() {
+    /**
+     * Set $scope elements for create room button to show input to get new room name
+     */
+    var editableTextBox = function() {
       $scope.editorEnabled = false;
+      $scope.enableEditor = function() {
+        $scope.editorEnabled = true;
+        $scope.editableText = $scope.user.about;
+      };
+      $scope.disableEditor = function() {
+        $scope.editorEnabled = false;
+      };
     };
-    $scope.saveText = function() {
+    /**
+     * User creates new room which will be sent to DB and then re-populate rooms list
+     */
+    $scope.createRoom = function() {
       var newRoom = {
         name: $scope.editableText,
         users: [
@@ -51,11 +58,10 @@ angular.module('meetMeInTheMiddleApp')
         info: 'How awesome',
         active: true
       };
-      UserImage.createRoom(newRoom, function() {
+      MainFactory.createRoom(newRoom, function() {
         $scope.getRooms();
       });
       $scope.disableEditor();
-      //save new user room name to DB using socket.io(?) with user as first object in room array
     };
 
   }]);

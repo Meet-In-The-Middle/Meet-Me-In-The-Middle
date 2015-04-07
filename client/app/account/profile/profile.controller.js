@@ -2,8 +2,8 @@
 
 angular.module('meetMeInTheMiddleApp')
 
-  .controller('profileCtrl', ['$scope', '$http', '$upload', 'Auth', 'UserImage',
-    function ($scope, $http, $upload, Auth, UserImage) {
+  .controller('profileCtrl', ['$scope', '$http', '$upload', 'Auth', 'MainController',
+    function ($scope, $http, $upload, Auth, MainController) {
     //profile controller methods
     var user = Auth.getCurrentUser();
     $scope.user = {};
@@ -55,7 +55,7 @@ angular.module('meetMeInTheMiddleApp')
      * @param username
      */
     $scope.loadUserImage = function (userId) {
-      UserImage.loadUserImage(userId, function(imageUrl) {
+      MainFactory.loadUserImage(userId, function(imageUrl) {
         var random = (new Date()).toString();
         //if user changes their profile image, we overwrite it in azure blob storage using
         //same image file name so we need to

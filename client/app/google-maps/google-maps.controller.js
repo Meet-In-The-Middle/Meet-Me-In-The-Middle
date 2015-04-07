@@ -37,7 +37,7 @@ angular.module('meetMeInTheMiddleApp')
             $scope.windowOptions.visible = !$scope.windowOptions.visible;
         };
 
-        $scope.marker = {
+        $scope.marker = new google.maps.Marker({
           id: 0,
           coords: {
             latitude: 52.47491894326404,
@@ -57,7 +57,7 @@ angular.module('meetMeInTheMiddleApp')
               };
             }
           }
-        };
+        });
 
         var events = {
           places_changed: function (searchBox) {
@@ -74,7 +74,7 @@ angular.module('meetMeInTheMiddleApp')
                 "zoom": 18
             };
 
-            $scope.marker = {
+            /*$scope.marker = {
                 placeID: place[0].id,
                 name: place[0].name,
                 address: place[0].formatted_address,
@@ -90,7 +90,25 @@ angular.module('meetMeInTheMiddleApp')
                   labelClass: "marker-labels"
               },
               show: true
-            };
+            };*/
+            $scope.marker.placeID = place[0].id;
+            $scope.marker.name = place[0].name;
+            $scope.marker.address = place[0].formatted_address;
+            $scope.marker.id = 0;
+            $scope.marker.coords = {
+                    latitude: place[0].geometry.location.lat(),
+                    longitude: place[0].geometry.location.lng()
+                };
+            $scope.marker.options = {
+                  draggable: true,
+                  labelContent: "lat: " + $scope.marker.coords.latitude + " " + "lon: " + $scope.marker.coords.longitude,
+                  labelAnchor: "100 0",
+                  labelClass: "marker-labels"
+              };
+            $scope.marker.show = true;
+            
+
+
           }
         }
         $scope.markers = [];
@@ -129,14 +147,20 @@ angular.module('meetMeInTheMiddleApp')
           navigator.geolocation.getCurrentPosition(
           function(pos) {
             $scope.map = { control: {}, center: { latitude: pos.coords.latitude, longitude: pos.coords.longitude }, zoom: 18};
-            $scope.marker = {
+            /*$scope.marker = {
                 id: 0,
                 coords: {
                     latitude: pos.coords.latitude,
                     longitude: pos.coords.longitude
                 }
 
-            };
+            };*/
+            $scope.marker.id = 0;
+            $scope.marker.coords = {
+                    latitude: pos.coords.latitude,
+                    longitude: pos.coords.longitude
+                };
+
             $scope.$apply();
            }, 
           function(error) {
@@ -163,18 +187,25 @@ angular.module('meetMeInTheMiddleApp')
         socket.on('move-pin', function(dataCollection){
             //Great we got at least two users, lets find that midpoint
             if(Object.keys(dataCollection).length >= 2){
-              /*for(var sockID in dataCollection){
-                if (socket.id === sockID){
-                  var start = new google.maps.LatLng(dataCollection[sockID].coords.latitude, dataCollection[sockID].coords.longitude);
-                }
-                else{
-                  var end = new google.maps.LatLng(dataCollection[sockID].coords.latitude, dataCollection[sockID].coords.longitude);
-                }
+              var userLoc = false;
+              var usersReady = 0;
+              //Loop through the 
+              for(var sockID in dataCollection){            
+                  if(dataCollection[sockID].coords !== undefined){
+                    usersReady++;
+                    if (socket.id === sockID){
+                      userLoc = true;
+                    }
+                  }
               }
-              calcRoute(start, end);
-            }*/
-            calcRoute(dataCollection);
-          }
+
+              if(userLoc && usersReady >= 2){
+                calcRoute(dataCollection);
+              }
+              //console.log(userLoc);
+              //console.log(usersReady);
+            }
+
         });
 
         $scope.searchbox = { template:'searchbox.tpl.html', events:events};
@@ -189,7 +220,8 @@ angular.module('meetMeInTheMiddleApp')
         //var paths = [];
         //Markers for other users
         var markers = [];
-        //$scope.marker = [];
+        //Remove all other markers from the map
+        $scope.markers.forEach(function(marker){marker.setMap(null);});  
         
         //Initialize the bounds of the polygon
         var bounds = new google.maps.LatLngBounds();
@@ -197,28 +229,37 @@ angular.module('meetMeInTheMiddleApp')
         //Get all of the users locations
         for(var socketID  in userData) {
           //Add a vertex in the polygon
-          var coord = new google.maps.LatLng(userData[socketID].coords.latitude, userData[socketID].coords.longitude);
-          //If not current user
-          if(socketID !== socket.id){
-            //create a marker for other user(s) and put it in the marker array
-            $scope.markers.push(new google.maps.Marker({
-              id: userData[socketID],
-              position: coord
-            }));
-          } else {
-            usrLoc = coord;
+          if(userData[socketID].coords !== undefined) {
+            var coord = new google.maps.LatLng(userData[socketID].coords.latitude, userData[socketID].coords.longitude);
+            //If not current user
+            if(socketID !== socket.id){
+            //Loop through the array and update the appropriate marker if it exists  
+              if(!(_.contains(_.map($scope.marker, function(x){
+                if(x.id === userData[socketID]){
+                  x.positon = coord;
+                  return true;
+                }
+              }), true))) {
+              //create a marker for other user(s) and put it in the marker array
+                $scope.markers.push(new google.maps.Marker({
+                  id: userData[socketID],
+                  position: coord
+                }));
+              }
+            } else {
+              usrLoc = coord;
+              //$scope.marker.setMap(null);
+            }
+            //console.log(coord);
+            bounds.extend(coord);
           }
-          //usrCoords.push(coord);
-          //console.log(coord);
-          bounds.extend(coord);
         }
+        console.log($scope.markers.length);
 
         //Find its center
         center = bounds.getCenter();
-        //console.log(center);
 
         //Setup the route from the user's current location to then central meetup point
-        //usrCoords.forEach(function(start) {
           var request = {
             origin: usrLoc,
             destination: center,        
@@ -229,35 +270,12 @@ angular.module('meetMeInTheMiddleApp')
           $scope.directionsService.route(request, function(response, status) {
       
           if (status == google.maps.DirectionsStatus.OK) {
-            /*var polyline = new polymap.Polyline({
-              path: [],
-              strokeColor: '#FF0000',
-              strokeWeight: 3
-            });*/
-            /*$scope.polyline.setPath([]);
-            var path = response.routes[0].overview_path;
-            var legs = response.routes[0].legs;
-            
-            var legs = response.routes[0].legs;
-            for (var i=0;i<legs.length;i++) {
-              if (i == 0) { 
-                var steps = legs[i].steps;
-                for (var j=0;j<steps.length;j++) {
-                var nextSegment = steps[j].path;
-                  for (var k=0;k<nextSegment.length;k++) {
-                    $scope.polyline.getPath().push(nextSegment[k]);
-                    //$scope.bounds.extend(nextSegment[k]);
-                  }
-                }
-              }
-            }
-            //Save the route
-            //$scope.polylines.push($scope.polyline);
-            $scope.polyline.setMap(instanceMap);*/
 
             //Add the other user(s) marker
+           // $scope.marker.setMap(null);
             $scope.markers.forEach(function(marker){marker.setMap(instanceMap);});  
             $scope.directionsDisplay.setDirections(response);
+           // $scope.marker.setMap(instanceMap);
 
           } else {
               alert("directions response "+status);

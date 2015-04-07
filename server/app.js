@@ -39,30 +39,29 @@ var io = socket(server);
 
 var dataCollection = {};
 io.on('connection', function(socket){
-
   // data = {id:c, coors: { latitude: num, longitude: num}}
-  socket.on('move-pin', function(data){
-    // If it's new socket.id
-    dataCollection[socket.id] = data;
+    socket.on('move-pin', function(data){
+      // If it's new socket.id
+      dataCollection[socket.id] = data;
 
-    // Sendback all the data
-    //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-    io.emit('move-pin', dataCollection)
+      // Sendback all the data
+      //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
+      io.emit('move-pin', dataCollection)
 
 
-    // Testing
-    console.log('TESTING SOCKET.IO' + socket.id)
+      // Testing
+      console.log('TESTING SOCKET.IO' + socket.id)
 
-    console.dir(dataCollection);
+      console.dir(dataCollection);
 
-  });
+    });
 
-  // Delete the data after disconnecting.
-  socket.on('disconnect', function(data){
-    delete dataCollection[socket.id];
-    io.emit('move-pin', dataCollection);
-  })
-})
+    // Delete the data after disconnecting.
+    socket.on('disconnect', function(data){
+      delete dataCollection[socket.id];
+      io.emit('move-pin', dataCollection);
+    })
+});
 
 
 require('./config/express')(app);

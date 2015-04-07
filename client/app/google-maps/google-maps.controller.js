@@ -63,6 +63,8 @@ angular.module('meetMeInTheMiddleApp')
                   labelAnchor: "100 0",
                   labelClass: "marker-labels"
               };
+              console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.marker, null, 2))
+              socket.emit('move-pin', $scope.marker);
             }
           }
         };
@@ -112,11 +114,11 @@ angular.module('meetMeInTheMiddleApp')
                   labelContent: "lat: " + $scope.marker.coords.latitude + " " + "lon: " + $scope.marker.coords.longitude,
                   labelAnchor: "100 0",
                   labelClass: "marker-labels"
-              };
+            };
             $scope.marker.show = true;
             
-
-
+            console.log('places_changed event fired once, data sent: \n' + JSON.stringify($scope.marker, null, 2))
+            socket.emit('move-pin', $scope.marker)
           }
         }
         $scope.markers = [];
@@ -182,11 +184,11 @@ angular.module('meetMeInTheMiddleApp')
         // Connect to socket when the user places pin on the map
         var socket = io();
         // Send data whenever user changes pin.
-        $scope.$watch("marker.coords.latitude || marker.coords.longitude", function(newVal, oldVal){
-          if(newVal !== oldVal){
-            socket.emit('move-pin', $scope.marker);
-          }
-        });
+        // $scope.$watch("marker.coords.latitude || marker.coords.longitude", function(newVal, oldVal){
+        //   if(newVal !== oldVal){
+        //     socket.emit('move-pin', $scope.marker);
+        //   }
+        // });
 
 
         // marker = {id:c, coors: { latitude: num, longitude: num}}
@@ -212,6 +214,7 @@ angular.module('meetMeInTheMiddleApp')
               }
               //console.log(userLoc);
               //console.log(usersReady);
+                console.log("listening for move pin fired multiple times");
             }
 
         });

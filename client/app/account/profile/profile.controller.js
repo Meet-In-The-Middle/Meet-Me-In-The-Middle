@@ -2,14 +2,17 @@
 
 angular.module('meetMeInTheMiddleApp')
 
-  .controller('profileCtrl', ['$scope', '$http', '$upload', 'Auth', 'MainController',
-    function ($scope, $http, $upload, Auth, MainController) {
+  .controller('profileCtrl', ['$scope', '$http', '$upload', 'Auth', 'MainFactory',
+    function ($scope, $http, $upload, Auth, MainFactory) {
     //profile controller methods
     var user = Auth.getCurrentUser();
     $scope.user = {};
+    $scope.spinner = true;
+
     $scope.init = function () {
       $scope.user.name = user.name;
       $scope.loadUserImage(user._id);
+      console.log('$scope.spinner is ', $scope.spinner);
     };
 
     //watch for image file upload
@@ -22,6 +25,8 @@ angular.module('meetMeInTheMiddleApp')
       * @param files
      */
     $scope.upload = function (files) { // user controller
+      $scope.spinner = false;
+
       var userId = user._id;
       if (files && files.length) {
         var file = files[0];
@@ -36,6 +41,7 @@ angular.module('meetMeInTheMiddleApp')
           console.log('progress: ' + progressPercentage + '% ' +
           evt.config.file.name);
         }).success(function (data, status, headers, config) {
+          $scope.spinner = true;
           console.log('data is ', data);
           //update DOM with new image URL
           $scope.user.image = data.path;
@@ -56,6 +62,7 @@ angular.module('meetMeInTheMiddleApp')
      */
     $scope.loadUserImage = function (userId) {
       MainFactory.loadUserImage(userId, function(imageUrl) {
+        $scope.spinner = true;
         var random = (new Date()).toString();
         //if user changes their profile image, we overwrite it in azure blob storage using
         //same image file name so we need to

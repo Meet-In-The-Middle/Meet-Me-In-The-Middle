@@ -8,7 +8,17 @@
     </script>
     <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" control="map.control" events="map.events">
         <ui-gmap-search-box template="searchbox.template" events="searchbox.events"></ui-gmap-search-box>
-        <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m.id" options="m.options" events="m.events" icon="m.icon">
+        <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m.id" options="m.options" events="m.events" icon="m.icon" click="onMarkerClick(m)">
+            <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl" templateParameter="m.templateParameter">
+            <div>
+                <h1>{{marker.name}}</h1>
+                {{marker.address}}<br/>
+                {{"Place ID: " + marker.placeID}}<br/>
+                {{"Latitude: " + m.coords.latitude}} <br/>
+                {{"Longitude: " + m.coords.longitude}} <br/>
+                <a ng-click="">Set New Position</a> 
+            </div>
+          </ui-gmap-window>
         </ui-gmap-marker>
     </ui-gmap-google-map>
     <button class="btn btn-submit" ng-click="findMe()">Find Me</button>
@@ -30,7 +40,7 @@
           </input>
         </div>
         <button ng-click="placeSearch(place)" type="submit" class="btn btn-primary">submit</button>
-        <button class="btn btn-danger" ng-click="removeMarkers()">Clear Map</button>
+        <button class="btn btn-danger" ng-click="clearMap()">Clear Map</button>
       </form>
     </div>
   </div>

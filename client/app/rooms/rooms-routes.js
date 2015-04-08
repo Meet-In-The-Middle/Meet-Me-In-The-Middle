@@ -10,5 +10,11 @@ angular.module('meetMeInTheMiddleApp')
         authenticate: true
 
       })
+      .state('room', {
+        url:'/mymidups/:Id',
+        templateUrl: 'app/google-maps/google-maps.html',
+        contoller: 'midUpCtrl',
+        authenticate: true
+      })
 
   }]);

@@ -18,6 +18,8 @@ module.exports = {
   GOOGLE_ID:        '904045696854-6ec041gm8if4m463v37mquogsqi3h8sa.apps.googleusercontent.com',
   GOOGLE_SECRET:    '904045696854-6ec041gm8if4m463v37mquogsqi3h8sa.apps.googleusercontent.com',
 
+  MONGOLAB_URI: 'mongodb://miduphacker:HtpbIkdrYL99DY8t@ds041177.mongolab.com:41177/midup',
+
   AZURE_STORAGE_ACCOUNT: 'midup',
   AZURE_STORAGE_ACCESS_KEY: 'qCNxXUKd6+hzDKF+tdZ99jIDFor5Dadd9L9rLiaI7ullkVEZCoioxcyvRLgaedMdThWrYdtwonZsAmf89C2rpw==',
   // Control debug level for modules using visionmedia/debug

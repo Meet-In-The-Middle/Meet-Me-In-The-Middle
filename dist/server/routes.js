@@ -12,15 +12,15 @@ var multer = require('multer');
 module.exports = function(app) {
 
   // Insert routes below
+  app.use('/api/rooms', require('./api/rooms'));
   //app.use('/userimage', require('./api/user'));
   app.use('/api/gmaps', require('./api/gmaps'));
   app.use('/api/things', require('./api/thing'));
   app.use('/api/users', require('./api/user'));
   app.use('/api/gmaps', require('./api/gmaps'));
-  //app.route('/userimage/*').get(function(req, res) {
-  //  console.log(123);
-  //  userCtrl.getImageUrl(req, res);
-  //});
+  app.use('api/rooms', require('./api/rooms'));
+
+
   app.post('/userimage',  function(req, res) {
     console.log(123);
     userCtrl.updateImageUrl(req, res);

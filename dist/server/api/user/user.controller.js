@@ -1,10 +1,6 @@
 'use strict';
 //NOTE: These will be moved to enviromental variables when deployed
 //Also will remove them from createBlobService... so it will read   ...createBlobService()...
-var AZURE_STORAGE_ACCOUNT='midup';
-var AZURE_STORAGE_ACCESS_KEY='qCNxXUKd6+hzDKF+tdZ99jIDFor5Dadd9L9rLiaI7ullkVEZCoioxcyvRLgaedMdThWrYdtwonZsAmf89C2rpw==';
-
-
 
 var User = require('./user.model');
 var passport = require('passport');
@@ -12,7 +8,7 @@ var config = require('../../config/environment');
 var jwt = require('jsonwebtoken');
 var azure = require('azure-storage');
 var retryOperations = new azure.ExponentialRetryPolicyFilter();
-var blobSvc = azure.createBlobService(AZURE_STORAGE_ACCOUNT, AZURE_STORAGE_ACCESS_KEY).withFilter(retryOperations);
+var blobSvc = azure.createBlobService(process.env.AZURE_STORAGE_ACCOUNT, process.env.AZURE_STORAGE_ACCESS_KEY).withFilter(retryOperations);
 blobSvc.createContainerIfNotExists('userpictures', {publicAccessLevel: 'blob'}, function(error, result, response) {
   if (!error) {
     console.log(result);
@@ -41,6 +37,10 @@ exports.index = function(req, res) {
  * Creates a new user
  */
 exports.create = function (req, res, next) {
+  console.log('req.body is ', req.body);
+  if( !req.body.name ) {
+    return res.send(500, err);
+  }
   var newUser = new User(req.body);
   newUser.provider = 'local';
   newUser.role = 'user';

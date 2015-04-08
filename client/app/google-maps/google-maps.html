@@ -1,16 +1,64 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
+<!-- <div id="map_canvas" ng-controller="MapsCtrl"> -->
 
-<div id="map_canvas" ng-controller="MapsCtrl">
+<div class="row">
+<div class="col-sm-8">
     <script type="text/ng-template" id="searchbox.tpl.html">
-        <input type="text" input id="pac-input" placeholder="Search Box">
+        <input type="text" input id="pac-input" placeholder="Enter Your Location">
     </script>
-
-
-    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" control="map.control" events="map.events">
         <ui-gmap-search-box template="searchbox.template" events="searchbox.events"></ui-gmap-search-box>
-        <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m.id" options="m.options">
+        <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m.id" options="m.options" events="m.events" icon="m.icon">
         </ui-gmap-marker>
     </ui-gmap-google-map>
-    <button class="btn btn-submit" ng-click="findMe()">Find Me</button><br/><br/>
-    <br/>
-</div>
+    <button class="btn btn-submit" ng-click="findMe()">Find Me</button>
+    <!-- <div class="divider"></div> -->
+    <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
+    <!-- <button class="controls" ng-click="viewMap()">View Map</button> -->
+    </div>
+    <div class="col-sm-4">
+      <H4 class="well well-sm">Place searches</H4>
+      <form class="form" role="form">
+        <div class="form-group">
+          <label class="control-label">Place types(ex.finance)</label>
+          <input type="text" class="form-control" ng-model="place.types">
+          </input>
+        </div>
+        <div class="form-group">
+          <label class="control-label">radius(meters)</label>
+          <input type="text" class="form-control" ng-model="place.radius">
+          </input>
+        </div>
+        <button ng-click="placeSearch(place)" type="submit" class="btn btn-primary">submit</button>
+        <button class="btn btn-danger" ng-click="removeMarkers()">Clear Map</button>
+      </form>
+    </div>
+  </div>
+
+
+
+    <!-- <div class="col-sm-2"> -->
+<!-- <div class="flex-item">
+      <H4 class="well well-sm">Place searches</H4>
+      <form class="form" role="form">
+        <div class="form-group">
+          <label class="control-label">Place types(ex.finance)</label>
+          <input type="text" class="form-control" ng-model="place.types">
+          </input>
+        </div>
+        <div class="form-group">
+          <label class="control-label">radius(meters)</label>
+          <input type="text" class="form-control" ng-model="place.radius">
+          </input>
+        </div>
+        <button ng-click="placeSearch(place)" type="submit" class="btn btn-primary">submit</button>
+        <button class="btn btn-danger" ng-click="removeMarkers()">Clear Map</button>
+      </form>
+      {{result}
+    </div>
+</div> -->
+
+
+
+
+ 

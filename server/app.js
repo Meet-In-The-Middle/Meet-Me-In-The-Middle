@@ -46,8 +46,7 @@ io.on('connection', function(socket){
 
       // Sendback all the data
       //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-      io.emit('move-pin', dataCollection)
-
+      io.emit('move-pin-reply', dataCollection)
 
       // Testing
       console.log('TESTING SOCKET.IO' + socket.id)
@@ -59,7 +58,7 @@ io.on('connection', function(socket){
     // Delete the data after disconnecting.
     socket.on('disconnect', function(data){
       delete dataCollection[socket.id];
-      io.emit('move-pin', dataCollection);
+      io.emit('move-pin-reply', dataCollection);
     })
 });
 

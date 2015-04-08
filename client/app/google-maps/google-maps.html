@@ -1,5 +1,12 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
-<!-- <div id="map_canvas" ng-controller="MapsCtrl"> -->
+<!--   <h1>Google Maps View</h1>
+  <h2>google-maps: <span ng-cloak>{{googleVersion}}</span></h2>
+  <h3>Calculate your route</h3>
+<div id="calculate-route" name="calculate-route" action="#" method="get">
+  <label for="from">From:</label>
+  <input type="text" id="from" name="from" required="required" placeholder="An address" size="30" />
+  <a id="from-link" href="#">Get my position</a>
+  <br />
 
 <div class="row">
 <div class="col-sm-8">
@@ -16,7 +23,7 @@
                 {{"Place ID: " + marker.placeID}}<br/>
                 {{"Latitude: " + m.coords.latitude}} <br/>
                 {{"Longitude: " + m.coords.longitude}} <br/>
-                <a ng-click="">Set New Position</a> 
+                <a ng-click="">Set New Position</a>
             </div>
           </ui-gmap-window>
         </ui-gmap-marker>
@@ -71,4 +78,28 @@
 
 
 
- 
+
+  <div ng-controller="midUpCtrl" ng-init="init()">
+    <div class="col-sm-6">
+      <div class="all-rooms" >
+        <h4>Info on MidUp</h4>
+        <p>People Attending</p>
+        <p>Possilbe Locations</p>
+        <p>Etc.</p>
+
+      </div>
+
+    </div>
+    <div class="col-sm-6 well start-a-midup">
+      <h4 class="no-top-margin">Chat About MidUp</h4>
+      <div class="chat-box"></div>
+      <div class="chat-input-submit">
+        <textarea ng-model="userMessage"></textarea><br>
+        <button class="btn btn-default" ng-click="">Submit</button>
+      </div>
+
+    </div>
+
+
+  </div>
+</div>

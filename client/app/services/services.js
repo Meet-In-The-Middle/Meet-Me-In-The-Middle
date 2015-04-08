@@ -42,10 +42,15 @@ angular.module('meetMeInTheMiddleApp')
           })
       };
 
+    var addUserToRoom = function(userId, roomId) {
+      $http.post('')
+    }
+
       return {
         loadUserImage: loadUserImage,
         createRoom: createRoom,
-        getRoomsForUser: getRoomsForUser
+        getRoomsForUser: getRoomsForUser,
+        addUserToRoom: addUserToRoom
       };
     }
     ]);

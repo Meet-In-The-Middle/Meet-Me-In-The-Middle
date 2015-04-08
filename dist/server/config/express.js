@@ -51,8 +51,10 @@ module.exports = function(app) {
   }
 
   if ('development' === env || 'test' === env) {
-    //comment this out b/c it's crashing heroku
-    //app.use(require('connect-livereload')());
+    //we don't want livereload module if production environment
+    if( !process.env.NODE_ENV === 'production' ) {
+      app.use(require('connect-livereload')());
+    }
     app.use(express.static(path.join(config.root, '.tmp')));
     app.use(express.static(path.join(config.root, 'client')));
     app.set('appPath', 'client');

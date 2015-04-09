@@ -113,7 +113,7 @@ angular.module('meetMeInTheMiddleApp')
            latitude: 44,
            longitude: -108
        },
-       radius: 500000,
+       radius: 10000,
        stroke: {
            color: '#08B21F',
            weight: 2,
@@ -136,13 +136,28 @@ angular.module('meetMeInTheMiddleApp')
             newCenter.lat = center.k;
             newCenter.lng = center.D;
             circle.setCenter(newCenter);
+            socket.emit('circle-move', $scope.circle.center);
           },
           radius_changed: function(circle){
             circleRadius = circle.getRadius();
+            $scope.circle.radius = circleRadius;
+            socket.emit('circle-radius-change', $scope.circle.radius);
           }
        }
    };
    var circleRadius = $scope.circle.radius;
+
+   socket.on('circle-move-replay', function(center){
+    $scope.circle.center = center;
+    console.dir('circle moved emit received  ' + JSON.stringify(center));
+    $scope.$apply();
+   });
+
+   socket.on('circle-radius-change-reply', function(radius){
+    $scope.circle.radius = radius;
+    console.dir('circle radius changed emit received  ' + radius);
+    $scope.$apply();
+   });
 
 
 
@@ -151,6 +166,7 @@ angular.module('meetMeInTheMiddleApp')
 
    
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
+
   $scope.placeSearch = function (place) {
     console.log('placesearch');
     var request = {
@@ -160,11 +176,14 @@ angular.module('meetMeInTheMiddleApp')
          // lat: $scope.markers[socket.id].coords.latitude,
          // lng: $scope.markers[socket.id].coords.longitude
       },
-      radius: circleRadius,
+      radius: $scope.circle.radius,
       types: [place.types]
     };  
-    console.dir(request.location)
-    console.dir(circleRadius);
+    socket.emit('place-search', request)
+    return;
+  };
+
+  socket.on('place-search-reply', function(request){
     service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         for (var i = 0; i < results.length; i++) {
@@ -176,8 +195,7 @@ angular.module('meetMeInTheMiddleApp')
         alert("directions response " +status);
       }
     });
-    return;
-  };
+  });
 
 
   var addPlace = function (place,id) {
@@ -195,7 +213,7 @@ angular.module('meetMeInTheMiddleApp')
       //   message: place.name
       // }
     };
-    $scope.$apply();
+    // $scope.$apply();
   }
 
   $scope.closeClick = function (marker) {
@@ -229,6 +247,7 @@ angular.module('meetMeInTheMiddleApp')
   }
 
   var calculateCenter = function(){
+    console.log('calc fired')
     bounds = new google.maps.LatLngBounds();
     for(var marker in $scope.markers){
       var coord = new google.maps.LatLng($scope.markers[marker].coords.latitude, $scope.markers[marker].coords.longitude);
@@ -239,7 +258,7 @@ angular.module('meetMeInTheMiddleApp')
     var circleCenter = {};
     circleCenter.latitude = center.k;
     circleCenter.longitude = center.D;
-    $scope.circles[0].center = circleCenter;
+    $scope.circle.center = circleCenter;
   }
 
   var calcRoute = function(){

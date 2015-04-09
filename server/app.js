@@ -44,15 +44,24 @@ io.on('connection', function(socket){
       // If it's new socket.id
       dataCollection[socket.id] = data;
 
-      // Sendback all the data
-      //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
       io.emit('move-pin-reply', dataCollection)
-
       // Testing
       console.log('TESTING SOCKET.IO' + socket.id)
 
       console.dir(dataCollection);
 
+    });
+
+    socket.on('circle-move', function(center){
+      io.emit('circle-move-replay', center);
+    });
+
+    socket.on('circle-radius-change', function(radius){
+      io.emit('circle-radius-change-reply', radius);
+    });
+
+    socket.on('place-search', function(request){
+      io.emit('place-search-reply', request);
     });
 
     // Delete the data after disconnecting.

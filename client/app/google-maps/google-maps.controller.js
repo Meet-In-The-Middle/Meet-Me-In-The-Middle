@@ -106,20 +106,65 @@ angular.module('meetMeInTheMiddleApp')
     }*/
   });
 
+
+  $scope.circle = {
+       id: 1,
+       center: {
+           latitude: 44,
+           longitude: -108
+       },
+       radius: 500000,
+       stroke: {
+           color: '#08B21F',
+           weight: 2,
+           opacity: 1
+       },
+       fill: {
+           color: '#08B21F',
+           opacity: 0.5
+       },
+       geodesic: true, // optional: defaults to false
+       draggable: true, // optional: defaults to false
+       clickable: true, // optional: defaults to true
+       editable: true, // optional: defaults to false
+       visible: true, // optional: defaults to true
+       control: {},
+       events: {
+          dragend: function(circle){
+            var center = circle.getCenter();
+            var newCenter = {};
+            newCenter.lat = center.k;
+            newCenter.lng = center.D;
+            circle.setCenter(newCenter);
+          },
+          radius_changed: function(circle){
+            circleRadius = circle.getRadius();
+          }
+       }
+   };
+   var circleRadius = $scope.circle.radius;
+
+
+
+
+
+
    
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
   $scope.placeSearch = function (place) {
     console.log('placesearch');
     var request = {
       location: {
-         // lat: $scope.map.center.latitude,
-         // lng: $scope.map.center.longitude
-         lat: $scope.markers[socket.id].coords.latitude,
-         lng: $scope.markers[socket.id].coords.longitude
+         lat: $scope.circle.center.latitude,
+         lng: $scope.circle.center.longitude
+         // lat: $scope.markers[socket.id].coords.latitude,
+         // lng: $scope.markers[socket.id].coords.longitude
       },
-      radius: place.radius,
+      radius: circleRadius,
       types: [place.types]
     };  
+    console.dir(request.location)
+    console.dir(circleRadius);
     service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         for (var i = 0; i < results.length; i++) {
@@ -190,6 +235,11 @@ angular.module('meetMeInTheMiddleApp')
       bounds.extend(coord);
     }
     center = bounds.getCenter(); 
+    console.log("CENTER OBJECT IS:  " + typeof center + "  " + JSON.stringify(center));
+    var circleCenter = {};
+    circleCenter.latitude = center.k;
+    circleCenter.longitude = center.D;
+    $scope.circles[0].center = circleCenter;
   }
 
   var calcRoute = function(){

@@ -5,6 +5,10 @@
 </script>
 <ui-gmap-google-map center="map.center" zoom="map.zoom" draggable="true" options="options" control="map.control" events="map.events">
   <ui-gmap-search-box template="searchbox.template" events="searchbox.events" position="searchbox.position"></ui-gmap-search-box>
+
+  <ui-gmap-circle center="circle.center" stroke="circle.stroke" fill="circle.fill" radius="circle.radius"
+                visible="circle.visible" geodesic="circle.geodesic" editable="circle.editable" draggable="circle.draggable" clickable="circle.clickable" control="circle.control" events="circle.events"></ui-gmap-circle>
+
   <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m.id" options="m.options" events="m.events" icon="m.icon" click="onMarkerClick(m)">
     <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl" templateParameter="m.templateParameter">
       <div>

@@ -5,7 +5,10 @@
   "dependencies": {
     "angular-google-maps": "^2.0.19",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "azure-storage": "^0.4.3",
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     "body-parser": "~1.5.0",
@@ -24,7 +27,10 @@
     "mongoose": "~3.8.8",
     "morgan": "~1.0.0",
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "multer": "^0.1.8",
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     "passport": "~0.2.0",

@@ -20,8 +20,12 @@ var UserSchema = new Schema({
   google: {},
   github: {},
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   imageUrl: String,
   memberOfRooms: []
+=======
+  imageUrl: String
+>>>>>>> Stashed changes
 =======
   imageUrl: String
 >>>>>>> Stashed changes

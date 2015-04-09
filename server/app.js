@@ -7,7 +7,7 @@
 // Set default node environment to development
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
 
-var express = require('express');
+//var express = require('express');
 var mongoose = require('mongoose');
 var config = require('./config/environment');
 
@@ -20,6 +20,10 @@ if(config.seedDB) { require('./config/seed'); }
 // Setup server
 var app = require('express')();
 var server = require('http').Server(app);
+<<<<<<< Updated upstream
+=======
+var io = require('socket.io')(server);
+>>>>>>> Stashed changes
 
 server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
@@ -34,9 +38,10 @@ server.listen(config.port, config.ip, function () {
 // });
 // //Ko: Server-side socket logic is defined here in ./config/socketio.js
 // require('./config/socketio')(socketio);
-var socket = require('socket.io');
-var io = socket(server);
+//var socket = require('socket.io');
+//var io = socket(server);
 
+<<<<<<< Updated upstream
 //temporary inject roomsController here
 var RoomsController = require('./api/rooms/rooms.controller');
 
@@ -44,10 +49,22 @@ var RoomsController = require('./api/rooms/rooms.controller');
 var dataCollection = {};
 io.on('connection', function(socket){
   // data = {id:c, coors: { latitude: num, longitude: num}}
+=======
+io.on('connection', function (socket) {
+  socket.emit('news', { hello: 'world' });
+  socket.on('my other event', function (data) {
+    console.log('inside socket connection ', data);
+  });
+});
+
+/*io.on('connection', function(socket){
+  socket.emit('news', { hello: 'world' });
+>>>>>>> Stashed changes
   socket.on('move-pin', function(data){
     // If it's new socket.id
     dataCollection[data._id] = data;
 
+<<<<<<< Updated upstream
     var userRoomObj = {
        roomId: data.roomId,
        user: {
@@ -72,6 +89,9 @@ io.on('connection', function(socket){
     io.emit('move-pin-reply', dataCollection)
 
     // Testing
+=======
+    //socket.emit('move-pin', data);
+>>>>>>> Stashed changes
     console.log('TESTING SOCKET.IO' + socket.id)
     console.dir(dataCollection);
 
@@ -95,6 +115,7 @@ io.on('connection', function(socket){
     delete dataCollection[socket.id];
     io.emit('move-pin-reply', dataCollection);
   })
+<<<<<<< Updated upstream
 });
 
 
@@ -106,11 +127,21 @@ io.on('connection', function(socket){
 
 
 
+=======
+})*/
+>>>>>>> Stashed changes
 
 
 require('./config/express')(app);
 require('./routes')(app);
 
+<<<<<<< Updated upstream
+=======
+// Start server/*
+/*server.listen(config.port, config.ip, function () {
+  console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
+});*/
+>>>>>>> Stashed changes
 
 // Expose app
 module.exports = app;

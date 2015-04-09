@@ -19,7 +19,10 @@ function onConnect(socket) {
 
   // Insert sockets below
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   require('../api/rooms/rooms.socket').register(socket);
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
   require('../api/gmaps/gmaps.socket').register(socket);

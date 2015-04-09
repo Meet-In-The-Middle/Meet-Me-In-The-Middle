@@ -13,14 +13,18 @@ module.exports = function(app) {
 
   // Insert routes below
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   app.use('/api/rooms', require('./api/rooms'));
   //app.use('/userimage', require('./api/user'));
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
   app.use('/api/gmaps', require('./api/gmaps'));
   app.use('/api/things', require('./api/thing'));
   app.use('/api/users', require('./api/user'));
   app.use('/api/gmaps', require('./api/gmaps'));
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
   app.use('api/rooms', require('./api/rooms'));
 
@@ -80,6 +84,13 @@ module.exports = function(app) {
   app.use('/auth', require('./auth'));
 
 
+=======
+
+
+
+  app.use('/auth', require('./auth'));
+
+>>>>>>> Stashed changes
 =======
 
 

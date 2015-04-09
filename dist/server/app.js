@@ -31,6 +31,9 @@ server.listen(config.port, config.ip, function () {
 =======
 var app = express();
 var server = require('http').createServer(app);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 //Ko: Socket is hooked here
 // var socketio = require('socket.io')(server, {
@@ -42,6 +45,7 @@ var server = require('http').createServer(app);
 var socket = require('socket.io');
 var io = socket(server);
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 var dataCollection = {};
 io.on('connection', function(socket){
@@ -69,6 +73,8 @@ io.on('connection', function(socket){
     })
 });
 =======
+=======
+>>>>>>> Stashed changes
 io.on('connection', function(socket){
 
   socket.on('move-pin', function(data){
@@ -79,6 +85,9 @@ io.on('connection', function(socket){
 
   })
 })
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 

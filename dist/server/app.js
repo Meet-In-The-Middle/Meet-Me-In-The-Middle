@@ -18,6 +18,7 @@ mongoose.connect(config.mongo.uri, config.mongo.options);
 if(config.seedDB) { require('./config/seed'); }
 
 // Setup server
+<<<<<<< Updated upstream
 var app = require('express')();
 var server = require('http').Server(app);
 
@@ -27,6 +28,10 @@ server.listen(config.port, config.ip, function () {
 
 
 //var server = require('http').Server(app);
+=======
+var app = express();
+var server = require('http').createServer(app);
+>>>>>>> Stashed changes
 //Ko: Socket is hooked here
 // var socketio = require('socket.io')(server, {
 //   serveClient: (config.env === 'production') ? false : true,
@@ -37,6 +42,7 @@ server.listen(config.port, config.ip, function () {
 var socket = require('socket.io');
 var io = socket(server);
 
+<<<<<<< Updated upstream
 var dataCollection = {};
 io.on('connection', function(socket){
   // data = {id:c, coors: { latitude: num, longitude: num}}
@@ -62,6 +68,18 @@ io.on('connection', function(socket){
       io.emit('move-pin', dataCollection);
     })
 });
+=======
+io.on('connection', function(socket){
+
+  socket.on('move-pin', function(data){
+    // do stuff with data received from cliend
+
+    socket.emit('move-pin', data)
+    console.log('TESTING SOCKET.IO' + socket.id)
+
+  })
+})
+>>>>>>> Stashed changes
 
 
 require('./config/express')(app);

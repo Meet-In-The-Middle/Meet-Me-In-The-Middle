@@ -26,7 +26,7 @@ angular.module('meetMeInTheMiddleApp')
             cb();
           })
           .error(function(error) {
-            console.log('there was an error ', error);
+            console.log('there was an error creating room ', error);
           });
 
       };
@@ -42,9 +42,17 @@ angular.module('meetMeInTheMiddleApp')
           })
       };
 
-    var addUserToRoom = function(userId, roomId) {
-      $http.post('')
-    }
+      var addUserToRoom = function(userRoomObj, cb) {
+        console.log('addUserToRoom in service')
+        $http.post('api/rooms/adduser', userRoomObj)
+          .success(function(data) {
+            console.log('data coming back in service ', data);
+            cb(data);
+          })
+          .error(function(error) {
+            console.log('there was an error adding User to Room ', error);
+          });
+      };
 
       return {
         loadUserImage: loadUserImage,

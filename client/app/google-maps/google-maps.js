@@ -6,7 +6,11 @@ angular.module('meetMeInTheMiddleApp')
       .state('google-maps', {
         url: '/maps',
         templateUrl: 'app/google-maps/google-maps.html',
-        controller: 'MapsCtrl'
+/*
+        Currently we have two controllers in this view so we inject them in html
+        //controller: 'MapsCtrl'
+*/
+        authenticate: true
       });
 
   }]);

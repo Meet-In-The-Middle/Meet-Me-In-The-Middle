@@ -13,7 +13,8 @@ angular.module('meetMeInTheMiddleApp')
       .state('room', {
         url:'/mymidups/:Id',
         templateUrl: 'app/google-maps/google-maps.html',
-        contoller: 'midUpCtrl',
+        //Using two controllers on this view so inject them in HTML
+        /*contoller: 'midUpCtrl',*/
         authenticate: true
       })
 

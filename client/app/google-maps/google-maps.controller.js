@@ -69,7 +69,7 @@ angular.module('meetMeInTheMiddleApp')
     }
   }
 
-  $scope.searchbox = { template:'searchbox.tpl.html', events:events};
+  $scope.searchbox = { template:'searchbox.tpl.html', events:events, position:"BOTTOM_LEFT"};
 
   socket.on('move-pin-reply', function(dataCollection){
     console.log('pin move event!!!!!');

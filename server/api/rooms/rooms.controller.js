@@ -7,7 +7,6 @@ var User = require('../user/user.model')
 // Get list of rooms
 exports.index = function(req, res) {
   console.log('got into index');
-  console.log('req.params', req.params);
 /*  User.findById(userId, function (err, user) {
     if(user.authenticate(oldPass)) {
       user.password = newPass;
@@ -70,7 +69,6 @@ exports.create = function(req, res) {
     else {
       //add room to in users collection
       User.findById(req.body.user._id, function (err, user) {
-          console.log('room._id ', room._id);
           var roomId = room._id.toString();
           user.memberOfRooms.push({roomId: roomId, name: req.body.name});
           user.save(function(err) {
@@ -110,7 +108,6 @@ exports.update = function(req, res) {
     var roomName = room.name;
     var preExistingUser = false;
     var usersInRoom = room.users;
-    console.log('usersInRoom is ', usersInRoom);
     for( var j = 0, len = usersInRoom.length; j < len; j++ ) {
       if( usersInRoom[j]._id === userId ) {
         usersInRoom[j].user = req.body.user;
@@ -126,7 +123,6 @@ exports.update = function(req, res) {
       else {
         User.findById(userId, function (err, user) {
           var flag = false;
-          console.log('user is ', user);
           var userInRooms = user.memberOfRooms;
           for( var i = 0, len = userInRooms.length; i < len ; i++ ) {
             if( user.memberOfRooms[i].roomId === roomId ) {
@@ -173,56 +169,44 @@ function handleError(res, err) {
 exports.updateRoom = function(data, cb) {
   var userId = data.user._id;
   var roomId = data.roomId;
-  Rooms.findById(roomId, function (err, room) {
-    if (err) { return handleError(res, err); }
-    if(!room) { return res.send(404); }
-    var updated;
-    var preExistingUser = false;
-    room.users.forEach(function(user, index) {
-      if( user._id === userId ) {
-        updated = _.merge(user, data.user);
-        preExistingUser = true;
-      }
-    });
-    if( !preExistingUser ) {
-      updated = room.users.push(data.user);
-    }
-    room.save(function (err) {
-      if (err) { return handleError(res, err); }
-      else {
-        User.findById(userId, function (err, user) {
-          console.log('user is ', user);
-          var flag = false;
-          var userInRooms = user.memberOfRooms;
-          for( var i = 0, len = userInRooms.length; i < len ; i++ ) {
-            if( userInRooms[i].roomId === roomId ) {
-              new Error('user already a member of this room');
-              flag = true;
-              break;
+    Rooms.update({'users._id': userId}, {'$set': {
+      'users.$.coords': data.user.coords
+    }}, function (err) {
+        if (err) {
+          return handleError(res, err);
+        }
+        else {
+          User.findById(userId, function (err, user) {
+            var flag = false;
+            var userRooms = user.memberOfRooms;
+            for (var i = 0, len = userRooms.length; i < len; i++) {
+              if (userRooms[i].roomId === roomId) {
+                flag = true;
+                break;
+              }
             }
-          }
-          if( !flag ){ userInRooms.push({roomId: roomId, name: req.body.name}); }
-          user.save(function(err) {
-            if (err) return validationError(res, err);
+            if (!flag) {
+              userRooms.push({roomId: roomId, name: req.body.name});
+            }
+            user.save(function (err) {
+              if (err) return validationError(res, err);
+            });
           });
+        }
+        //return json array of all users in room
+        //return res.json(200, room.users);
+        Rooms.findById(roomId, function(err, room) {
+          var usersObj = room.users.reduce(function (a, b) {
+            a[b._id] = b;
+            return a;
+          }, {});
+          cb(usersObj);
         });
-      }
-      //return json array of all users in room
-      //return res.json(200, room.users);
-      console.log('room.users is ', room.users);
-      var usersObj = room.users.reduce(function(a, b) {
-        a[b._id] = b;
-        return a;
-      }, {});
-      cb(usersObj);
-    });
-  });
+      });
 };
 
 
 exports.getUsersForRoom = function(data, cb) {
-  console.log('getUsersForRoom called rooms.controller');
-  console.log('socket.io data is ', data);
   var userId = data.userId;
   var roomId = data.roomId;
   Rooms.findById(roomId, function (err, room) {

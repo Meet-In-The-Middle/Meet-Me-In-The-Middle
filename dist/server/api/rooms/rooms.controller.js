@@ -27,7 +27,7 @@ exports.index = function(req, res) {
   });*/
 };
 
-// Get a single rooms
+// Get a single rooms' user objects
 exports.show = function(req, res) {
   User.findById(req.params.id, function (err, user) {
     if(!err ) {
@@ -38,11 +38,6 @@ exports.show = function(req, res) {
     }
   });
 
-/*  Rooms.findById(req.params.id, function (err, rooms) {
-    if(err) { return handleError(res, err); }
-    if(!rooms) { return res.send(404); }
-    return res.json(rooms);
-  });*/
 };
 
 // Creates a new rooms in the DB.
@@ -79,37 +74,59 @@ exports.create = function(req, res) {
   });
 };
 
-/*name: String,
-  users: [],
-  info: String,
-  active: Boolean*/
-
-/*userObj = {
- _id
- latitude:
- longitude:
- }
-
-
- { vb8Jqogd53BTaBDMAAAB:
- { id: 0,
- coords: { latitude: 52.2058804, longitude: 0.1453831999999693 }
- },
- ZGNL1pdiqsFMjG3DAAAC:
- { id: 0,
- coords: { latitude: 32.22414, longitude: -80.69725900000003 } } }*/
+/*var userRoomObj = {
+  roomId: roomId,
+  user: {
+    _id: user._id,
+    name: user.name,
+    coords: {
+      latitude: 54.2058804,
+      longitude: long+1,
+    },
+    owner: false
+  },
+  info: 'How awesome',
+  active: true
+};*/
 
 
-// Updates an existing rooms in the DB.
+// Updates an existing room in the DB.
 exports.update = function(req, res) {
-  if(req.body._id) { delete req.body._id; }
-  Rooms.findById(req.params.id, function (err, rooms) {
+  console.log('called update');
+  var userId = req.body.user._id;
+  var roomId = req.body.roomId;
+  Rooms.findById(roomId, function (err, room) {
     if (err) { return handleError(res, err); }
-    if(!rooms) { return res.send(404); }
-    var updated = _.merge(rooms, req.body);
-    updated.save(function (err) {
+    if(!room) { return res.send(404); }
+    var updated;
+    var preExistingUser = false;
+    room.users.forEach(function(user, index) {
+      if( user._id === userId ) {
+        updated = _.merge(user, req.body.user);
+        preExistingUser = true;
+      }
+    });
+    if( !preExistingUser ) {
+      updated = room.users.push(req.body.user);
+    }
+    room.save(function (err) {
       if (err) { return handleError(res, err); }
-      return res.json(200, rooms);
+      else {
+        User.findById(userId, function (err, user) {
+          console.log('user is ', user);
+          for( var i = 0, len = user.memberOfRooms.length; i < len ; i++ ) {
+            if( user.memberOfRooms[i].roomId === roomId ) {
+              return new Error('user already a member of this room');
+            }
+          }
+          user.memberOfRooms.push({roomId: roomId, name: req.body.name});
+          user.save(function(err) {
+            if (err) return validationError(res, err);
+          });
+        });
+      }
+      //return json array of all users in room
+      return res.json(200, room.users);
     });
   });
 };
@@ -129,3 +146,71 @@ exports.destroy = function(req, res) {
 function handleError(res, err) {
   return res.send(500, err);
 }
+
+
+/**
+ * Function is called by socket.io listener to update room DB and user DB with user data
+ * @param data
+ * @param cb
+ */
+exports.updateRoom = function(data, cb) {
+  var userId = data.user._id;
+  var roomId = data.roomId;
+  Rooms.findById(roomId, function (err, room) {
+    if (err) { return handleError(res, err); }
+    if(!room) { return res.send(404); }
+    var updated;
+    var preExistingUser = false;
+    room.users.forEach(function(user, index) {
+      if( user._id === userId ) {
+        updated = _.merge(user, data.user);
+        preExistingUser = true;
+      }
+    });
+    if( !preExistingUser ) {
+      updated = room.users.push(data.user);
+    }
+    room.save(function (err) {
+      if (err) { return handleError(res, err); }
+      else {
+        User.findById(userId, function (err, user) {
+          console.log('user is ', user);
+          for( var i = 0, len = user.memberOfRooms.length; i < len ; i++ ) {
+            if( user.memberOfRooms[i].roomId === roomId ) {
+              return new Error('user already a member of this room');
+            }
+          }
+          user.memberOfRooms.push({roomId: roomId, name: req.body.name});
+          user.save(function(err) {
+            if (err) return validationError(res, err);
+          });
+        });
+      }
+      //return json array of all users in room
+      //return res.json(200, room.users);
+      console.log('room.users is ', room.users);
+      var usersObj = room.users.reduce(function(a, b) {
+        a[b._id] = b;
+        return a;
+      }, {});
+      cb(usersObj);
+    });
+  });
+};
+
+
+exports.getUsersForRoom = function(data, cb) {
+  console.log('getUsersForRoom called rooms.controller');
+  console.log('socket.io data is ', data);
+  var userId = data.userId;
+  var roomId = data.roomId;
+  Rooms.findById(roomId, function (err, room) {
+    if (err) { return handleError(res, err); }
+    if(!room) { return res.send(404); }
+    var usersObj = room.users.reduce(function(a, b) {
+      a[b._id] = b;
+      return a;
+    }, {});
+    cb(usersObj);
+  });
+};

@@ -1,9 +1,4 @@
-.angular-google-map-container { 
-  margin-top: 110px;
-  height: 400px; 
-  display: flex;
-  /*width: 100;*/
-}
+.angular-google-map-container { height: 400px; }
 
 .controls {
   margin-top: 16px;
@@ -32,31 +27,6 @@
 }
 
 #map_canvas {
-  margin-top: 100px;
-  width: 600px;
-  display: block;
-}
-
-.col-sm-8{
+  margin: 125px auto 0;
   width: 800px;
-}
-
-.col-sm-4{
-  margin-top: 110px;
-  flex-grow:1;
-  /*display: none;*/
-}
-
-.divider{
-  /*width:610px;*/
-  /*margin-right: 20px;*/
-}
-
-.flex-item{
-  flex-grow:1;
-  /*width: 100px;*/
-  float: left;
-  /*style: margin-right;*/
-  /*display: none;*/
-  /*margin-right: 10px;*/
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .factory('UserImage', ['$http', function($http){
+  .factory('MainFactory', ['$http', function($http){
 
       var imageStore = {};
       var loadUserImage = function(userId, cb) {
@@ -18,8 +18,47 @@ angular.module('meetMeInTheMiddleApp')
             });
         }
       };
+
+      var createRoom = function(roomObj, cb) {
+        $http.post('api/rooms', roomObj)
+          .success(function(data) {
+            console.log('data coming back ', data);
+            cb();
+          })
+          .error(function(error) {
+            console.log('there was an error creating room ', error);
+          });
+
+      };
+
+      var getRoomsForUser = function(userId, cb) {
+        $http.get('api/rooms/' + userId)
+          .success(function(rooms) {
+            //load list of rooms
+            cb(rooms);
+          })
+          .error(function(error) {
+            console.log('error on getRoomsForUser ', error);
+          })
+      };
+
+      var addUserToRoom = function(userRoomObj, cb) {
+        console.log('addUserToRoom in service')
+        $http.post('api/rooms/adduser', userRoomObj)
+          .success(function(data) {
+            console.log('data coming back in service ', data);
+            cb(data);
+          })
+          .error(function(error) {
+            console.log('there was an error adding User to Room ', error);
+          });
+      };
+
       return {
-        loadUserImage: loadUserImage
+        loadUserImage: loadUserImage,
+        createRoom: createRoom,
+        getRoomsForUser: getRoomsForUser,
+        addUserToRoom: addUserToRoom
       };
     }
     ]);

@@ -6,7 +6,8 @@ angular.module('meetMeInTheMiddleApp')
       .state('profile', {
         url: '/profile',
         templateUrl: 'app/account/profile/profile.html',
-        controller: 'profileCtrl'
+        controller: 'profileCtrl',
+        authenticate: true
       })
 
   }]);

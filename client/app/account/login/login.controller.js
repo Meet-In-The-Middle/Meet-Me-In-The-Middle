@@ -14,8 +14,8 @@ angular.module('meetMeInTheMiddleApp')
           password: $scope.user.password
         })
         .then( function() {
-          // Logged in, redirect to home
-          $location.path('/');
+          // Logged in, redirect to mymidups
+          $location.path('/mymidups');
         })
         .catch( function(err) {
           $scope.errors.other = err.message;

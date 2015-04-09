@@ -18,9 +18,9 @@ mongoose.connect(config.mongo.uri, config.mongo.options);
 if(config.seedDB) { require('./config/seed'); }
 
 // Setup server
+<<<<<<< Updated upstream
 var app = require('express')();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
 
 server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
@@ -28,6 +28,13 @@ server.listen(config.port, config.ip, function () {
 
 
 //var server = require('http').Server(app);
+=======
+var app = express();
+var server = require('http').createServer(app);
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 //Ko: Socket is hooked here
 // var socketio = require('socket.io')(server, {
 //   serveClient: (config.env === 'production') ? false : true,
@@ -38,32 +45,50 @@ server.listen(config.port, config.ip, function () {
 var socket = require('socket.io');
 var io = socket(server);
 
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 var dataCollection = {};
 io.on('connection', function(socket){
-
   // data = {id:c, coors: { latitude: num, longitude: num}}
+    socket.on('move-pin', function(data){
+      // If it's new socket.id
+      dataCollection[socket.id] = data;
+
+      // Sendback all the data
+      //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
+      io.emit('move-pin', dataCollection)
+
+
+      // Testing
+      console.log('TESTING SOCKET.IO' + socket.id)
+
+      console.dir(dataCollection);
+
+    });
+
+    // Delete the data after disconnecting.
+    socket.on('disconnect', function(data){
+      delete dataCollection[socket.id];
+      io.emit('move-pin', dataCollection);
+    })
+});
+=======
+=======
+>>>>>>> Stashed changes
+io.on('connection', function(socket){
+
   socket.on('move-pin', function(data){
-    // If it's new socket.id
-    dataCollection[socket.id] = data;
+    // do stuff with data received from cliend
 
-    // Sendback all the data
-    //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-    io.emit('move-pin', dataCollection)
-
-
-    // Testing
+    socket.emit('move-pin', data)
     console.log('TESTING SOCKET.IO' + socket.id)
 
-    console.dir(dataCollection);
-
-  });
-
-  // Delete the data after disconnecting.
-  socket.on('disconnect', function(data){
-    delete dataCollection[socket.id];
-    io.emit('move-pin', dataCollection);
   })
 })
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 
 
 require('./config/express')(app);

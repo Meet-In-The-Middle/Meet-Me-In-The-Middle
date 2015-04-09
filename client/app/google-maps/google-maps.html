@@ -34,25 +34,32 @@
         <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
         <!-- <button class="controls" ng-click="viewMap()">View Map</button> -->
       </div>
-      <div class="col-sm-4">
-        <H4 class="well well-sm">Place searches</H4>
-
-        <form class="form" role="form">
-          <div class="form-group">
-            <label class="control-label">Place types(ex.finance)</label>
-            <input type="text" class="form-control" ng-model="place.types">
-            </input>
-          </div>
-          <div class="form-group">
-            <label class="control-label">radius(meters)</label>
-            <input type="text" class="form-control" ng-model="place.radius">
-            </input>
-          </div>
-          <button ng-click="placeSearch(place)" type="submit" class="btn btn-primary">submit</button>
-          <button class="btn btn-danger" ng-click="clearMap()">Clear Map</button>
-        </form>
-      </div>
+    <div class="col-sm-4">
+      <H4 class="well well-sm">Place searches</H4>
+      <form class="form" role="form">
+        <div class="form-group">
+        <label class="contorol-label">Select a Category:</label><br />
+        <!-- <select ng-model="place.category"  -->
+        <select ng-init="Restaurants = Restaurants || places[0]" ng-model="Restaurants"
+            ng-options="place as place.name for place in places"></select>
+            {{place.category | json}}
+        <br/><br/>
+        <label class="control-label">Search for a Place: </label>
+          <input type="text" class="form-control" ng-model="place.types">
+          </input>
+        </div>
+        <div class="form-group">
+          <label class="control-label">Radius for Search(meters)</label>
+          <input type="text" class="form-control" ng-model="place.radius">
+          </input>
+        </div>
+        <button ng-click="placeSearch(place)" type="submit" class="btn btn-primary">submit</button>
+        <button class="btn btn-danger" ng-click="clearMap()">Clear Map</button>
+      </form>
     </div>
+  </div>
+
+    
 
 
     <!-- <div class="col-sm-2"> -->
@@ -109,4 +116,3 @@
   </div>
 
 </div>
-

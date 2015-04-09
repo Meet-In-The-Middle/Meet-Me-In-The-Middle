@@ -48,7 +48,7 @@ io.on('connection', function (socket) {
   socket.on('my other event', function (data) {
     console.log('inside socket connection ', data);
   });
-});
+
 
   socket.on('move-pin', function(data){
     // If it's new socket.id
@@ -104,29 +104,9 @@ io.on('connection', function (socket) {
 });
 
 
-
-
-
-
-
-
-
-
-=======
-})*/
->>>>>>> Stashed changes
-
-
 require('./config/express')(app);
 require('./routes')(app);
 
-<<<<<<< Updated upstream
-=======
-// Start server/*
-/*server.listen(config.port, config.ip, function () {
-  console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
-});*/
->>>>>>> Stashed changes
 
 // Expose app
 module.exports = app;

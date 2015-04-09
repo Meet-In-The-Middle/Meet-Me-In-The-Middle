@@ -44,40 +44,44 @@ var RoomsController = require('./api/rooms/rooms.controller');
 
 var dataCollection = {};
 io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log('inside socket connection ', data);
-  });
+  // socket.emit('news', { hello: 'world' });
+  // socket.on('my other event', function (data) {
+  //   console.log('inside socket connection ', data);
+  // });
 
 
   socket.on('move-pin', function(data){
     // If it's new socket.id
-    dataCollection[data._id] = data;
-    var userRoomObj = {
-       roomId: data.roomId,
-       user: {
-         _id: data._id,
-         name: data.name,
-         coords: {
-           latitude: data.coords.latitude,
-           longitude: data.coords.longitude,
-         },
-         owner: false
-       },
-       info: 'How awesome',
-       active: true
-     };
+    // dataCollection[data.roomId] = {};
+    // dataCollection[data.roomId][data._id] = data;
+    dataCollection[socket.id] = data;
+    // var userRoomObj = {
+    //    roomId: data.roomId,
+    //    user: {
+    //      _id: data._id,
+    //      name: data.name,
+    //      coords: {
+    //        latitude: data.coords.latitude,
+    //        longitude: data.coords.longitude,
+    //      },
+    //      owner: false
+    //    },
+    //    info: 'How awesome',
+    //    active: true
+    //  };
 
      console.log('User Room Obj:', userRoomObj);
     //Update Database with new info (coords) but don't send data back
     //Data will be sent back from Data Cache for performance reasons
-    RoomsController.updateRoom(userRoomObj, function(usersData) {
-      console.log('UPDATE ROOM - USRS DATA: ', usersData);
-      //do something with usersData maybe
-    });
+
+    // RoomsController.updateRoom(userRoomObj, function(usersData) {
+    //   console.log('UPDATE ROOM - USRS DATA: ', usersData);
+    //   //do something with usersData maybe
+    // });
+  
     // Sendback all the data
     //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-    io.emit('move-pin-reply', dataCollection);
+    io.emit('move-pin-reply', dataCollection[socket.id]);
 
     // Testing
     //socket.emit('move-pin', data);
@@ -86,19 +90,19 @@ io.on('connection', function (socket) {
 
   });
 
-  socket.on('updateMap', function(data) {
-    console.log('data is ', data);
-    var userRoomObj = {
-      roomId: data.roomId,
-      userId: data._id
-    };
-    RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
-    //return object of objects indexed by userId
-    console.log('!!!!!!USERS DATA for ALL IN ROOM!!! ', usersData);
-      io.emit('updateMapReply', usersData);
-    });
+  // socket.on('updateMap', function(data) {
+  //   console.log('data is ', data);
+  //   var userRoomObj = {
+  //     roomId: data.roomId,
+  //     userId: data._id
+  //   };
+  //   RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
+  //   //return object of objects indexed by userId
+  //   console.log('!!!!!!USERS DATA for ALL IN ROOM!!! ', usersData);
+  //     io.emit('updateMapReply', usersData);
+  //   });
 
-  });
+  // });
 
   // Delete the data after disconnecting.
   socket.on('disconnect', function(data){

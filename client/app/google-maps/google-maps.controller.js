@@ -24,7 +24,8 @@ angular.module('meetMeInTheMiddleApp')
   var infowindow;
   var service;
   var user = Auth.getCurrentUser();
-  var userId = user._id;
+  // var userId = user._id;
+  var userId = socket.id;
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
 
@@ -131,8 +132,11 @@ angular.module('meetMeInTheMiddleApp')
     var selectedPlace, latitude, longitude, radius;
     if(place.category){
       selectedPlace = place.category;
-    } else{
+    } else if(place.types !== 'Restaurants'){
       selectedPlace = place.types;
+    } else{
+      alert('Error! No search parameters.');
+      return;
     }
 
     if(center){
@@ -158,7 +162,8 @@ angular.module('meetMeInTheMiddleApp')
 
 
   var placeSearch = function (place, radius, latitude, longitude) {
-    var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };  
+    var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: [place] };  
+    console.log('!!!!request!!!! ', request);
     service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
@@ -168,7 +173,15 @@ angular.module('meetMeInTheMiddleApp')
           //console.log(results[i]);
           //Update places object
           updatePlaces(results[i], i);
-          addPlace(results[i], i);
+          // console.log(results[i]);
+          // if(results[i].photos){
+          //   console.log(results[i].photos[0].getUrl);
+          //   //console.log(results[i].photos[0].getUrl());
+          //   var test = results[i].photos[0].getUrl;
+          //   console.log(test());
+          // }
+          // addPlace(results[i], i);
+          // $scope.$apply();
         }
         console.log(places_Nearby);
         $scope.placesNearby = places_Nearby;
@@ -200,7 +213,7 @@ angular.module('meetMeInTheMiddleApp')
       showWindow: false,
       name: place.name,
     };
-    $scope.$apply();
+    // $scope.$apply();
   }
 
   var updatePlaces = function(place, id){
@@ -364,10 +377,8 @@ angular.module('meetMeInTheMiddleApp')
     }else{
       $scope.markers[id] = {
         _id: id,
+        roomId: roomId,
         icon: 'http://www.googlemapsmarkers.com/v1/0099FF/',
-        // icon: {
-        //   strokeColor: 'blue'
-        // },
         coords:{
           latitude: latitude,
           longitude: longitude
@@ -378,25 +389,25 @@ angular.module('meetMeInTheMiddleApp')
     }
   };
 
-  $scope.updateMap = function() {
-    console.log('updateMap called');
-    var userObj = {
-      _id: user._id,
-      roomId: roomId,
-      name: user.name,
-    };
-    socket.emit('updateMap', userObj);
-    socket.on('updateMapReply', function(data) {
-      console.log('data from updateMapReply ', data);
-      for(var marker in data){
-        console.log(data[marker]);
-        //addMarker();
-        if(data[marker].coords.longitude !== "" && data[marker].coords.latitude !== ""){
-          addMarker(data[marker].coords.latitude, data[marker].coords.longitude, data[marker]._id);
-        }
-      }
-    });
-  };
+  // $scope.updateMap = function() {
+  //   console.log('updateMap called');
+  //   var userObj = {
+  //     _id: user._id,
+  //     roomId: roomId,
+  //     name: user.name,
+  //   };
+  //   socket.emit('updateMap', userObj);
+  //   socket.on('updateMapReply', function(data) {
+  //     console.log('data from updateMapReply ', data);
+  //     for(var marker in data){
+  //       console.log(data[marker]);
+  //       //addMarker();
+  //       if(data[marker].coords.longitude !== "" && data[marker].coords.latitude !== ""){
+  //         addMarker(data[marker].coords.latitude, data[marker].coords.longitude, data[marker]._id);
+  //       }
+  //     }
+  //   });
+  // };
 
   var removeMarker = function (id) {
     delete $scope.markers[id];

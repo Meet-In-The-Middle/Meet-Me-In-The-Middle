@@ -4,6 +4,7 @@
 // Use for your api keys, secrets, etc. This file should not be tracked by git.
 //
 // You will need to set these on the server you deploy to.
+//these settings are stored in App Settings (Azure) or Config Vars (Heroku)
 
 module.exports = {
   DOMAIN:           'http://localhost:9000',
@@ -16,7 +17,7 @@ module.exports = {
   TWITTER_SECRET:   'qFkPI6RvUh1jSmaY1jXiwBs1ipQ5YF6unzQMWj11FoZuLWkWn6',
 
   GOOGLE_ID:        '904045696854-6ec041gm8if4m463v37mquogsqi3h8sa.apps.googleusercontent.com',
-  GOOGLE_SECRET:    '904045696854-6ec041gm8if4m463v37mquogsqi3h8sa.apps.googleusercontent.com',
+  GOOGLE_SECRET:    'udkoIPGPRd3coAECIhSx-ePZ',
 
   MONGOLAB_URI: 'mongodb://miduphacker:HtpbIkdrYL99DY8t@ds041177.mongolab.com:41177/midup',
 

@@ -2,12 +2,15 @@
 
 angular.module('meetMeInTheMiddleApp')
 
-  .controller('roomsCtrl', ['$scope', '$http', 'Auth', 'MainFactory',
-    function ($scope, $http, Auth, MainFactory) {
+  .controller('roomsCtrl', ['$scope', '$http', '$location', 'Auth', 'MainFactory',
+    function ($scope, $http, $location, Auth, MainFactory) {
     //profile controller methods
     var user = Auth.getCurrentUser();
     console.log('user is ', user);
+    var userId = user._id;
     $scope.user = {};
+    var url = $location.$$path.split('/');
+    var roomId = url[url.length - 1];
 
       /**
        * initial page on load to show rooms user belongs to
@@ -45,20 +48,24 @@ angular.module('meetMeInTheMiddleApp')
      * User creates new room which will be sent to DB and then re-populate rooms list
      */
     $scope.createRoom = function() {
-      var newRoom = {
+      var userRoomObj = {
+        roomId: roomId,
         name: $scope.editableText,
-        users: [
-          {
-            _id: user._id,
-            name: user.name,
-            latitude: 54.2058804,
-            longitude: 1.1453831999999693,
-            owner: true
-          }],
+        user: {
+          _id: user._id,
+          name: user.name,
+          coords: {
+            latitude: "",
+            longitude: "",
+          },
+          owner: true
+        },
         info: 'How awesome',
         active: true
       };
-      MainFactory.createRoom(newRoom, function() {
+
+
+      MainFactory.createRoom(userRoomObj, function() {
         $scope.getRooms();
       });
       $scope.disableEditor();

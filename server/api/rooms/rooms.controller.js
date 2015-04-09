@@ -42,28 +42,37 @@ exports.show = function(req, res) {
 
 // Creates a new rooms in the DB.
 exports.create = function(req, res) {
-  /*var roomOne = {
-    name: 'Friday Night Hangout',
-    users: [
-      {
-        _id: '551eda03095613233a022027',
-        name: 'jonahDog',
-        latitude: 52.2058804,
-        longitude: 0.1453831999999693,
-        owner: true
-      }],
+/*  var userRoomObj = {
+    roomId: roomId,
+    name: $scope.editableText,
+    user: {
+      _id: user._id,
+      name: user.name,
+      coords: {
+        latitude: "",
+        longitude: "",
+      },
+      owner: false
+    },
     info: 'How awesome',
     active: true
   };*/
+  var newRoom = {
+    name: req.body.name,
+    info: req.body.info,
+    active: req.body.active,
+    users: [req.body.user]
+  };
   //create new roomId to user data in user collection
-  Rooms.create(req.body, function(err, room) {
-    console.log('req.body.users[0]._id ', req.body);
+  Rooms.create(newRoom, function(err, room) {
+    console.log('req.body.user._id ', req.body.user._id);
     if(err) { return handleError(res, err); }
     else {
       //add room to in users collection
-      User.findById(req.body.users[0]._id, function (err, user) {
-          console.log('user is ', user);
-          user.memberOfRooms.push({roomId: room._id, name: req.body.name});
+      User.findById(req.body.user._id, function (err, user) {
+          console.log('room._id ', room._id);
+          var roomId = room._id.toString();
+          user.memberOfRooms.push({roomId: roomId, name: req.body.name});
           user.save(function(err) {
             if (err) return validationError(res, err);
             //res.send(200);
@@ -98,28 +107,36 @@ exports.update = function(req, res) {
   Rooms.findById(roomId, function (err, room) {
     if (err) { return handleError(res, err); }
     if(!room) { return res.send(404); }
-    var updated;
+    var roomName = room.name;
     var preExistingUser = false;
-    room.users.forEach(function(user, index) {
-      if( user._id === userId ) {
-        updated = _.merge(user, req.body.user);
+    var usersInRoom = room.users;
+    console.log('usersInRoom is ', usersInRoom);
+    for( var j = 0, len = usersInRoom.length; j < len; j++ ) {
+      if( usersInRoom[j]._id === userId ) {
+        usersInRoom[j].user = req.body.user;
         preExistingUser = true;
+        break;
       }
-    });
+    }
     if( !preExistingUser ) {
-      updated = room.users.push(req.body.user);
+      usersInRoom.push(req.body.user);
     }
     room.save(function (err) {
       if (err) { return handleError(res, err); }
       else {
         User.findById(userId, function (err, user) {
+          var flag = false;
           console.log('user is ', user);
-          for( var i = 0, len = user.memberOfRooms.length; i < len ; i++ ) {
+          var userInRooms = user.memberOfRooms;
+          for( var i = 0, len = userInRooms.length; i < len ; i++ ) {
             if( user.memberOfRooms[i].roomId === roomId ) {
-              return new Error('user already a member of this room');
+              new Error('user already a member of this room');
+              flag = true;
+              break;
             }
+
           }
-          user.memberOfRooms.push({roomId: roomId, name: req.body.name});
+          if( !flag ) { user.memberOfRooms.push({roomId: roomId, name: roomName}); }
           user.save(function(err) {
             if (err) return validationError(res, err);
           });
@@ -175,12 +192,16 @@ exports.updateRoom = function(data, cb) {
       else {
         User.findById(userId, function (err, user) {
           console.log('user is ', user);
-          for( var i = 0, len = user.memberOfRooms.length; i < len ; i++ ) {
-            if( user.memberOfRooms[i].roomId === roomId ) {
-              return new Error('user already a member of this room');
+          var flag = false;
+          var userInRooms = user.memberOfRooms;
+          for( var i = 0, len = userInRooms.length; i < len ; i++ ) {
+            if( userInRooms[i].roomId === roomId ) {
+              new Error('user already a member of this room');
+              flag = true;
+              break;
             }
           }
-          user.memberOfRooms.push({roomId: roomId, name: req.body.name});
+          if( !flag ){ userInRooms.push({roomId: roomId, name: req.body.name}); }
           user.save(function(err) {
             if (err) return validationError(res, err);
           });
@@ -205,8 +226,8 @@ exports.getUsersForRoom = function(data, cb) {
   var userId = data.userId;
   var roomId = data.roomId;
   Rooms.findById(roomId, function (err, room) {
-    if (err) { return handleError(res, err); }
-    if(!room) { return res.send(404); }
+    if (err) { console.log('getUsersForRoom in rooms.controller ', err); }
+    if(!room) { console.log('theres no room dude... im in getUsersForRoom in rooms.controller'); }
     var usersObj = room.users.reduce(function(a, b) {
       a[b._id] = b;
       return a;

@@ -20,10 +20,7 @@ if(config.seedDB) { require('./config/seed'); }
 // Setup server
 var app = require('express')();
 var server = require('http').Server(app);
-<<<<<<< Updated upstream
-=======
 var io = require('socket.io')(server);
->>>>>>> Stashed changes
 
 server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
@@ -41,15 +38,11 @@ server.listen(config.port, config.ip, function () {
 //var socket = require('socket.io');
 //var io = socket(server);
 
-<<<<<<< Updated upstream
 //temporary inject roomsController here
 var RoomsController = require('./api/rooms/rooms.controller');
 
 
 var dataCollection = {};
-io.on('connection', function(socket){
-  // data = {id:c, coors: { latitude: num, longitude: num}}
-=======
 io.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
   socket.on('my other event', function (data) {
@@ -57,14 +50,9 @@ io.on('connection', function (socket) {
   });
 });
 
-/*io.on('connection', function(socket){
-  socket.emit('news', { hello: 'world' });
->>>>>>> Stashed changes
   socket.on('move-pin', function(data){
     // If it's new socket.id
     dataCollection[data._id] = data;
-
-<<<<<<< Updated upstream
     var userRoomObj = {
        roomId: data.roomId,
        user: {
@@ -82,16 +70,14 @@ io.on('connection', function (socket) {
     //Update Database with new info (coords) but don't send data back
     //Data will be sent back from Data Cache for performance reasons
     RoomsController.updateRoom(userRoomObj, function(usersData) {
-      //io.emit('move-pin-reply', usersData);
+      //do something with usersData maybe
     });
- // Sendback all the data
+    // Sendback all the data
     //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
     io.emit('move-pin-reply', dataCollection)
 
     // Testing
-=======
     //socket.emit('move-pin', data);
->>>>>>> Stashed changes
     console.log('TESTING SOCKET.IO' + socket.id)
     console.dir(dataCollection);
 
@@ -104,10 +90,10 @@ io.on('connection', function (socket) {
       userId: data._id
     };
     RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
+    //return object of objects indexed by userId
       io.emit('updateMapReply', usersData);
     });
 
-    //return object of objects indexed by Id
   });
 
   // Delete the data after disconnecting.
@@ -115,7 +101,6 @@ io.on('connection', function (socket) {
     delete dataCollection[socket.id];
     io.emit('move-pin-reply', dataCollection);
   })
-<<<<<<< Updated upstream
 });
 
 

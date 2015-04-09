@@ -330,25 +330,25 @@ angular.module('meetMeInTheMiddleApp')
     }
   };
 
-  // $scope.updateMap = function() {
-  //   console.log('updateMap called');
-  //   var userObj = {
-  //     _id: user._id,
-  //     roomId: roomId,
-  //     name: user.name,
-  //   };
-  //   socket.emit('updateMap', userObj);
-  //   socket.on('updateMapReply', function(data) {
-  //     console.log('data from updateMapReply ', data);
-  //     for(var marker in data){
-  //       console.log(data[marker]);
-  //       //addMarker();
-  //       if(data[marker].coords.longitude !== "" && data[marker].coords.latitude !== ""){
-  //         addMarker(data[marker].coords.latitude, data[marker].coords.longitude, data[marker]._id);
-  //       }
-  //     }
-  //   });
-  // };
+  $scope.updateMap = function() {
+    console.log('updateMap called');
+    var userObj = {
+      _id: user._id,
+      roomId: roomId,
+      name: user.name,
+    };
+    socket.emit('updateMap', userObj);
+    socket.on('updateMapReply', function(data) {
+      console.log('data from updateMapReply ', data);
+      for(var marker in data){
+        console.log(data[marker]);
+        //addMarker();
+        if(data[marker].coords.longitude !== "" && data[marker].coords.latitude !== ""){
+          addMarker(data[marker].coords.latitude, data[marker].coords.longitude, data[marker]._id);
+        }
+      }
+    });
+  };
 
   var removeMarker = function (id) {
     delete $scope.markers[id];

@@ -67,18 +67,21 @@ io.on('connection', function (socket) {
        info: 'How awesome',
        active: true
      };
+
+     console.log('User Room Obj:', userRoomObj);
     //Update Database with new info (coords) but don't send data back
     //Data will be sent back from Data Cache for performance reasons
-    // RoomsController.updateRoom(userRoomObj, function(usersData) {
-    //   //do something with usersData maybe
-    // });
+    RoomsController.updateRoom(userRoomObj, function(usersData) {
+      console.log('UPDATE ROOM - USRS DATA: ', usersData);
+      //do something with usersData maybe
+    });
     // Sendback all the data
     //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-    io.emit('move-pin-reply', dataCollection)
+    io.emit('move-pin-reply', dataCollection);
 
     // Testing
     //socket.emit('move-pin', data);
-    console.log('TESTING SOCKET.IO' + socket.id)
+    console.log('TESTING SOCKET.IO' + socket.id);
     console.dir(dataCollection);
 
   });
@@ -91,6 +94,7 @@ io.on('connection', function (socket) {
     };
     RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
     //return object of objects indexed by userId
+    console.log('!!!!!!USERS DATA for ALL IN ROOM!!! ', usersData);
       io.emit('updateMapReply', usersData);
     });
 

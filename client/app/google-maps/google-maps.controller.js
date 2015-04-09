@@ -252,22 +252,39 @@ angular.module('meetMeInTheMiddleApp')
     });
   }
 
+  var userImage = {
+    url: '../../assets/images/skoPic.PNG',
+    scaledSize : new google.maps.Size(40, 40),
+    origin: new google.maps.Point(0,0),
+    anchor: new google.maps.Point(20, 40),
+
+  }
   var addMarker = function (latitude, longitude, id) {
     console.log('add id: ', id);
 
     if(id === socket.id){
       $scope.markers[id] = {
         id: id,
-        // icon: {},
+        icon: userImage,
         coords:{
           latitude: latitude,
           longitude: longitude
         },
-        options:{draggable: true},
+        options:{
+          draggable: true,
+          animation: google.maps.Animation.BOUNCE
+        },
         events: {
           dragend: function(marker, eventName, args){
             console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[socket.id], null, 2));
             socket.emit('move-pin', $scope.markers[socket.id]);
+          },
+          click: function(marker){
+            if(marker.getAnimation() != null){
+              marker.setAnimation(null);
+            } else {
+              marker.setAnimation(google.maps.Animation.BOUNCE);
+            }
           }
         }
       }

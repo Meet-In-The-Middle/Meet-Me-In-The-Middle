@@ -16,12 +16,24 @@ body {
   top: 0; right: 0; bottom: 0; left: 0;
 }
 
-/* Search Style*/
+/* Button Style */
+.btn-container {
+  position: absolute;
+  z-index: 2;
+  bottom: 80px; left: 13px;
+}
+
+/* Form style */
 .form-container {
   position: absolute;
   z-index: 2;
-  width: 600px;
+  width: 300px;
+  bottom: 140px;
+  left: 13px;
 }
+
+
+/* Search Style*/
 #pac-input {
   background-color: #fff;
   font-family: Roboto;

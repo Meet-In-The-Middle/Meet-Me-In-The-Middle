@@ -29,7 +29,12 @@ angular.module('meetMeInTheMiddleApp')
     zoom: 4,
   }; 
 
-  $scope.options = {scrollwheel: false, scaleControl: true};
+  $scope.options = {
+    scrollwheel: false,
+    scaleControl: true,
+    mapTypeControl: false 
+  };
+
   $scope.markers = {};
   $scope.place = '';
 
@@ -69,7 +74,7 @@ angular.module('meetMeInTheMiddleApp')
     }
   }
 
-  $scope.searchbox = { template:'searchbox.tpl.html', events:events, position:"BOTTOM_LEFT"};
+  $scope.searchbox = { template:'searchbox.tpl.html', events:events, position:"LEFT_BOTTOM"};
 
   socket.on('move-pin-reply', function(dataCollection){
     console.log('pin move event!!!!!');

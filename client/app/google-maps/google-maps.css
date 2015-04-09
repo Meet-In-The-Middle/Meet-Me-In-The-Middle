@@ -36,3 +36,7 @@ body {
 #pac-input:focus {
   border-color: #4d90fe;
 }
+
+.pac-container {
+  margin-top: -16%;
+}

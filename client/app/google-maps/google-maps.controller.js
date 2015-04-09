@@ -114,9 +114,9 @@ angular.module('meetMeInTheMiddleApp')
 
     // if(Object.keys($scope.markers).length === 2){
     //   var end;
-    //   if(Object.keys($scope.markers)[0] === socket.id){ end = Object.keys($scope.markers)[1]; } 
+    //   if(Object.keys($scope.markers)[0] === userId){ end = Object.keys($scope.markers)[1]; } 
     //   else{ end = Object.keys($scope.markers)[0]; }
-    //   calcRoute2Users(socket.id, end);
+    //   calcRoute2Users(userId, end);
     // }
   });
 
@@ -133,9 +133,9 @@ angular.module('meetMeInTheMiddleApp')
     if(center){
       latitude = center.k;
       longitude = center.D;
-    } else if($scope.markers[socket.id]){
-      latitude = $scope.markers[socket.id].coords.latitude;
-      longitude = $scope.markers[socket.id].coords.longitude;
+    } else if($scope.markers[userId]){
+      latitude = $scope.markers[userId].coords.latitude;
+      longitude = $scope.markers[userId].coords.longitude;
     } else{
       alert('Error! No marker set on Map.');
       return;
@@ -158,6 +158,12 @@ angular.module('meetMeInTheMiddleApp')
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         for (var i = 0; i < results.length; i++) {
           console.log(results[i]);
+          if(results[i].photos){
+            console.log(results[i].photos[0].getUrl);
+            //console.log(results[i].photos[0].getUrl());
+            var test = results[i].photos[0].getUrl;
+            console.log(test());
+          }
           addPlace(results[i], i);
         }
       }
@@ -170,7 +176,7 @@ angular.module('meetMeInTheMiddleApp')
 
   var addPlace = function (place,id) {
     $scope.markers[id] = {
-      id: id,
+      _id: id,
       coords: {
         latitude: place.geometry.location.lat(),
         longitude: place.geometry.location.lng()
@@ -324,19 +330,25 @@ angular.module('meetMeInTheMiddleApp')
     }
   };
 
-  $scope.updateMap = function() {
-    console.log('updateMap called');
-    var userObj = {
-      _id: user._id,
-      roomId: roomId,
-      name: user.name,
-    };
-    socket.emit('updateMap', userObj);
-    socket.on('updateMapReply', function(data) {
-      console.log('data from updateMapReply ', data);
-    });
-
-  };
+  // $scope.updateMap = function() {
+  //   console.log('updateMap called');
+  //   var userObj = {
+  //     _id: user._id,
+  //     roomId: roomId,
+  //     name: user.name,
+  //   };
+  //   socket.emit('updateMap', userObj);
+  //   socket.on('updateMapReply', function(data) {
+  //     console.log('data from updateMapReply ', data);
+  //     for(var marker in data){
+  //       console.log(data[marker]);
+  //       //addMarker();
+  //       if(data[marker].coords.longitude !== "" && data[marker].coords.latitude !== ""){
+  //         addMarker(data[marker].coords.latitude, data[marker].coords.longitude, data[marker]._id);
+  //       }
+  //     }
+  //   });
+  // };
 
   var removeMarker = function (id) {
     delete $scope.markers[id];

@@ -28,10 +28,13 @@ angular.module('meetMeInTheMiddleApp')
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
 
+  var places_Nearby;
+
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 }; 
   $scope.options = {scrollwheel: false, scaleControl: true};
   $scope.markers = {};
   $scope.place = '';
+
   $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Mexican'},
@@ -52,6 +55,8 @@ angular.module('meetMeInTheMiddleApp')
     { id: 17, name: 'Entertainment'},
     { id: 18, name: 'Golf'}
   ];
+
+  $scope.placesNearby = [];
 
   uiGmapGoogleMapApi.then(function(maps) {
     maps = maps;
@@ -156,16 +161,17 @@ angular.module('meetMeInTheMiddleApp')
     var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };  
     service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
+        //Reset the places object
+        //placesNearby = {};
+        places_Nearby = [];
         for (var i = 0; i < results.length; i++) {
-          console.log(results[i]);
-          if(results[i].photos){
-            console.log(results[i].photos[0].getUrl);
-            //console.log(results[i].photos[0].getUrl());
-            var test = results[i].photos[0].getUrl;
-            console.log(test());
-          }
+          //console.log(results[i]);
+          //Update places object
+          updatePlaces(results[i], i);
           addPlace(results[i], i);
         }
+        console.log(places_Nearby);
+        $scope.placesNearby = places_Nearby;
       }
       else{
         alert("directions response " +status);
@@ -175,21 +181,63 @@ angular.module('meetMeInTheMiddleApp')
   };
 
   var addPlace = function (place,id) {
+    //Format the icon to be displayed
+    var icon = {
+      url: place.icon,
+      origin: new google.maps.Point(0,0),
+      anchor: new google.maps.Point(0, 0),
+      scaledSize: new google.maps.Size(20, 20)
+    };
+
+    //Define the marker
     $scope.markers[id] = {
       _id: id,
       coords: {
         latitude: place.geometry.location.lat(),
         longitude: place.geometry.location.lng()
       },
-      icon: place.icon,
+      icon: icon,
       showWindow: false,
-      name: place.name
-      //templateUrl: 'assets/templates/place.html',
-      // templateParameter: {
-      //   message: place.name
-      // }
+      name: place.name,
     };
     $scope.$apply();
+  }
+
+  var updatePlaces = function(place, id){
+    //Information to be collected about a place
+    //var placeInfo = ['name','opening_hours[open_now]','photos', 'price_level', 'rating'];
+    var placeInfo = ['name','photos', 'price_level', 'rating'];
+    var placeTags = ['','','Price Level: ','Rating: '];
+    if(places_Nearby[id] === undefined) {
+      places_Nearby[id] = [];
+     for(var x = 0; x < placeInfo.length ; x++){
+        if(place[placeInfo[x]] !== undefined) {
+          if(placeTags[x] === 'Price Level: '){
+            var y = place[placeInfo[x]];
+            var cost = '';
+            while(y > 0){
+              cost = cost + '$';
+              y--;
+            }
+            places_Nearby[id].push(placeTags[x] + cost);
+          } else if(placeInfo[x] === 'photos') {
+             //places_Nearby[id].push(place[placeInfo[x]]);
+             places_Nearby[id].push(place[placeInfo[x]][0].getUrl({'maxWidth': 100, 'maxHeight': 100}));
+             //console.log('PPPPPPPPPPPPPP', place[placeInfo[x]][0].getUrl({'maxWidth': 100, 'maxHeight': 100}));
+          }else {
+            places_Nearby[id].push(placeTags[x] + place[placeInfo[x]]); 
+          }
+        } else {
+          places_Nearby[id].push(placeTags[x] + 'None provided.')
+          
+        }
+      }
+      if(place.opening_hours.open_now){
+        places_Nearby[id].push('Currently open.');
+      } else {
+        places_Nearby[id].push('Currently closed.');
+      }
+    }
   }
 
   $scope.closeClick = function (marker) {

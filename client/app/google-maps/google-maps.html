@@ -18,22 +18,28 @@
                           icon="m.icon" click="onMarkerClick(m)">
             <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl"
                             templateParameter="m.templateParameter">
-              <div>
-                <h1>{{marker.name}}</h1>
+            <div>
+               <!-- <h1>{{marker.name}}</h1>
                 {{marker.address}}<br/>
                 {{"Place ID: " + marker.placeID}}<br/>
                 {{"Latitude: " + m.coords.latitude}} <br/>
-                {{"Longitude: " + m.coords.longitude}} <br/>
-                <a ng-click="">Set New Position</a>
+                {{"Longitude: " + m.coords.longitude}} <br/>-->
+              <div>
+               <b>{{placesNearby[m.id][0]}}</b><br>
+               <img ng-src={{placesNearby[m.id][1]}}><br>
+               {{placesNearby[m.id][2]}}<br>
+               {{placesNearby[m.id][3]}}<br>
+               {{placesNearby[m.id][4]}}<br>
               </div>
-            </ui-gmap-window>
-          </ui-gmap-marker>
-        </ui-gmap-google-map>
-        <button class="btn btn-submit" ng-click="findMe()">Find Me</button>
-        <!-- <div class="divider"></div> -->
-        <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
-        <!-- <button class="controls" ng-click="viewMap()">View Map</button> -->
-      </div>
+         </div>
+          </ui-gmap-window>
+        </ui-gmap-marker>
+    </ui-gmap-google-map>
+    <button class="btn btn-submit" ng-click="findMe()">Find Me</button>
+    <!-- <div class="divider"></div> -->
+    <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
+    <!-- <button class="controls" ng-click="viewMap()">View Map</button> -->
+    </div>
     <div class="col-sm-4">
       <H4 class="well well-sm">Place searches</H4>
       <form class="form" role="form">

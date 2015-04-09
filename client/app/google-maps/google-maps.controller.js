@@ -23,20 +23,18 @@ angular.module('meetMeInTheMiddleApp')
   var polyline;
   var infowindow;
   var service;
-<<<<<<< HEAD
   var user = Auth.getCurrentUser();
   var userId = user._id;
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
-=======
+
   var places_Nearby;
->>>>>>> Added window content for the place markers.
 
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 }; 
   $scope.options = {scrollwheel: false, scaleControl: true};
   $scope.markers = {};
   $scope.place = '';
-<<<<<<< HEAD
+
   $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Mexican'},
@@ -57,9 +55,8 @@ angular.module('meetMeInTheMiddleApp')
     { id: 17, name: 'Entertainment'},
     { id: 18, name: 'Golf'}
   ];
-=======
+
   $scope.placesNearby = [];
->>>>>>> Added window content for the place markers.
 
   uiGmapGoogleMapApi.then(function(maps) {
     maps = maps;
@@ -168,19 +165,9 @@ angular.module('meetMeInTheMiddleApp')
         //placesNearby = {};
         places_Nearby = [];
         for (var i = 0; i < results.length; i++) {
-<<<<<<< HEAD
-          console.log(results[i]);
-          if(results[i].photos){
-            console.log(results[i].photos[0].getUrl);
-            //console.log(results[i].photos[0].getUrl());
-            var test = results[i].photos[0].getUrl;
-            console.log(test());
-          }
-=======
           //console.log(results[i]);
           //Update places object
           updatePlaces(results[i], i);
->>>>>>> Added window content for the place markers.
           addPlace(results[i], i);
         }
         console.log(places_Nearby);

@@ -10,8 +10,8 @@ angular.module('meetMeInTheMiddleApp')
     });
 }])
 
-.controller('MapsCtrl', ['$scope', '$q', '$http', '$location', 'Auth','uiGmapGoogleMapApi', 'uiGmapIsReady', 'SocketFactory',
-    function ($scope, $q, $log, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, Main Factory, SocketFactory) {
+.controller('MapsCtrl', ['$scope', '$q', '$http', '$location', 'Auth','uiGmapGoogleMapApi', 'uiGmapIsReady', 'MainFactory', 'SocketFactory',
+    function ($scope, $q, $log, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, MainFactory, SocketFactory) {
   var socket = io();
   SocketFactory.socket = socket;
   var geolocationAvailable;
@@ -25,13 +25,8 @@ angular.module('meetMeInTheMiddleApp')
   var infowindow;
   var service;
   var user = Auth.getCurrentUser();
-<<<<<<< HEAD
   var userId;
   // var userId = user._id;
-=======
-  var userId = user._id;
-  var userId = socket.id;
->>>>>>> prepare for rebase
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
 

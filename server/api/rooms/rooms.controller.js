@@ -273,7 +273,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
     var preExistingUser = false;
     var usersInRoom = room.users;
     for (var j = 0, len = usersInRoom.length; j < len; j++) {
-      if (usersInRoom[j]._id === userId) {
+      if (usersInRoom[j]._id.toString() === userId) {
         usersInRoom[j].coords = userRoomObj.user.coords;
         usersInRoom[j].owner = userRoomObj.user.owner;
         usersInRoom[j].name = userRoomObj.user.name;

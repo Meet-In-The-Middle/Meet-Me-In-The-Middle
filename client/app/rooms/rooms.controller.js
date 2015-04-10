@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
+.controller('roomsCtrl', ['$scope', '$http', '$location', 'Auth', 'MainFactory', 'SocketFactory',
+  function ($scope, $http, $location, Auth, MainFactory, SocketFactory) {
 
-  .controller('roomsCtrl', ['$scope', '$http', '$location', 'Auth', 'MainFactory',
-    function ($scope, $http, $location, Auth, MainFactory) {
     //profile controller methods
     var user = Auth.getCurrentUser();
     console.log('user is ', user);
@@ -25,7 +25,7 @@ angular.module('meetMeInTheMiddleApp')
 
     $scope.getRooms = function() {
       MainFactory.getRoomsForUser(user._id, function(rooms) {
-        console.log('rooms is ', rooms);
+        console.log('rooms for this user are ', rooms);
         $scope.rooms = rooms;
       });
       //return an array of rooms

@@ -3,22 +3,50 @@
  */
 
 'use strict';
+/*
+var io = require('../app.js').io;
 
 var Rooms = require('./rooms.model');
 
-exports.register = function(socket) {
-  Rooms.schema.post('save', function (doc) {
-    onSave(socket, doc);
-  });
-  Rooms.schema.post('remove', function (doc) {
-    onRemove(socket, doc);
-  });
-}
+var RoomsCtrl = require('./rooms.controller');
 
-function onSave(socket, doc, cb) {
-  socket.emit('rooms:save', doc);
-}
+var midUpCreate = io
+  .of('/midupcreate')
+  .on('connection', function(socket) {
+    socket.emit('message', {
+      that: 'only',
+      '/midupcreate': 'will get'
+    });
+    midUpCreate.emit('a message', {
+      everyone: 'in',
+      '/midupcreate': 'will get'
+    });
+  });
 
-function onRemove(socket, doc, cb) {
-  socket.emit('rooms:remove', doc);
-}
+var newsy = io
+  .of('/newsy')
+  .on('connection', function(socket) {
+    socket.emit('news', {news: 'item'});
+  });
+*/
+
+
+
+
+
+//exports.register = function(socket) {
+//  Rooms.schema.post('save', function (doc) {
+//    onSave(socket, doc);
+//  });
+//  Rooms.schema.post('remove', function (doc) {
+//    onRemove(socket, doc);
+//  });
+//}
+//
+//function onSave(socket, doc, cb) {
+//  socket.emit('rooms:save', doc);
+//}
+//
+//function onRemove(socket, doc, cb) {
+//  socket.emit('rooms:remove', doc);
+//}

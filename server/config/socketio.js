@@ -19,7 +19,7 @@ function onConnect(socket) {
 
   // Insert sockets below
   require('../api/rooms/rooms.socket').register(socket);
-  require('../api/gmaps/gmaps.socket').register(socket);
+  require('.././gmaps.socket').register(socket);
   require('../api/thing/thing.socket').register(socket);
 }
 

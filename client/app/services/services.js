@@ -4,6 +4,7 @@ angular.module('meetMeInTheMiddleApp')
   .factory('MainFactory', ['$http', function($http){
 
       var imageStore = {};
+
       var loadUserImage = function(userId, cb) {
         if (imageStore[userId]) {
           cb(imageStore[userId]);
@@ -54,14 +55,24 @@ angular.module('meetMeInTheMiddleApp')
           });
       };
 
+    var markers = {
+
+    };
+
       return {
         loadUserImage: loadUserImage,
         createRoom: createRoom,
         getRoomsForUser: getRoomsForUser,
-        addUserToRoom: addUserToRoom
+        addUserToRoom: addUserToRoom,
       };
     }
-    ]);
+    ])
+  .factory('SocketFactory', [function() {
+    var socket;
+    return {
+      socket: socket,
+    }
+  }]);
 
 
 

@@ -54,11 +54,15 @@ angular.module('meetMeInTheMiddleApp')
           });
       };
 
+    var markers = {
+
+    };
+
       return {
         loadUserImage: loadUserImage,
         createRoom: createRoom,
         getRoomsForUser: getRoomsForUser,
-        addUserToRoom: addUserToRoom
+        addUserToRoom: addUserToRoom,
       };
     }
     ]);

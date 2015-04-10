@@ -26,6 +26,18 @@ server.listen(config.port, config.ip, function () {
   console.log('Express server listening on %d, in %s mode', config.port, app.get('env'));
 });
 
+
+//var server = require('http').Server(app);
+//Ko: Socket is hooked here
+// var socketio = require('socket.io')(server, {
+//   serveClient: (config.env === 'production') ? false : true,
+//   path: '/socket.io-client'
+// });
+// //Ko: Server-side socket logic is defined here in ./config/socketio.js
+// require('./config/socketio')(socketio);
+//var socket = require('socket.io');
+//var io = socket(server);
+
 //temporary inject roomsController here
 var RoomsController = require('./api/rooms/rooms.controller');
 

@@ -95,6 +95,19 @@ io.on('connection', function (socket) {
     //socket.emit('move-pin', data);
     // console.log('TESTING SOCKET.IO' + socket.id);
     // console.dir(dataCollection);
+    
+    socket.on('circle-move', function(center){
+      io.emit('circle-move-replay', center);
+    });
+
+    socket.on('circle-radius-change', function(radius){
+      io.emit('circle-radius-change-reply', radius);
+    });
+
+    socket.on('place-search', function(request){
+      io.emit('place-search-reply', request);
+    });
+
 
   });
 

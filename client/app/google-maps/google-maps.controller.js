@@ -32,7 +32,11 @@ angular.module('meetMeInTheMiddleApp')
   var places_Nearby;
 
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 }; 
-  $scope.options = {scrollwheel: false, scaleControl: true};
+  $scope.options = {
+    scrollwheel: false,
+    scaleControl: true,
+    mapTypeControl: false 
+  };
   $scope.markers = {};
   $scope.place = '';
 
@@ -94,7 +98,7 @@ angular.module('meetMeInTheMiddleApp')
     }
   }
 
-  $scope.searchbox = { template:'searchbox.tpl.html', events:events};
+  $scope.searchbox = { template:'searchbox.tpl.html', events:events, position:"LEFT_BOTTOM"};
 
   socket.on('move-pin-reply', function(dataCollection){
     console.log('pin move event!!!!!!');
@@ -206,12 +210,12 @@ angular.module('meetMeInTheMiddleApp')
       return;
     }
 
-    if(place.radius){
-      radius = place.radius;
-    } else{
-      alert('Error! No radius entered.');
-      return;
-    }
+    // if(place.radius){
+    //   radius = place.radius;
+    // } else{
+    //   alert('Error! No radius entered.');
+    //   return;
+    // }
     console.log(selectedPlace, radius, latitude, longitude);
     placeSearch(selectedPlace, radius, latitude, longitude);
   };
@@ -358,6 +362,10 @@ angular.module('meetMeInTheMiddleApp')
       bounds.extend(coord);
     }
     center = bounds.getCenter(); 
+    var circleCenter = {};
+    circleCenter.latitude = center.k;
+    circleCenter.longitude = center.D;
+    $scope.circle.center = circleCenter;
     return center;
   }
 

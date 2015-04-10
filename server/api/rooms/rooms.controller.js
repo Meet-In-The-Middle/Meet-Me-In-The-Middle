@@ -261,46 +261,63 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
   console.log('userRoomObj', userRoomObj);
   var userId = userRoomObj.user._id;
   var roomId = userRoomObj.roomId;
-
+  var roomName;
+  var usersInRoom;
   Rooms.findById(roomId, function (err, room) {
+    console.log('room is ', room);
     if (err) {
       return cb(_, err);
     }
     if (!room) {
       return cb(_, err);
     }
-    var roomName = room.name;
+    roomName = room.name;
+    room.info = "changed to not awesome";
     var preExistingUser = false;
-    var usersInRoom = room.users;
+    usersInRoom = room.users;
     for (var j = 0, len = usersInRoom.length; j < len; j++) {
-      if (usersInRoom[j]._id.toString() === userId) {
-        usersInRoom[j].coords = userRoomObj.user.coords;
-        usersInRoom[j].owner = userRoomObj.user.owner;
+      if (usersInRoom[j]._id === userId) {
+        console.log(45678);
+        console.log('userRoomObj.user.coords.latitude is ', userRoomObj.user.coords.latitude);
+        if( userRoomObj.user.coords.latitude !== "" ) {
+          console.log('shouldnt get here');
+          usersInRoom[j].coords.latitude = userRoomObj.user.coords.latitude;
+        }
+        if( userRoomObj.user.coords.longitude !== "" ) {
+          usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude;
+        }
+        console.log('usersInRoom[j].coords.latitude is ', usersInRoom[j].coords.latitude);
+        //usersInRoom[j].coords.latitude = userRoomObj.user.coords.latitude === ''? usersInRoom[j].coords.latitude: userRoomObj.user.coords.latitude;
+        //usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude === ''? usersInRoom[j].coords.longitude: userRoomObj.user.coords.longitude;
         usersInRoom[j].name = userRoomObj.user.name;
         preExistingUser = true;
         break;
       }
     }
     if (!preExistingUser) {
-      usersInRoom.push(userRoomObj.user);
-    }
-    room.save(function (err) {
-      if (err) {
-        return cb(_, err);
+      if( userRoomObj.user.coords.latitude !== "" || userRoomObj.user.coords.longitude !== "" ) {
+        usersInRoom.push(userRoomObj.user);
       }
-      else {
+    }
+    console.log('456room.users is ', room.users);
+    Rooms.findById(roomId, function (err, room) {
+      console.log('hella');
+      room.users = usersInRoom;
+      room.save();
+      if (!err) {
         User.findById(userId, function (err, user) {
-          if ( err ) {
+          if (err) {
             return cb(_, err);
-          } else if ( user === null || user === undefined ) {
-            return cb(_, _, true);
+          } else if (user === null || user === undefined) {
+            //return cb(_, _, true);
+            console.log('user is null or undefined');
           }
           else {
             var flag = false;
             var userInRooms = user.memberOfRooms;
             for (var i = 0, len = userInRooms.length; i < len; i++) {
               if (user.memberOfRooms[i].roomId === roomId) {
-                new Error('user already a member of this room');
+                console.log('user already a member of this room');
                 flag = true;
                 break;
               }
@@ -323,6 +340,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
             });
           }
         });
+
       }
     });
   });

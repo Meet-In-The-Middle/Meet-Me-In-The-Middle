@@ -25,8 +25,8 @@ angular.module('meetMeInTheMiddleApp')
   var infowindow;
   var service;
   var user = Auth.getCurrentUser();
-  var userId;
-  // var userId = user._id;
+  //var userId;
+  var userId = user._id;
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
 
@@ -64,6 +64,18 @@ angular.module('meetMeInTheMiddleApp')
     { id: 18, name: 'Golf'}
   ];
 
+  socket.on('join-room-reply', function(userData) {
+    console.log('userData is ', userData);
+    for(var marker in userData) {
+      console.log(123);
+      console.log('latitude is ', Number(userData[marker].coords.latitude));
+      console.log('longitude is ', Number(userData[marker].coords.longitude));
+      if( userData[marker].coords.latitude !== "" || userData[marker].coords.longitude !== "" ) {
+        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
+      }
+    }
+  });
+
   $scope.placesNearby = [];
 
   uiGmapGoogleMapApi.then(function(maps) {
@@ -80,7 +92,7 @@ angular.module('meetMeInTheMiddleApp')
       strokeWeight: 3
     });
     uiGmapIsReady.promise(1).then(function(instances) {
-      userId = socket.id;
+      //userId = socket.id;
       console.log("!!!!!User ID SOCKET ID: ", userId);
       instanceMap = instances[0].map;
       service = new maps.places.PlacesService(instanceMap);
@@ -461,7 +473,7 @@ angular.module('meetMeInTheMiddleApp')
         },
         events: {
           dragend: function(marker, eventName, args){
-            console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[id], null, 2));
+            console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[userId], null, 2));
             socket.emit('move-pin', $scope.markers[userId]);
           },
           click: function(marker){
@@ -473,7 +485,7 @@ angular.module('meetMeInTheMiddleApp')
           }
         }
       }
-      console.log('marker added event: \n' + JSON.stringify($scope.markers[id], null, 2))
+      console.log('marker added event: \n' + JSON.stringify($scope.markers[userId], null, 2))
       socket.emit('move-pin', $scope.markers[userId]);
     }else{
       $scope.markers[id] = {

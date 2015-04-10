@@ -49,7 +49,7 @@ angular.module('meetMeInTheMiddleApp')
           name: user.name,
           coords: {
             latitude: "",
-            longitude: "",
+            longitude: ""
           },
           owner: false
         },
@@ -57,9 +57,9 @@ angular.module('meetMeInTheMiddleApp')
         active: true
       };
 
-      socket.on('connect', function() {
-        socket.emit('join-room', userRoomObj);
-      });
+
+      socket.emit('join-room', userRoomObj);
+
 
       //socket.on('join-room-reply', function(data){
       //  console.log('return data ', data);

@@ -74,10 +74,21 @@ io.on('connection', function (socket) {
     //Update Database with new info (coords) but don't send data back
     //Data will be sent back from Data Cache for performance reasons
 
-    RoomsController.addUserToRoomOrUpdate(userRoomObj, function(usersData) {
-       console.log('UPDATE ROOM - USRS DATA: ', usersData);
-       //do something with usersData maybe
+    //RoomsController.addUserToRoomOrUpdate(userRoomObj, function(usersData) {
+    //   console.log('UPDATE ROOM - USRS DATA: ', usersData);
+    //   //do something with usersData maybe
+    //});
+    RoomsController.addUserToRoomOrUpdate(userRoomObj, function(returnData, err, noUser) {
+      console.log('returnData is ', returnData);
+      if( err ) {
+        socket.emit('error', err);
+      } else if (noUser) {
+        socket.emit('error', 'UserId was not sent with or was undefined in request');
+      } else {
+        //socket.emit('join-room-reply',  returnData);
+      }
     });
+
 
     // Sendback all the data
     //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
@@ -109,17 +120,18 @@ io.on('connection', function (socket) {
   //     roomId: data.roomId,
   //     userId: data._id
   //   };
-  //   RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
-  //   //return object of objects indexed by userId
-  //   console.log('!!!!!!USERS DATA for ALL IN ROOM!!! ', usersData);
-  //     io.emit('updateMapReply', usersData);
-  //   });
+  // RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
+  // //return object of objects indexed by userId
+  // console.log('!!!!!!USERS DATA for ALL IN ROOM!!! ', usersData);
+  //   io.emit('updateMapReply', usersData);
+  // });
   //
   //});
 
   socket.on('join-room', function(data) {
     console.log('join-room data', data);
     RoomsController.addUserToRoomOrUpdate(data, function(returnData, err, noUser) {
+      console.log('returnData is ', returnData);
       if( err ) {
         socket.emit('error', err);
       } else if (noUser) {
@@ -127,13 +139,13 @@ io.on('connection', function (socket) {
       } else {
         socket.emit('join-room-reply',  returnData);
       }
-    })
+    });
   });
 
   // Delete the data after disconnecting.
   socket.on('disconnect', function(data){
-    delete dataCollection[socket.id];
-    io.emit('move-pin-reply', dataCollection);
+    //delete dataCollection[socket.id];
+    //io.emit('move-pin-reply', dataCollection);
   })
 });
 

@@ -54,7 +54,15 @@ io.on('connection', function (socket) {
     // If it's new socket.id
     // dataCollection[data.roomId] = {};
     // dataCollection[data.roomId][data._id] = data;
-    dataCollection[socket.id] = data;
+    console.log(data);
+    // console.log(JSON.stringify(data._id));
+    dataCollection[data._id] = data;
+    console.log('dataCollection: ', dataCollection);
+    // console.log('server socket', socket.id);
+    // console.log(data);
+    // console.log('server data received: ', data);
+    // console.log('data collection: ', dataCollection);
+
     // var userRoomObj = {
     //    roomId: data.roomId,
     //    user: {
@@ -70,7 +78,7 @@ io.on('connection', function (socket) {
     //    active: true
     //  };
 
-     console.log('User Room Obj:', userRoomObj);
+     // console.log('User Room Obj:', userRoomObj);
     //Update Database with new info (coords) but don't send data back
     //Data will be sent back from Data Cache for performance reasons
 
@@ -81,12 +89,12 @@ io.on('connection', function (socket) {
   
     // Sendback all the data
     //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-    io.emit('move-pin-reply', dataCollection[socket.id]);
+    io.emit('move-pin-reply', dataCollection);
 
     // Testing
     //socket.emit('move-pin', data);
-    console.log('TESTING SOCKET.IO' + socket.id);
-    console.dir(dataCollection);
+    // console.log('TESTING SOCKET.IO' + socket.id);
+    // console.dir(dataCollection);
 
   });
 

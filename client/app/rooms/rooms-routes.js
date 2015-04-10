@@ -7,7 +7,7 @@ angular.module('meetMeInTheMiddleApp')
         url: '/mymidups',
         templateUrl: 'app/rooms/rooms.html',
         controller: 'roomsCtrl',
-        authenticate: true
+        // authenticate: true
 
       })
       .state('room', {
@@ -15,7 +15,7 @@ angular.module('meetMeInTheMiddleApp')
         templateUrl: 'app/google-maps/google-maps.html',
         //Using two controllers on this view so inject them in HTML
         /*contoller: 'midUpCtrl',*/
-        authenticate: true
+        // authenticate: true
       })
 
   }]);

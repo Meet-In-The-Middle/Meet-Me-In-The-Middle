@@ -10,9 +10,10 @@ angular.module('meetMeInTheMiddleApp')
     });
 }])
 
-.controller('MapsCtrl', ['$scope', '$q', '$http', '$location', 'Auth', 'MainFactory' 'uiGmapGoogleMapApi', 'uiGmapIsReady',
-    function ($scope, $q, $log, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, MainFactory) {
+.controller('MapsCtrl', ['$scope', '$q', '$http', '$location', 'Auth','uiGmapGoogleMapApi', 'uiGmapIsReady', 'SocketFactory',
+    function ($scope, $q, $log, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, Main Factory, SocketFactory) {
   var socket = io();
+  SocketFactory.socket = socket;
   var geolocationAvailable;
   var center;
   var bounds;
@@ -485,7 +486,10 @@ angular.module('meetMeInTheMiddleApp')
     }
   };
 
-  // $scope.updateMap = function() {
+  socket.on('join-room-reply', function(userData) {
+    console.log('userData is ', userData);
+  });
+  //$scope.updateMap = function() {
   //   console.log('updateMap called');
   //   var userObj = {
   //     _id: user._id,
@@ -503,7 +507,7 @@ angular.module('meetMeInTheMiddleApp')
   //       }
   //     }
   //   });
-  // };
+  //};
 
   var removeMarker = function (id) {
     delete $scope.markers[id];

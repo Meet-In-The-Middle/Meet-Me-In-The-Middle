@@ -24,8 +24,8 @@ angular.module('meetMeInTheMiddleApp')
   var infowindow;
   var service;
   var user = Auth.getCurrentUser();
+  var userId;
   // var userId = user._id;
-  var userId = socket.id;
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
 
@@ -73,6 +73,8 @@ angular.module('meetMeInTheMiddleApp')
       strokeWeight: 3
     });
     uiGmapIsReady.promise(1).then(function(instances) {
+      userId = socket.id;
+      console.log("!!!!!User ID SOCKET ID: ", userId);
       instanceMap = instances[0].map;
       service = new maps.places.PlacesService(instanceMap);
       directionsDisplay.setMap(instanceMap);
@@ -98,8 +100,10 @@ angular.module('meetMeInTheMiddleApp')
     console.log('pin move event!!!!!!');
     console.log('dataCollection: ', dataCollection);
     for(var marker in dataCollection){
+      console.log('marker', marker);
       if(marker !== userId){
         console.log('inner socket add!!!!!!');
+        console.log('data received', dataCollection);
         addMarker(dataCollection[marker].coords.latitude, dataCollection[marker].coords.longitude, marker);
         $scope.$apply();
       }
@@ -368,12 +372,12 @@ angular.module('meetMeInTheMiddleApp')
         events: {
           dragend: function(marker, eventName, args){
             console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[id], null, 2));
-            socket.emit('move-pin', $scope.markers[id]);
+            socket.emit('move-pin', $scope.markers[userId]);
           }
         }
       }
       console.log('marker added event: \n' + JSON.stringify($scope.markers[id], null, 2))
-      socket.emit('move-pin', $scope.markers[id]);
+      socket.emit('move-pin', $scope.markers[userId]);
     }else{
       $scope.markers[id] = {
         _id: id,

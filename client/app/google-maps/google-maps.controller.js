@@ -25,8 +25,13 @@ angular.module('meetMeInTheMiddleApp')
   var infowindow;
   var service;
   var user = Auth.getCurrentUser();
+<<<<<<< HEAD
   var userId;
   // var userId = user._id;
+=======
+  var userId = user._id;
+  var userId = socket.id;
+>>>>>>> prepare for rebase
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
 
@@ -116,6 +121,10 @@ angular.module('meetMeInTheMiddleApp')
       }
       console.log('markers: ', $scope.markers);
     }
+
+    socket.on('error', function(message) {
+      console.log('error message is ', message);
+    });
 
     if(Object.keys($scope.markers).length >= 2){
       // console.log('center before: ', center);
@@ -245,7 +254,7 @@ angular.module('meetMeInTheMiddleApp')
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
         //placesNearby = {};
-        places_Nearby = [];
+        //places_Nearby = [];
         for (var i = 0; i < results.length; i++) {
           //console.log(results[i]);
           //Update places object
@@ -442,7 +451,7 @@ angular.module('meetMeInTheMiddleApp')
 
     if(id === userId){
       $scope.markers[id] = {
-        _id: id,
+        _id: userId,
         roomId: roomId,
         icon: userImage,
         name: user.name,

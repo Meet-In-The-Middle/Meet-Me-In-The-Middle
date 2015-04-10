@@ -258,6 +258,7 @@ exports.getUsersForRoom = function (data, cb) {
  */
 exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
   console.log('called addUserToRoom');
+  console.log('userRoomObj', userRoomObj);
   var userId = userRoomObj.user._id;
   var roomId = userRoomObj.roomId;
 
@@ -289,8 +290,10 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
       }
       else {
         User.findById(userId, function (err, user) {
-          if (err) {
+          if ( err ) {
             return cb(_, err);
+          } else if ( user === null || user === undefined ) {
+            return cb(_, _, true);
           }
           else {
             var flag = false;

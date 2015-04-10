@@ -119,9 +119,11 @@ io.on('connection', function (socket) {
 
   socket.on('join-room', function(data) {
     console.log('join-room data', data);
-    RoomsController.addUserToRoomOrUpdate(data, function(returnData, err) {
+    RoomsController.addUserToRoomOrUpdate(data, function(returnData, err, noUser) {
       if( err ) {
         socket.emit('error', err);
+      } else if (noUser) {
+        socket.emit('error', 'UserId was not sent with or was undefined in request');
       } else {
         socket.emit('join-room-reply',  returnData);
       }

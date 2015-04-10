@@ -11,9 +11,8 @@
 }
 
 .chat-box {
-  margin: 0 auto;
   width: 90%;
-  height: 400px;
+  height: 100px;
   border: 1px solid #3d3d3d;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
@@ -31,7 +30,9 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
-
-.info-chat {
-  margin: 50px 0 0 0;
+.info-chat-container {
+  position: absolute;
+  width: 30%;
+  height: 200px;
+  right: 5%; bottom: 25%;
 }

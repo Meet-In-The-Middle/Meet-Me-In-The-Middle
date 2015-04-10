@@ -1,9 +1,8 @@
-.angular-google-map-container { 
+/*.angular-google-map-container { 
   margin-top: 110px;
   height: 400px; 
   display: flex;
   vertical-align: center;
-  /*width: 100;*/
 }
 
 .controls {
@@ -36,3 +35,61 @@
   margin: 125px auto 0;
   width: 800px;
 }
+*/
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+/* Top global nav bar*/
+.navBar {
+  display: none;
+}
+
+/* Full screen map*/
+.angular-google-map-container { 
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+}
+
+/* Button Style */
+.btn-container {
+  position: absolute;
+  z-index: 2;
+  bottom: 80px; left: 13px;
+}
+
+/* Form style */
+.form-container {
+  position: absolute;
+  z-index: 2;
+  width: 300px;
+  bottom: 140px;
+  left: 13px;
+}
+
+
+/* Search Style*/
+#pac-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 400px;
+  right: 0;
+}
+#pac-input:focus {
+  border-color: #4d90fe;
+}
+
+.pac-container {
+  margin-top: -16%;
+}
+
+
+/* Styling of chat window done in client/rooms/rooms.css*/

@@ -130,6 +130,58 @@ angular.module('meetMeInTheMiddleApp')
     // }
   });
 
+  $scope.circle = {
+       id: 1,
+       center: {
+           latitude: 44,
+           longitude: -108
+       },
+       radius: 10000,
+       stroke: {
+           color: '#08B21F',
+           weight: 2,
+           opacity: 1
+       },
+       fill: {
+           color: '#08B21F',
+           opacity: 0.5
+       },
+       geodesic: true, // optional: defaults to false
+       draggable: true, // optional: defaults to false
+       clickable: true, // optional: defaults to true
+       editable: true, // optional: defaults to false
+       visible: true, // optional: defaults to true
+       control: {},
+       events: {
+          dragend: function(circle){
+            var center = circle.getCenter();
+            var newCenter = {};
+            newCenter.lat = center.k;
+            newCenter.lng = center.D;
+            circle.setCenter(newCenter);
+            socket.emit('circle-move', $scope.circle.center);
+          },
+          radius_changed: function(circle){
+            circleRadius = circle.getRadius();
+            $scope.circle.radius = circleRadius;
+            socket.emit('circle-radius-change', $scope.circle.radius);
+          }
+       }
+   };
+   var circleRadius = $scope.circle.radius;
+
+   socket.on('circle-move-replay', function(center){
+    $scope.circle.center = center;
+    console.dir('circle moved emit received  ' + JSON.stringify(center));
+    $scope.$apply();
+   });
+
+   socket.on('circle-radius-change-reply', function(radius){
+    $scope.circle.radius = radius;
+    console.dir('circle radius changed emit received  ' + radius);
+    $scope.$apply();
+   });
+
 
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
   $scope.placeSearch = function (place) {
@@ -166,8 +218,21 @@ angular.module('meetMeInTheMiddleApp')
 
 
   var placeSearch = function (place, radius, latitude, longitude) {
-    var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: [place] };  
-    console.log('!!!!request!!!! ', request);
+    var request = {
+      location: {
+         lat: $scope.circle.center.latitude,
+         lng: $scope.circle.center.longitude
+         // lat: $scope.markers[socket.id].coords.latitude,
+         // lng: $scope.markers[socket.id].coords.longitude
+      },
+      radius: $scope.circle.radius,
+      types: [place]
+    };  
+    socket.emit('place-search', request);
+    return;
+  };
+
+  socket.on('place-search-reply', function(request){
     service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
@@ -194,8 +259,7 @@ angular.module('meetMeInTheMiddleApp')
         alert("directions response " +status);
       }
     });
-    return;
-  };
+  });
 
   var addPlace = function (place,id) {
     //Format the icon to be displayed
@@ -353,6 +417,13 @@ angular.module('meetMeInTheMiddleApp')
       }
     });
   }
+  var userImage = {
+    url: '../../assets/images/skoPic.PNG',
+    scaledSize : new google.maps.Size(40, 40),
+    origin: new google.maps.Point(0,0),
+    anchor: new google.maps.Point(20, 40),
+
+  };
 
   var addMarker = function (latitude, longitude, id) {
     console.log('add id: ', id);
@@ -361,19 +432,29 @@ angular.module('meetMeInTheMiddleApp')
       $scope.markers[id] = {
         _id: id,
         roomId: roomId,
+        icon: userImage,
         name: user.name,
-        // icon: {},
         coords:{
           latitude: latitude,
           longitude: longitude
         },
         info: '',
-        options:{draggable: true},
+        options:{
+          draggable: true,
+          animation: google.maps.Animation.BOUNCE
+        },
         events: {
           dragend: function(marker, eventName, args){
             console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[id], null, 2));
             socket.emit('move-pin', $scope.markers[userId]);
-          }
+          },
+          click: function(marker){
+            if(marker.getAnimation() != null){
+              marker.setAnimation(null);
+            } else {
+              marker.setAnimation(google.maps.Animation.BOUNCE);
+            }
+          }          
         }
       }
       console.log('marker added event: \n' + JSON.stringify($scope.markers[id], null, 2))

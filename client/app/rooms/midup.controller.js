@@ -6,6 +6,7 @@ angular.module('meetMeInTheMiddleApp')
   function ($scope, $http, $location, Auth, MainFactory, SocketFactory) {
     var user = Auth.getCurrentUser();
     var userId = user._id;
+    var username = user.name;
     var socket = SocketFactory.socket;
     console.log('user  ', user);
     $scope.user = {};
@@ -15,6 +16,12 @@ angular.module('meetMeInTheMiddleApp')
 
     $scope.init = function() {
       addUserToRoom();
+    };
+
+    $scope.sendChat = function() {
+      var message = $scope.userMessage;
+      console.log('sendChat called ', $scope.userMessage);
+      socket.emit(roomId, userId, username, message);
     };
 
 /*
@@ -60,10 +67,15 @@ angular.module('meetMeInTheMiddleApp')
 
       socket.emit('join-room', userRoomObj);
 
+      //var message = 'Rioa and Jonah working hard';
+      //var sumbitMessage = (function(roomId) {
+      //  socket.emit('chat', roomId);
+      //  socket.emit(roomId, 'Hey roomId works');
+      //})(roomId);
 
-      //socket.on('join-room-reply', function(data){
-      //  console.log('return data ', data);
-      //});
+      socket.on('serversend', function(username, message) {
+        console.log(444444, username, message);
+      });
 
     };
 

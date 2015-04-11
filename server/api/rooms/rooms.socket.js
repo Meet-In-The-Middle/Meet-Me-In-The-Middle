@@ -3,35 +3,43 @@
  */
 
 'use strict';
-/*
-var io = require('../app.js').io;
+//var io = require('../app.js').io;
 
 var Rooms = require('./rooms.model');
 
-var RoomsCtrl = require('./rooms.controller');
+var RoomsController = require('./rooms.controller');
 
-var midUpCreate = io
-  .of('/midupcreate')
-  .on('connection', function(socket) {
-    socket.emit('message', {
-      that: 'only',
-      '/midupcreate': 'will get'
+module.exports = function(socket) {
+    socket.on('join-room', function(data) {
+      console.log('join-room data', data);
+      RoomsController.addUserToRoomOrUpdate(data, function (returnData, err, noUser) {
+        console.log('returnData is ', returnData);
+        if (err) {
+          socket.emit('error', err);
+        } else if (noUser) {
+          socket.emit('error', 'UserId was not sent with or was undefined in request');
+        } else {
+          socket.emit('join-room-reply', returnData);
+        }
+      });
     });
-    midUpCreate.emit('a message', {
-      everyone: 'in',
-      '/midupcreate': 'will get'
+
+
+  var midUpRoomChat = function(roomNumber) {
+    socket.on(roomNumber, function(data) {
+
     });
-  });
+  };
 
-var newsy = io
-  .of('/newsy')
-  .on('connection', function(socket) {
-    socket.emit('news', {news: 'item'});
-  });
-*/
+    socket.on('chat', function(message) {
+
+    });
 
 
 
+
+
+};
 
 
 //exports.register = function(socket) {

@@ -98,7 +98,7 @@ io.on('connection', function (socket) {
     //socket.emit('move-pin', data);
     // console.log('TESTING SOCKET.IO' + socket.id);
     // console.dir(dataCollection);
-    
+
     socket.on('circle-move', function(center){
       io.emit('circle-move-replay', center);
     });
@@ -128,25 +128,27 @@ io.on('connection', function (socket) {
   //
   //});
 
-  socket.on('join-room', function(data) {
-    console.log('join-room data', data);
-    RoomsController.addUserToRoomOrUpdate(data, function(returnData, err, noUser) {
-      console.log('returnData is ', returnData);
-      if( err ) {
-        socket.emit('error', err);
-      } else if (noUser) {
-        socket.emit('error', 'UserId was not sent with or was undefined in request');
-      } else {
-        socket.emit('join-room-reply',  returnData);
-      }
-    });
-  });
-
+  //socket.on('join-room', function(data) {
+  //  console.log('join-room data', data);
+  //  RoomsController.addUserToRoomOrUpdate(data, function(returnData, err, noUser) {
+  //    console.log('returnData is ', returnData);
+  //    if( err ) {
+  //      socket.emit('error', err);
+  //    } else if (noUser) {
+  //      socket.emit('error', 'UserId was not sent with or was undefined in request');
+  //    } else {
+  //      socket.emit('join-room-reply',  returnData);
+  //    }
+  //  });
+  //});
+  //
   // Delete the data after disconnecting.
   socket.on('disconnect', function(data){
     //delete dataCollection[socket.id];
     //io.emit('move-pin-reply', dataCollection);
   })
+
+  require('./api/rooms/rooms.socket.js')(socket);
 });
 
 

@@ -46,10 +46,10 @@ io.on('connection', function (socket) {
     // If it's new socket.id
     // dataCollection[data.roomId] = {};
     // dataCollection[data.roomId][data._id] = data;
-    console.log('move-pin data ', data);
+    //console.log('move-pin data ', data);
     // console.log(JSON.stringify(data._id));
     dataCollection[data._id] = data;
-    console.log('dataCollection: ', dataCollection);
+    //console.log('dataCollection: ', dataCollection);
     // console.log('server socket', socket.id);
     // console.log(data);
     // console.log('server data received: ', data);
@@ -70,7 +70,7 @@ io.on('connection', function (socket) {
         active: true
       };
 
-    console.log('User Room Obj:', userRoomObj);
+    //console.log('User Room Obj:', userRoomObj);
     //Update Database with new info (coords) but don't send data back
     //Data will be sent back from Data Cache for performance reasons
 
@@ -79,7 +79,7 @@ io.on('connection', function (socket) {
     //   //do something with usersData maybe
     //});
     RoomsController.addUserToRoomOrUpdate(userRoomObj, function(returnData, err, noUser) {
-      console.log('returnData is ', returnData);
+      //console.log('returnData is ', returnData);
       if( err ) {
         socket.emit('error', err);
       } else if (noUser) {
@@ -128,27 +128,21 @@ io.on('connection', function (socket) {
   //
   //});
 
-  //socket.on('join-room', function(data) {
-  //  console.log('join-room data', data);
-  //  RoomsController.addUserToRoomOrUpdate(data, function(returnData, err, noUser) {
-  //    console.log('returnData is ', returnData);
-  //    if( err ) {
-  //      socket.emit('error', err);
-  //    } else if (noUser) {
-  //      socket.emit('error', 'UserId was not sent with or was undefined in request');
-  //    } else {
-  //      socket.emit('join-room-reply',  returnData);
-  //    }
-  //  });
-  //});
-  //
   // Delete the data after disconnecting.
   socket.on('disconnect', function(data){
     //delete dataCollection[socket.id];
     //io.emit('move-pin-reply', dataCollection);
   })
 
-  require('./api/rooms/rooms.socket.js')(socket);
+  var roomSockets = require('./api/rooms/rooms.socket.js')
+  roomSockets.roomSockets(socket);
+});
+
+io.on('connection', function(socket) {
+  socket.on('chat', function() {})
+
+
+  socket.on('fdlkjalkjdasfljadf', function() {})
 });
 
 

@@ -7,7 +7,8 @@ var RoomsSchema = new Schema({
   name: String,
   users: [],
   info: String,
-  active: Boolean
+  active: Boolean,
+  messages: []
 });
 
 module.exports = mongoose.model('Rooms', RoomsSchema);

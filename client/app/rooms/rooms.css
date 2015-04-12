@@ -12,11 +12,15 @@
 
 .chat-box {
   width: 90%;
-  height: 100px;
+  height: 150px;
   border: 1px solid #3d3d3d;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+  overflow-y: scroll;
+  scrollbar-face-color: #336699; scrollbar-3dlight-color: #336699; scrollbar-base-color: #336699;
+  scrollbar-track-color: #336699; scrollbar-darkshadow-color: #000; scrollbar-arrow-color: #000;
+  scrollbar-shadow-color: #fff; scrollbar-highlight-color: #fff;
 }
 
 .chat-input-submit {
@@ -35,4 +39,9 @@
   width: 30%;
   height: 200px;
   right: 5%; bottom: 25%;
+}
+
+.chatUserName {
+  color: #0000ff;
+  font-weight: 600;
 }

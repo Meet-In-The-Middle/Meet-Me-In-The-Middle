@@ -5,15 +5,14 @@
 'use strict';
 
 var Rooms = require('./rooms.model');
-
 var RoomsController = require('./rooms.controller');
 var io = require('../../app').io;
 
-exports.roomSockets = function (socket, roomNumber) {
-  //var roomId;
+exports.roomSockets = function (socket) {
+  var roomId;
 
   socket.on('join-room', function (data) {
-    var roomId = data.roomId;
+    roomId = data.roomId;
     console.log('join-room data ', data);
     console.log('join-room data', data);
     RoomsController.addUserToRoomOrUpdate(data, function (returnData, err, noUser) {
@@ -27,62 +26,31 @@ exports.roomSockets = function (socket, roomNumber) {
       }
     });
     socket.join(roomId);
+/*
     // echo to client they've connected
     socket.emit('serversend', 'SERVER, you have connected to ' + roomId);
     //broadcast to room members (other than this client) that new user
-    //socket.broadcast.to(roomId).emit('serversend', 'jonah', '5555 everyone in room EXCEPT client should see this');
+    socket.broadcast.to(roomId).emit('serversend', 'jonah', '5555 everyone in room EXCEPT client should see this');
+*/
 
-    // when the client emits 'sendchat', this listens and executes
-/*
-    socket.on('clientsend', function (data) {
-      // we tell the client to execute 'updatechat' with 2 parameters
-      var username = 'RAMBO';
-      io.sockets.in(roomId).emit('serversend', 'everybody in room should get this');
-    });
-    */
+    /**
+     * listen for client emitting to event 'roomId' which segregates rooms
+     */
     socket.on(roomId, function(userId, username, message){
       console.log('####################### in socket.on', userId, username, message);
-      //Update room in DB with new message.
       //Call method in rooms.controller.js (which interacts with rooms.model.js)
-      //will look like this
-      //RoomsController.updateRoomWithMessage = function(roomId, userId, message)
+      RoomsController.updateRoomChats(roomId, userId, username, message);
       io.sockets.in(roomId).emit('serversend',username, message);
     });
+
+  });
+
+  socket.on('disconnect', function(data){
+    socket.leave(roomId);
   });
 
 
-
 };
-
-/*
-  socket.on('chat', function (roomId) {
-    console.log('here is our Awesomeness ', roomId);
-    //socket.on(roomId, function(message) {
-    //  console.log(111111111, message);
-    //});
-    socket.join(roomId);
-    // echo to client they've connected
-    socket.emit('serversend', 'SERVER, you have connected to ' + roomId);
-    //broadcast to room members (other than this client) that new user
-    socket.broadcast.to(roomId).emit('updatechat', '5555 everyone in room EXCEPT client should see this');
-
-    // when the client emits 'sendchat', this listens and executes
-    socket.on('clientsend', function (data) {
-      // we tell the client to execute 'updatechat' with 2 parameters
-      var username = 'RAMBO';
-      io.sockets.in(roomId).emit('serversend', 'everybody in room should get this');
-    });
-*/
-
-
-    //io.sockets.in(roomId).emit('serversend', 'data1', 'data2');
-
-  //socket.on('disconnect', function(data){
-  //  socket.leave(roomId);
-  //})
-
-
-
 
 
 //exports.register = function(socket) {

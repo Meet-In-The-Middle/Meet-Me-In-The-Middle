@@ -348,4 +348,28 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
   });
 };
 
+exports.updateRoomChats = function(roomId, userId, username, message){
+  // Rooms.findById(roomId, function (err, room) {
+  // if(err){
+  // console.log('updateRoomChats Error:' + err);
+  //} else {
+  //Create the message object
+  var chatObj = {
+    userId: userId,
+    username: username,
+    message: message,
+    date: new Date()
+  };
 
+  Rooms.update(
+    { "_id": roomId },
+    { "$push": {"messages": chatObj }},
+    function(err, numAffected){
+      if(err){
+        console.log('updateRoomChats error:' + err);
+      } else {
+        console.log('updateRoomChats numAffected:' + numAffected);
+      }
+    }
+  );
+};

@@ -14,39 +14,17 @@ angular.module('meetMeInTheMiddleApp')
     var roomId = url[url.length - 1];
     console.log('roomId is ', roomId);
 
+    /**
+     * init called when page loads
+     */
     $scope.init = function() {
       addUserToRoom();
     };
-
-    $scope.sendChat = function() {
-      var message = $scope.userMessage;
-      console.log('sendChat called ', $scope.userMessage);
-      socket.emit(roomId, userId, username, message);
-    };
-
-/*
-    var addUserToRoom = function() {
-      var userRoomObj = {
-        roomId: roomId,
-        user: {
-            _id: user._id,
-            name: user.name,
-            coords: {
-              latitude: "",
-              longitude: "",
-            },
-            owner: false
-          },
-        info: 'How awesome',
-        active: true
-      };
-       MainFactory.addUserToRoom(userRoomObj, function(data) {
-         console.log('data coming back from addUserToRoom in controller ', data);
-        //do something with the data coming back
-       });
-    };
-*/
-
+    /**
+     * send user and room information to server to be stored in DB (i.e. add this user to room in DB)
+     * with emit 'join-room' event
+     * set up 'serversend' listener for chat messages
+     */
     var addUserToRoom = function() {
       //User object to be sent to server and DB
       var userRoomObj = {
@@ -64,20 +42,27 @@ angular.module('meetMeInTheMiddleApp')
         active: true
       };
 
-
       socket.emit('join-room', userRoomObj);
 
-      //var message = 'Rioa and Jonah working hard';
-      //var sumbitMessage = (function(roomId) {
-      //  socket.emit('chat', roomId);
-      //  socket.emit(roomId, 'Hey roomId works');
-      //})(roomId);
-
-      socket.on('serversend', function(username, message) {
-        console.log(444444, username, message);
-      });
 
     };
+    /**
+     * send chat message by emitting to roomId (which means only that room will receive message)
+     */
+    $scope.sendChat = function() {
+      var message = $scope.userMessage;
+      var userId = Auth.getCurrentUser()._id;
+      var username = Auth.getCurrentUser().name;
+      console.log('sendChat called ', $scope.userMessage);
+      socket.emit(roomId, userId, username, message);
+      $scope.userMessage = "";
+    };
+
+    socket.on('serversend', function(username, message) {
+      console.log(444444, username, message);
+      var newMessage = '<div><span class="chatUserName">'+username+': </span><span class="message">' +message+ '</span>';
+      angular.element('.chat-box').append(newMessage);
+    });
 
 
 

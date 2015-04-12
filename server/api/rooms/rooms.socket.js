@@ -48,8 +48,6 @@ exports.roomSockets = function (socket) {
       });
     });
 
-  });
-
   socket.on('disconnect', function(data){
     socket.leave(roomId);
   });

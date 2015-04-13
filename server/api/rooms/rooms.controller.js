@@ -87,22 +87,6 @@ exports.create = function (req, res) {
   });
 };
 
-/*var userRoomObj = {
- roomId: roomId,
- user: {
- _id: user._id,
- name: user.name,
- coords: {
- latitude: 54.2058804,
- longitude: long+1,
- },
- owner: false
- },
- info: 'How awesome',
- active: true
- };*/
-
-
 // Updates an existing room in the DB. Called when a user joins a room in 'midup.controller.js'
 // Will add user to room if not already part of room
 exports.update = function (req, res) {
@@ -279,18 +263,12 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
     usersInRoom = room.users;
     for (var j = 0, len = usersInRoom.length; j < len; j++) {
       if (usersInRoom[j]._id === userId) {
-        //console.log(45678);
-        //console.log('userRoomObj.user.coords.latitude is ', userRoomObj.user.coords.latitude);
         if( userRoomObj.user.coords.latitude !== "" ) {
-          //console.log('shouldnt get here');
           usersInRoom[j].coords.latitude = userRoomObj.user.coords.latitude;
         }
         if( userRoomObj.user.coords.longitude !== "" ) {
           usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude;
         }
-        //console.log('usersInRoom[j].coords.latitude is ', usersInRoom[j].coords.latitude);
-        //usersInRoom[j].coords.latitude = userRoomObj.user.coords.latitude === ''? usersInRoom[j].coords.latitude: userRoomObj.user.coords.latitude;
-        //usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude === ''? usersInRoom[j].coords.longitude: userRoomObj.user.coords.longitude;
         usersInRoom[j].name = userRoomObj.user.name;
         preExistingUser = true;
         break;
@@ -301,9 +279,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
         usersInRoom.push(userRoomObj.user);
       }
     }
-    //console.log('456room.users is ', room.users);
     Rooms.findById(roomId, function (err, room) {
-      //console.log('hella');
       room.users = usersInRoom;
       room.save();
       if (!err) {
@@ -312,14 +288,13 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
             return cb(_, err);
           } else if (user === null || user === undefined) {
             //return cb(_, _, true);
-            //console.log('user is null or undefined');
           }
           else {
             var flag = false;
             var userInRooms = user.memberOfRooms;
             for (var i = 0, len = userInRooms.length; i < len; i++) {
               if (user.memberOfRooms[i].roomId === roomId) {
-                //console.log('user already a member of this room');
+                console.log('user already a member of this room');
                 flag = true;
                 break;
               }
@@ -332,7 +307,6 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
               if (err) return cb(_, err);
             });
             //callback for sending data back to client
-            //console.log('room.users is ', JSON.stringify(room.users));
             Rooms.findById(roomId, function (err, room) {
               var usersObj = room.users.reduce(function (a, b) {
                 a[b._id] = b;
@@ -342,17 +316,12 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
             });
           }
         });
-
       }
     });
   });
 };
 
-exports.updateRoomChats = function(roomId, userId, username, message){
-  // Rooms.findById(roomId, function (err, room) {
-  // if(err){
-  // console.log('updateRoomChats Error:' + err);
-  //} else {
+exports.updateRoomChats = function(roomId, userId, username, message, callback){
   //Create the message object
   var chatObj = {
     userId: userId,
@@ -360,7 +329,7 @@ exports.updateRoomChats = function(roomId, userId, username, message){
     message: message,
     date: new Date()
   };
-
+  //push new chat message to MidUp room messages array
   Rooms.update(
     { "_id": roomId },
     { "$push": {"messages": chatObj }},
@@ -369,7 +338,20 @@ exports.updateRoomChats = function(roomId, userId, username, message){
         console.log('updateRoomChats error:' + err);
       } else {
         console.log('updateRoomChats numAffected:' + numAffected);
+        callback(chatObj);
       }
     }
   );
 };
+
+exports.getRecentChatMessages = function(roomId, callback) {
+  Rooms.findById(roomId, function(err, room) {
+    if(err){
+      console.log(err);
+    } else {
+      var messages = room.messages.slice(0, 100);
+      callback(messages, err);
+    }
+  });
+};
+

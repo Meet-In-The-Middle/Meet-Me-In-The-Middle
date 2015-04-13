@@ -13,10 +13,7 @@ exports.roomSockets = function (socket) {
 
   socket.on('join-room', function (data) {
     roomId = data.roomId;
-    console.log('join-room data ', data);
-    console.log('join-room data', data);
     RoomsController.addUserToRoomOrUpdate(data, function (returnData, err, noUser) {
-      console.log('returnData is ', returnData);
       if (err) {
         socket.emit('error', err);
       } else if (noUser) {
@@ -26,21 +23,29 @@ exports.roomSockets = function (socket) {
       }
     });
     socket.join(roomId);
-/*
-    // echo to client they've connected
-    socket.emit('serversend', 'SERVER, you have connected to ' + roomId);
-    //broadcast to room members (other than this client) that new user
-    socket.broadcast.to(roomId).emit('serversend', 'jonah', '5555 everyone in room EXCEPT client should see this');
-*/
+    /*
+        // echo to client they've connected
+        socket.emit('serversend', 'SERVER, you have connected to ' + roomId);
+        //broadcast to room members (other than this client) that new user
+        socket.broadcast.to(roomId).emit('serversend', 'jonah', '5555 everyone in room EXCEPT client should see this');
+    */
+    //get most recent messages for a room and send to client in JSON array
+    RoomsController.getRecentChatMessages(roomId, function(messageData, err) {
+      if(err) {
+        //handle error}
+      } else {
+        socket.emit('chat-messages', messageData);
+      }
+    });
 
-    /**
-     * listen for client emitting to event 'roomId' which segregates rooms
-     */
+
+     // listen for client emitting to event 'roomId' which segregates room
     socket.on(roomId, function(userId, username, message){
-      console.log('####################### in socket.on', userId, username, message);
+      //console.log('####################### in socket.on', userId, username, message);
       //Call method in rooms.controller.js (which interacts with rooms.model.js)
-      RoomsController.updateRoomChats(roomId, userId, username, message);
-      io.sockets.in(roomId).emit('serversend',username, message);
+      RoomsController.updateRoomChats(roomId, userId, username, message, function( messageObj ) {
+          io.sockets.in(roomId).emit('server-chat-response', messageObj);
+      });
     });
 
   });

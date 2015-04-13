@@ -7,7 +7,8 @@ angular.module('meetMeInTheMiddleApp', [
   'ui.router',
   'ui.bootstrap',
   'uiGmapgoogle-maps',
-  'angularFileUpload'
+  'angularFileUpload',
+  'luegg.directives'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
     $urlRouterProvider

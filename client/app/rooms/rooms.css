@@ -45,3 +45,8 @@
   color: #0000ff;
   font-weight: 600;
 }
+
+.message-date {
+  font-style: italic;
+  font-size: 0.9em;
+}

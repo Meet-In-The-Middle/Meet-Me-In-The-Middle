@@ -57,7 +57,11 @@
     <p>Etc.</p>
   </div>
   <h4 class="no-top-margin">Chat About MidUp</h4>
-  <div class="chat-box"></div>
+  <div class="chat-box" scroll-glue>
+    <div ng-repeat="message in messages">
+      <span class="chatUserName">{{message.username}} </span><span class="message-date">{{message.date | date: 'MMM dd @ h:mma'}}  </span><span class="message">{{message.message}} </span>
+    </div>
+  </div>
   <div class="chat-input-submit">
     <textarea ng-model="userMessage"></textarea><br>
     <button class="btn btn-default" ng-click="sendChat()">Submit</button>

@@ -31,8 +31,8 @@
   <h4 class="well well-sm">Place searches</h4>
     <form class="form" role="form">
       <div class="form-group">
-      <label class="contorol-label">Select a Category:</label><br />
-      <select ng-init="Restaurants = Restaurants || places[0]" ng-model="Restaurants" ng-options="place as place.name for place in places"></select>
+      <label class="control-label">Select a Category:</label><br />
+      <select ng-init="places[0].name" ng-model="place.category" ng-options="place as place.name for place in places"></select>
           {{place.category | json}}
       <br><br>
       <label class="control-label">Search for a Place: </label>

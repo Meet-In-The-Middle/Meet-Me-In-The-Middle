@@ -27,7 +27,7 @@ var io = require('socket.io')(server);
 //});
 
 //Socket.io methods for rooms
-var rooms
+// var rooms
 
 
 //temporary inject roomsController here

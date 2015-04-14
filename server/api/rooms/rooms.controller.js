@@ -275,9 +275,9 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
       }
     }
     if (!preExistingUser) {
-      if( userRoomObj.user.coords.latitude !== "" || userRoomObj.user.coords.longitude !== "" ) {
+      // if( userRoomObj.user.coords.latitude !== "" || userRoomObj.user.coords.longitude !== "" ) {
         usersInRoom.push(userRoomObj.user);
-      }
+      // }
     }
     Rooms.findById(roomId, function (err, room) {
       room.users = usersInRoom;
@@ -308,6 +308,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
             });
             //callback for sending data back to client
             Rooms.findById(roomId, function (err, room) {
+              console.log('!!!!!!!ROOM: ', room);
               var usersObj = room.users.reduce(function (a, b) {
                 a[b._id] = b;
                 return a;

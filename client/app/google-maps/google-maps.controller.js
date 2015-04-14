@@ -16,8 +16,10 @@ angular.module('meetMeInTheMiddleApp')
   SocketFactory.socket = socket;
   var geolocationAvailable;
   var center;
+  var circleRadius;
   var bounds;
   var instanceMap;
+  var userInfo;
   var maps;
   var directionsService;
   var directionsDisplay;
@@ -25,7 +27,6 @@ angular.module('meetMeInTheMiddleApp')
   var infowindow;
   var service;
   var user = Auth.getCurrentUser();
-  //var userId;
   var userId = user._id;
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
@@ -41,8 +42,8 @@ angular.module('meetMeInTheMiddleApp')
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
   $scope.options = {scrollwheel: false, scaleControl: true};
   $scope.markers = {};
-  $scope.place = '';
-
+  $scope.place = {};
+  $scope.placesNearby = [];
   $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Mexican'},
@@ -55,28 +56,35 @@ angular.module('meetMeInTheMiddleApp')
     { id: 9, name: 'Coffee'},
     { id: 10, name: 'Ice Cream'},
     { id: 11, name: 'Hotels'},
-    { id: 12, name: 'Restaurants'},
-    { id: 13, name: 'Movie Theaters'},
-    { id: 14, name: 'Shopping'},
-    { id: 15, name: 'Parks'},
-    { id: 16, name: 'Fun'},
-    { id: 17, name: 'Entertainment'},
-    { id: 18, name: 'Golf'}
+    { id: 12, name: 'Movie Theaters'},
+    { id: 13, name: 'Shopping'},
+    { id: 14, name: 'Parks'},
+    { id: 15, name: 'Fun'},
+    { id: 16, name: 'Entertainment'},
+    { id: 17, name: 'Golf'}
   ];
 
-  socket.on('join-room-reply', function(userData) {
-    console.log('userData is ', userData);
-    for(var marker in userData) {
-      console.log(123);
-      console.log('latitude is ', Number(userData[marker].coords.latitude));
-      console.log('longitude is ', Number(userData[marker].coords.longitude));
-      if( userData[marker].coords.latitude !== "" || userData[marker].coords.longitude !== "" ) {
-        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
-      }
-    }
-  });
-
-  $scope.placesNearby = [];
+$scope.circle = {
+   id: 1,
+   // center: {         // dont need a default center???
+   //     latitude: 44,
+   //     longitude: -108
+   // },
+   radius: 10000, // need a default radius???
+   stroke: {
+       color: '#08B21F',
+       weight: 2,
+       opacity: 1
+   },
+   fill: {
+       color: '#08B21F',
+       opacity: 0.5
+   },
+   geodesic: true, // optional: defaults to false
+   clickable: true, // optional: defaults to true
+   visible: false, // optional: defaults to true
+   control: {}
+};
 
   uiGmapGoogleMapApi.then(function(maps) {
     maps = maps;
@@ -93,7 +101,9 @@ angular.module('meetMeInTheMiddleApp')
     });
     uiGmapIsReady.promise(1).then(function(instances) {
       //userId = socket.id;
-      console.log("!!!!!User ID SOCKET ID: ", userId);
+      // userId = user._id;
+      console.log("!!!!!User ID: ", userId);
+      console.log('user : ', user);
       instanceMap = instances[0].map;
       service = new maps.places.PlacesService(instanceMap);
       directionsDisplay.setMap(instanceMap);
@@ -140,8 +150,13 @@ angular.module('meetMeInTheMiddleApp')
       // console.log('center after: ', center);
       // console.log('calcRoute');
       // calcRoute();
+      if($scope.circle.center === undefined){
+        calculateCenter();
+        calcCircleCenter();
+      }
       if($scope.markers[userId]){
-        calcRoute(calculateCenter());
+        calculateCenter();
+        calcRoute();
       }
     }
 
@@ -153,45 +168,21 @@ angular.module('meetMeInTheMiddleApp')
     // }
   });
 
-  $scope.circle = {
-       id: 1,
-       center: {
-           latitude: 44,
-           longitude: -108
-       },
-       radius: 10000,
-       stroke: {
-           color: '#08B21F',
-           weight: 2,
-           opacity: 1
-       },
-       fill: {
-           color: '#08B21F',
-           opacity: 0.5
-       },
-       geodesic: true, // optional: defaults to false
-       draggable: true, // optional: defaults to false
-       clickable: true, // optional: defaults to true
-       editable: true, // optional: defaults to false
-       visible: true, // optional: defaults to true
-       control: {},
-       events: {
-          dragend: function(circle){
-            var center = circle.getCenter();
-            var newCenter = {};
-            newCenter.lat = center.k;
-            newCenter.lng = center.D;
-            circle.setCenter(newCenter);
-            socket.emit('circle-move', $scope.circle.center);
-          },
-          radius_changed: function(circle){
-            circleRadius = circle.getRadius();
-            $scope.circle.radius = circleRadius;
-            socket.emit('circle-radius-change', $scope.circle.radius);
-          }
-       }
-   };
-   var circleRadius = $scope.circle.radius;
+
+  socket.on('join-room-reply', function(userData) {
+    console.log('userData is ', userData);
+    for(var marker in userData) {
+      if(userData[marker]._id === userId){
+        userInfo = userData[marker];
+      }
+      console.log(123);
+      // console.log('latitude is ', Number(userData[marker].coords.latitude));
+      // console.log('longitude is ', Number(userData[marker].coords.longitude));
+      if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
+        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
+      }
+    }
+  });
 
    socket.on('circle-move-replay', function(center){
     $scope.circle.center = center;
@@ -208,64 +199,58 @@ angular.module('meetMeInTheMiddleApp')
 
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
   $scope.placeSearch = function (place) {
-    var selectedPlace, latitude, longitude, radius;
-    if(place.category){
-      selectedPlace = place.category;
-    } else if(place.types !== 'Restaurants'){
-      selectedPlace = place.types;
-    } else{
-      alert('Error! No search parameters.');
+    console.log("!!!!place: ", place);
+    if(!isNaN(Number(place.radius))){
+      console.log("RADIUS: ", place.radius);
+      $scope.circle.radius = Number(place.radius);
       return;
     }
+    else{
+      alert('radius not a number');
+    }
+    if($scope.circle.center){
+      var request = {
+        location: {
+          lat: $scope.circle.center.latitude, 
+          lng: $scope.circle.center.longitude
+        },
+        radius: $scope.circle.radius
+      };
+      if(place.types){
+        console.log('!!!!!!!!!types!!!!!!!!');
+        request.types = [place.types];
+      }
+      else if(place.category){
+        console.log('!!!!!!!!!category name!!!!!!!!');
+        request.types = [place.category.name.toLowerCase()];
+        //request.types.push(place.category.name.toLowerCase());//.toString()];
+      }
 
-    if(center){
-      latitude = center.k;
-      longitude = center.D;
-    } else if($scope.markers[userId]){
-      latitude = $scope.markers[userId].coords.latitude;
-      longitude = $scope.markers[userId].coords.longitude;
-    } else{
-      alert('Error! No marker set on Map.');
+      console.log('place search request: ', request);
+      socket.emit('place-search', request);
       return;
     }
-
-    // if(place.radius){
-    //   radius = place.radius;
-    // } else{
-    //   alert('Error! No radius entered.');
-    //   return;
-    // }
-    console.log(selectedPlace, radius, latitude, longitude);
-    placeSearch(selectedPlace, radius, latitude, longitude);
-  };
-
-
-  var placeSearch = function (place, radius, latitude, longitude) {
-    var request = {
-      location: {
-         lat: $scope.circle.center.latitude,
-         lng: $scope.circle.center.longitude
-         // lat: $scope.markers[socket.id].coords.latitude,
-         // lng: $scope.markers[socket.id].coords.longitude
-      },
-      radius: $scope.circle.radius,
-      types: [place]
-    };
-    socket.emit('place-search', request);
-    return;
+    else{
+      alert('Error! No marker set on Map. Please add at least one marker to the map.');
+      return;
+    }
   };
 
   socket.on('place-search-reply', function(request){
-    var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
+   //var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
+   console.log('socket request: ', request);
     service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
         //placesNearby = {};
         //places_Nearby = [];
+        console.log('place results: ', results);
         for (var i = 0; i < results.length; i++) {
           //console.log(results[i]);
           //Update places object
-          updatePlaces(results[i], i);
+
+          // updatePlaces(results[i], i);
+
           // console.log(results[i]);
           // if(results[i].photos){
           //   console.log(results[i].photos[0].getUrl);
@@ -273,10 +258,15 @@ angular.module('meetMeInTheMiddleApp')
           //   var test = results[i].photos[0].getUrl;
           //   console.log(test());
           // }
-          // addPlace(results[i], i);
+          //console.log(results[i]);
+
+          // if(i === 0){ placeDetails(results[i].id); }
+          
+          addPlace(results[i]);
+
           // $scope.$apply();
         }
-        console.log(places_Nearby);
+        //console.log(places_Nearby);
         $scope.placesNearby = places_Nearby;
       }
       else{
@@ -285,27 +275,27 @@ angular.module('meetMeInTheMiddleApp')
     });
   });
 
-  var addPlace = function (place,id) {
+  var addPlace = function (place) {
     //Format the icon to be displayed
-    var icon = {
-      url: place.icon,
-      origin: new google.maps.Point(0,0),
-      anchor: new google.maps.Point(0, 0),
-      scaledSize: new google.maps.Size(20, 20)
-    };
+    // var icon = {
+    //   url: place.icon,
+    //   origin: new google.maps.Point(0,0),
+    //   anchor: new google.maps.Point(0, 0),
+    //   scaledSize: new google.maps.Size(20, 20)
+    // };
 
     //Define the marker
-    $scope.markers[id] = {
-      _id: id,
+    $scope.markers[place.id] = {
+      _id: place.id,
       coords: {
         latitude: place.geometry.location.lat(),
         longitude: place.geometry.location.lng()
       },
-      icon: icon,
+      //icon: icon,
       showWindow: false,
       name: place.name,
     };
-    // $scope.$apply();
+    $scope.$apply();
   }
 
   var updatePlaces = function(place, id){
@@ -369,10 +359,38 @@ angular.module('meetMeInTheMiddleApp')
     changeMapView(40.1451, -99.6680, 4);
   }
 
+
+  var placeDetails = function(placeId){
+    var request = {
+      placeId: placeId
+    };
+    console.log(request);
+    service.getDetails(request, function(place, status) {
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        //createMarker(place);
+        console.log(status);
+        console.log('getDetails: ', place);
+      }
+      else{
+        alert("service get details response "+status);
+      }
+      console.log('getDetailsafter: ', place);
+    });
+  }
+
   var extendBounds = function(latitude, longitude){
     var coord = new google.maps.LatLng(latitude, longitude);
     bounds.extend(coord);
     center = bounds.getCenter();
+  }
+
+  var calcCircleCenter = function(){
+    var circleCenter = {};
+    circleCenter.latitude = center.k;
+    circleCenter.longitude = center.D;
+    $scope.circle.center = circleCenter;
+    $scope.circle.visible = true;
+    $scope.$apply();
   }
 
   var calculateCenter = function(){
@@ -382,17 +400,12 @@ angular.module('meetMeInTheMiddleApp')
       bounds.extend(coord);
     }
     center = bounds.getCenter();
-    var circleCenter = {};
-    circleCenter.latitude = center.k;
-    circleCenter.longitude = center.D;
-    $scope.circle.center = circleCenter;
-    return center;
   }
 
-  var calcRoute = function(dest){
+  var calcRoute = function(){
     var request = {
       origin: new google.maps.LatLng($scope.markers[userId].coords.latitude, $scope.markers[userId].coords.longitude),
-      destination: dest,
+      destination: center,
       travelMode: google.maps.TravelMode.DRIVING
     };
     console.log('Request: ', JSON.stringify(request));
@@ -450,11 +463,32 @@ angular.module('meetMeInTheMiddleApp')
     scaledSize : new google.maps.Size(40, 40),
     origin: new google.maps.Point(0,0),
     anchor: new google.maps.Point(20, 40),
-
   };
 
   var addMarker = function (latitude, longitude, id) {
     console.log('add id: ', id);
+    console.log('---------- ',userInfo);
+    if(id === userId && userInfo.owner === true){
+      // console.log('I AM THE OWNER!!!');
+      $scope.circle.draggable = true;
+      $scope.circle.editable = true;
+      $scope.circle.events = {
+        dragend: function(circle){
+          var center = circle.getCenter();
+          var newCenter = {};
+          newCenter.lat = center.k;
+          newCenter.lng = center.D;
+          circle.setCenter(newCenter);
+          socket.emit('circle-move', $scope.circle.center);
+        },
+        radius_changed:  function(circle){
+          circleRadius = circle.getRadius();
+          $scope.circle.radius = circleRadius;
+          socket.emit('circle-radius-change', $scope.circle.radius);
+        }
+      }
+      $scope.$apply();
+    }
 
     if(id === userId){
       $scope.markers[id] = {
@@ -468,21 +502,21 @@ angular.module('meetMeInTheMiddleApp')
         },
         info: '',
         options:{
-          draggable: true,
-          animation: google.maps.Animation.BOUNCE
+          draggable: true
+          // animation: google.maps.Animation.BOUNCE
         },
         events: {
           dragend: function(marker, eventName, args){
             console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[userId], null, 2));
             socket.emit('move-pin', $scope.markers[userId]);
-          },
-          click: function(marker){
-            if(marker.getAnimation() != null){
-              marker.setAnimation(null);
-            } else {
-              marker.setAnimation(google.maps.Animation.BOUNCE);
-            }
           }
+          // click: function(marker){
+          //   if(marker.getAnimation() != null){
+          //     marker.setAnimation(null);
+          //   } else {
+          //     marker.setAnimation(google.maps.Animation.BOUNCE);
+          //   }
+          // }
         }
       }
       console.log('marker added event: \n' + JSON.stringify($scope.markers[userId], null, 2))
@@ -501,29 +535,6 @@ angular.module('meetMeInTheMiddleApp')
       }
     }
   };
-
-  socket.on('join-room-reply', function(userData) {
-    console.log('userData is ', userData);
-  });
-  //$scope.updateMap = function() {
-  //   console.log('updateMap called');
-  //   var userObj = {
-  //     _id: user._id,
-  //     roomId: roomId,
-  //     name: user.name,
-  //   };
-  //   socket.emit('updateMap', userObj);
-  //   socket.on('updateMapReply', function(data) {
-  //     console.log('data from updateMapReply ', data);
-  //     for(var marker in data){
-  //       console.log(data[marker]);
-  //       //addMarker();
-  //       if(data[marker].coords.longitude !== "" && data[marker].coords.latitude !== ""){
-  //         addMarker(data[marker].coords.latitude, data[marker].coords.longitude, data[marker]._id);
-  //       }
-  //     }
-  //   });
-  //};
 
   var removeMarker = function (id) {
     delete $scope.markers[id];
@@ -564,23 +575,7 @@ angular.module('meetMeInTheMiddleApp')
         latitude: latitude,
         longitude: longitude
       },
-      zoom: zoom,
-      // events: {
-      //   tilesloaded: function(map){
-      //     console.log('!!!!!!!! ', map);
-      //     map = map;
-      //     directionsDisplay.setMap(map);
-      //   }
-      // }
+      zoom: zoom
     }
   };
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 }]);
-
-
-// google.maps.event.addListener($scope.marker, 'click', function() {
-//             $scope.infowindow.setContent(contentString+"<br>"+$scope.marker.getPosition().toUrlValue(6));
-//             $scope.infowindow.open(instanceMap,$scope.marker);
-//           });
-

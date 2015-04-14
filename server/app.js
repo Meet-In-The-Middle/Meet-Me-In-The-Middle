@@ -48,7 +48,19 @@ io.on('connection', function (socket) {
     // dataCollection[data.roomId][data._id] = data;
     //console.log('move-pin data ', data);
     // console.log(JSON.stringify(data._id));
-    dataCollection[data._id] = data;
+    // var userId = data._id;
+
+    //dataCollection[data._id] = data;
+
+    if(dataCollection[data.roomId] === undefined){
+      dataCollection[data.roomId] = {};
+      dataCollection[data.roomId][data._id] = data;
+    } 
+    else{
+      dataCollection[data.roomId][data._id] = data;
+    }
+
+
     //console.log('dataCollection: ', dataCollection);
     // console.log('server socket', socket.id);
     // console.log(data);
@@ -92,7 +104,12 @@ io.on('connection', function (socket) {
 
     // Sendback all the data
     //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-    io.emit('move-pin-reply', dataCollection);
+    
+    // io.emit('move-pin-reply', dataCollection);
+    // io.emit('move-pin-reply', dataCollection[data.roomId]);
+    io.sockets.in(data.roomId).emit('move-pin-reply', dataCollection[data.roomId]);
+    // socket.on(data.roomId)
+
 
     // Testing
     //socket.emit('move-pin', data);

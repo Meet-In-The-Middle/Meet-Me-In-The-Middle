@@ -91,7 +91,6 @@ body {
   width: 400px;
   right: 0;
   /*TODO: show*/
-  display: none;
 }
 #pac-input:focus {
   border-color: #4d90fe;

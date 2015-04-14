@@ -29,17 +29,17 @@
   <form class="form" role="form">
     <div>
     <label class="control-label">Select a Category:</label>
-    <select ng-init="places[0].name" ng-model="place.category" ng-options="place as place.name for place in places"></select>
-        {{place.category | json}}
+    <div ng-dropdown-multiselect="" options="places" selected-model="place.types" extra-settings="scrollSettings"> </div>
+        {{place.type | json}}
     <label class="control-label">Search for a Place: </label>
-      <input class="form-control" type="text" ng-model="place.types"></input>
+      <input class="form-control" type="text" ng-model="place.keywords"></input>
     </div>
     <div class="space-top">
       <label class="control-label">Radius for Search(meters)</label>
       <input type="text" class="form-control" ng-model="place.radius"></input>
     </div>
     <div class="btn-group btn-group-sm space-top">
-      <button class="btn btn-primary space-right" ng-click="placeSearch(place)" type="submit">Submit</button>
+      <button class="btn btn-primary space-right" ng-click="placeSearch()" type="submit">Submit</button>
       <button class="btn btn-danger" ng-click="clearMap()">Clear Map</button>
     </div>
   </form>

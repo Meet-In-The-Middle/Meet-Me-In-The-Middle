@@ -43,11 +43,11 @@ angular.module('meetMeInTheMiddleApp')
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
   $scope.options = {scrollwheel: false, scaleControl: true};
   $scope.markers = {};
-  $scope.place = {};
+  $scope.place = {types:[], keywords:'', radius: '1000'};
   $scope.placesNearby = [];
-  $scope.places = [
+ /* $scope.places = [
     { id: 1, name: 'Restaurants'},
-    { id: 2, name: 'Mexican'},
+    { id: 2, name: 'Cafe'},
     { id: 3, name: 'Italian'},
     { id: 4, name: 'Pizza'},
     { id: 5, name: 'Sandwiches'},
@@ -63,7 +63,48 @@ angular.module('meetMeInTheMiddleApp')
     { id: 15, name: 'Fun'},
     { id: 16, name: 'Entertainment'},
     { id: 17, name: 'Golf'}
+  ];*/
+
+$scope.scrollSettings = {
+    scrollableHeight: '300px',
+    scrollable: true,
+    displayProp: 'label',
+    idProp: 'type',
+    externalIdProp: 'type'
+};
+
+$scope.places = [
+    { id: 1, type: 'amusement_park', label: 'Amusement Park'},
+    { id: 2, type: 'art_gallery', label: 'Art Gallery'},
+    { id: 3, type: 'aquarium', label: 'Aquarium'},
+    { id: 4, type: 'bar', label: 'Bar'},
+    { id: 5, type: 'bowling_alley', label: 'Bowling Alley'},
+    { id: 6, type: 'bus_station', label: 'Bus Station'},
+    { id: 7, type: 'cafe', label: 'Cafe'},
+    { id: 8, type: 'casino', label: 'Casino'},
+    { id: 9, type: 'food', label: 'Food'},
+    { id: 10, type: 'hotel', label: 'Hotel'},            
+    { id: 11, type: 'restaurant', label: 'Restaurant'},
+    { id: 12, type: 'library', label: 'Library'},
+    { id: 13, type: 'movie', label: 'Movie Theater'},
+    { id: 14, type: 'museum', label: 'Museum'},
+    { id: 15, type: 'night_club', label: 'Night Club'},
+    { id: 16, type: 'park', label: 'Park'},
+    { id: 17, type: 'shopping_mall', label: 'Shopping Mall'},
+    { id: 18, type: 'spa', label: 'Spa'},
+    { id: 19, type: 'subway_station', label: 'Subway Station'},
+    { id: 20, type: 'taxi_stand', label: 'Taxi Stand'},
+    { id: 21, type: 'train_station', label: 'Train Station'},
+    { id: 22, type: 'zoo', label: 'Zoo'}
   ];
+//$scope.test = [];
+/*$scope.places = [
+    { id: 1, label: 'Amusement Park'},
+    { id: 2, label: 'Art Gallery'} 
+];*/
+
+    
+
 
 $scope.circle = {
    id: 1,
@@ -199,8 +240,9 @@ $scope.circle = {
 
 
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
-  $scope.placeSearch = function (place) {
-    console.log("!!!!place: ", place);
+  $scope.placeSearch = function () {
+    var place = $scope.place;
+    console.log("!!!!place: ", $scope.place);
     if(!isNaN(Number(place.radius))){
       console.log("RADIUS: ", place.radius);
       $scope.circle.radius = Number(place.radius);
@@ -214,13 +256,18 @@ $scope.circle = {
         },
         radius: $scope.circle.radius
       };
-      if(place.types){
+      if(place.types.length){
+        var types = '';
+        place.types.forEach(function(x){
+          console.log('x:' + x);
+          console.log('x.type:' + x.type);
+          types = types + '' + x.type;})
         console.log('!!!!!!!!!types!!!!!!!!');
-        request.types = [place.types];
+        request.types = [types];
       }
-      else if(place.category){
+      else if(place.keywords){
         console.log('!!!!!!!!!category name!!!!!!!!');
-        request.types = [place.category.name.toLowerCase()];
+        request.keyword = [place.keyword.toLowerCase()];
         //request.types.push(place.category.name.toLowerCase());//.toString()];
       }
 

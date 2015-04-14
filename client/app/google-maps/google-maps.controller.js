@@ -26,8 +26,9 @@ angular.module('meetMeInTheMiddleApp')
   var polyline;
   var infowindow;
   var service;
-  var user = Auth.getCurrentUser();
-  var userId = user._id;
+  //var user = Auth.getCurrentUser();
+  //var userId = user._id;
+  //Auth.getCurrentUser()._id
   var url = $location.$$path.split('/');
   var roomId = url[url.length - 1];
 
@@ -102,8 +103,8 @@ $scope.circle = {
     uiGmapIsReady.promise(1).then(function(instances) {
       //userId = socket.id;
       // userId = user._id;
-      console.log("!!!!!User ID: ", userId);
-      console.log('user : ', user);
+      console.log("!!!!!User ID: ", Auth.getCurrentUser()._id);
+      console.log('user : ', Auth.getCurrentUser());
       instanceMap = instances[0].map;
       service = new maps.places.PlacesService(instanceMap);
       directionsDisplay.setMap(instanceMap);
@@ -118,7 +119,7 @@ $scope.circle = {
         return;
       }
       changeMapView(place[0].geometry.location.lat(), place[0].geometry.location.lng(), 18);
-      addMarker(place[0].geometry.location.lat(), place[0].geometry.location.lng(), userId);
+      addMarker(place[0].geometry.location.lat(), place[0].geometry.location.lng(), Auth.getCurrentUser()._id);
       $scope.$apply();
     }
   }
@@ -130,7 +131,7 @@ $scope.circle = {
     console.log('dataCollection: ', dataCollection);
     for(var marker in dataCollection){
       console.log('marker', marker);
-      if(marker !== userId){
+      if(marker !== Auth.getCurrentUser()._id){
         console.log('inner socket add!!!!!!');
         console.log('data received', dataCollection);
         addMarker(dataCollection[marker].coords.latitude, dataCollection[marker].coords.longitude, marker);
@@ -154,7 +155,7 @@ $scope.circle = {
         calculateCenter();
         calcCircleCenter();
       }
-      if($scope.markers[userId]){
+      if($scope.markers[Auth.getCurrentUser()._id]){
         calculateCenter();
         calcRoute();
       }
@@ -172,7 +173,7 @@ $scope.circle = {
   socket.on('join-room-reply', function(userData) {
     console.log('userData is ', userData);
     for(var marker in userData) {
-      if(userData[marker]._id === userId){
+      if(userData[marker]._id === Auth.getCurrentUser()._id){
         userInfo = userData[marker];
       }
       console.log(123);
@@ -204,9 +205,6 @@ $scope.circle = {
       console.log("RADIUS: ", place.radius);
       $scope.circle.radius = Number(place.radius);
       return;
-    }
-    else{
-      alert('radius not a number');
     }
     if($scope.circle.center){
       var request = {
@@ -346,7 +344,7 @@ $scope.circle = {
     if(geolocationAvailable) {
       navigator.geolocation.getCurrentPosition(function (position) {
         changeMapView(position.coords.latitude, position.coords.longitude, 18);
-        addMarker(position.coords.latitude, position.coords.longitude, userId);
+        addMarker(position.coords.latitude, position.coords.longitude, Auth.getCurrentUser()._id);
         $scope.$apply();
       }, function () {});
     }
@@ -404,7 +402,7 @@ $scope.circle = {
 
   var calcRoute = function(){
     var request = {
-      origin: new google.maps.LatLng($scope.markers[userId].coords.latitude, $scope.markers[userId].coords.longitude),
+      origin: new google.maps.LatLng($scope.markers[Auth.getCurrentUser()._id].coords.latitude, $scope.markers[Auth.getCurrentUser()._id].coords.longitude),
       destination: center,
       travelMode: google.maps.TravelMode.DRIVING
     };
@@ -468,7 +466,7 @@ $scope.circle = {
   var addMarker = function (latitude, longitude, id) {
     console.log('add id: ', id);
     console.log('---------- ',userInfo);
-    if(id === userId && userInfo.owner === true){
+    if(id === Auth.getCurrentUser()._id && Auth.getCurrentUser().owner === true){
       // console.log('I AM THE OWNER!!!');
       $scope.circle.draggable = true;
       $scope.circle.editable = true;
@@ -490,12 +488,12 @@ $scope.circle = {
       $scope.$apply();
     }
 
-    if(id === userId){
+    if(id === Auth.getCurrentUser()._id){
       $scope.markers[id] = {
-        _id: userId,
+        _id: Auth.getCurrentUser()._id,
         roomId: roomId,
         icon: userImage,
-        name: user.name,
+        name: Auth.getCurrentUser().name,
         coords:{
           latitude: latitude,
           longitude: longitude
@@ -507,8 +505,8 @@ $scope.circle = {
         },
         events: {
           dragend: function(marker, eventName, args){
-            console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[userId], null, 2));
-            socket.emit('move-pin', $scope.markers[userId]);
+            console.log('marker dragend event fired once data sent: \n' + JSON.stringify($scope.markers[Auth.getCurrentUser()._id], null, 2));
+            socket.emit('move-pin', $scope.markers[Auth.getCurrentUser()._id]);
           }
           // click: function(marker){
           //   if(marker.getAnimation() != null){
@@ -519,8 +517,8 @@ $scope.circle = {
           // }
         }
       }
-      console.log('marker added event: \n' + JSON.stringify($scope.markers[userId], null, 2))
-      socket.emit('move-pin', $scope.markers[userId]);
+      console.log('marker added event: \n' + JSON.stringify($scope.markers[Auth.getCurrentUser()._id], null, 2))
+      socket.emit('move-pin', $scope.markers[Auth.getCurrentUser()._id]);
     }else{
       $scope.markers[id] = {
         _id: id,

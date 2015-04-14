@@ -578,4 +578,18 @@ $scope.circle = {
       zoom: zoom
     }
   };
+
+  $scope.slide = false
+  $scope.slider = function (){
+    $scope.slide = !$scope.slide;
+    var map = document.querySelector('.angular-google-map-container');
+    var mapWidth = parseInt(window.getComputedStyle(map).width);
+    var bodyWidth = parseInt(window.getComputedStyle(document.body).width);
+    var ratio = mapWidth / bodyWidth;
+    if(ratio < .9){
+      map.style.width = '100%';
+    } else {
+      map.style.width = '88%';
+    }
+  }
 }]);

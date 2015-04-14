@@ -11,7 +11,6 @@
 }
 
 .chat-box {
-  width: 90%;
   height: 150px;
   border: 1px solid #3d3d3d;
   -webkit-border-radius: 5px;
@@ -24,21 +23,16 @@
 }
 
 .chat-input-submit {
-  margin: 5px auto;
-  width: 90%;
+  margin-top: 5px;
 }
 
 .chat-input-submit textarea {
-  width: 90%;
+  width: 100%;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
 .info-chat-container {
-  position: absolute;
-  width: 30%;
-  height: 200px;
-  right: 5%; bottom: 25%;
 }
 
 .chatUserName {

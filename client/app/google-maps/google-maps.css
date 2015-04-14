@@ -1,41 +1,3 @@
-/*.angular-google-map-container { 
-  margin-top: 110px;
-  height: 400px; 
-  display: flex;
-  vertical-align: center;
-}
-
-.controls {
-  margin-top: 16px;
-  border: 1px solid transparent;
-  border-radius: 2px 0 0 2px;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  height: 32px;
-  outline: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-#pac-input {
-  background-color: #fff;
-  font-family: Roboto;
-  font-size: 15px;
-  font-weight: 300;
-  margin-left: 12px;
-  padding: 0 11px 0 13px;
-  text-overflow: ellipsis;
-  width: 400px;
-}
-
-#pac-input:focus {
-  border-color: #4d90fe;
-}
-
-#map_canvas {
-  margin: 125px auto 0;
-  width: 800px;
-}
-*/
 html,
 body {
   height: 100%;
@@ -50,31 +12,72 @@ body {
 
 /* Full screen map*/
 .angular-google-map-container { 
-/*  margin-top: 110px;
-  height: 400px; 
-  vertical-align: center;*/
   position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
-/*  width: 40%;
-  height: 40%;*/
+  top: 0; right: 0; bottom: 0; 
+  /*TODO: left:0*/
+  /*left: 0;*/
+  width: 88%;
+  height: 100%;
+  transition: width 1s;
 }
 
-/* Button Style */
-.btn-container {
+/* map-ui-style */
+.map-ui-style {
   position: absolute;
-  z-index: 2;
-  bottom: 80px; left: 13px;
+  top: 0; left: 0;
+  width: 20%;
+  padding: 1%;
+  background: #B3D1FF;
+  border: 1px solid black;
+  height: 100%;
+  transition: left 1s;
+}
+
+.left-minus {
+  left: -20%;
 }
 
 /* Form style */
 .form-container {
-  position: absolute;
-  z-index: 2;
-  width: 300px;
-  bottom: 140px;
-  left: 13px;
 }
 
+  .title {
+    margin:0;
+    padding: 0;
+    text-align: center;
+    background: tomato;
+    margin-bottom: 10px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input {
+    height: 20px;
+    display: block;
+    margin:0;
+    padding: 0;
+  }
+  
+  .space-top {
+    margin-top: 10px;
+  }
+  .space-right {
+    margin-right: 10px;
+  }
+/* Chat style */
+.info-chat-container {
+}
+
+.label-style {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Button Style */
+.btn-container {
+}
 
 /* Search Style*/
 #pac-input {
@@ -87,6 +90,8 @@ body {
   text-overflow: ellipsis;
   width: 400px;
   right: 0;
+  /*TODO: show*/
+  display: none;
 }
 #pac-input:focus {
   border-color: #4d90fe;
@@ -96,5 +101,19 @@ body {
   margin-top: -16%;
 }
 
+.gui-slider {
+  position: absolute;
+  top: 45%;
+  left: 20%;
+  transition: left 1s;
+}
+.left-zero {
+  left: 0;
+}
 
 /* Styling of chat window done in client/rooms/rooms.css*/
+@media screen and (max-width: 600px){
+  .map-ui-style {
+    top: 70%;
+  }
+}

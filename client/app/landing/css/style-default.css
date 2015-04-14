@@ -262,7 +262,7 @@ h6 {
 /*     3.2. Forms     */
 
 input {
-  height: 64px !important;
+  height: 64px;
   border-color: #cccccc;
   font-weight: 400;
 }

@@ -243,7 +243,7 @@ $scope.circle = {
   $scope.placeSearch = function () {
     var place = $scope.place;
     console.log("!!!!place: ", $scope.place);
-    if(!isNaN(Number(place.radius))){
+    if(!isNaN(Number(place.radius)) && Number(place.radius) > 0){
       console.log("RADIUS: ", place.radius);
       $scope.circle.radius = Number(place.radius);
      // return;
@@ -518,8 +518,9 @@ $scope.circle = {
   var addMarker = function (latitude, longitude, id) {
     console.log('add id: ', id);
     console.log('---------- ',userInfo);
-    if(id === Auth.getCurrentUser()._id && Auth.getCurrentUser().owner === true){
-      // console.log('I AM THE OWNER!!!');
+    console.log(Auth.getCurrentUser());
+    if(id === Auth.getCurrentUser()._id && userInfo.owner === true){
+       console.log('I AM THE OWNER!!!');
       $scope.circle.draggable = true;
       $scope.circle.editable = true;
       $scope.circle.events = {

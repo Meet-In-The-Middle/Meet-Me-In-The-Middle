@@ -6,14 +6,11 @@
     <input type="text" input id="pac-input" placeholder="Enter Your Location">
   </script>
 
-  <ui-gmap-google-map class="testing" center="map.center" zoom="map.zoom" draggable="true" options="options"
-                      control="map.control" events="map.events">
-    <ui-gmap-search-box template="searchbox.template" events="searchbox.events"
-                        position="searchbox.position"></ui-gmap-search-box>
-    <ui-gmap-circle center="circle.center" stroke="circle.stroke" fill="circle.fill" radius="circle.radius"
-                    visible="circle.visible" geodesic="circle.geodesic" editable="circle.editable"
-                    draggable="circle.draggable" clickable="circle.clickable" control="circle.control"
-                    events="circle.events"></ui-gmap-circle>
+  <ui-gmap-google-map class="testing" center="map.center" zoom="map.zoom" draggable="true" options="options" control="map.control" events="map.events">
+    <ui-gmap-search-box template="searchbox.template" events="searchbox.events" position="searchbox.position">
+    </ui-gmap-search-box>
+    <ui-gmap-circle center="circle.center" stroke="circle.stroke" fill="circle.fill" radius="circle.radius" visible="circle.visible" geodesic="circle.geodesic" editable="circle.editable" draggable="circle.draggable" clickable="circle.clickable" control="circle.control" events="circle.events">
+    </ui-gmap-circle>
     <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m._id" options="m.options" events="m.events"
                     icon="m.icon" click="onMarkerClick(m)">
       <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl"
@@ -30,7 +27,6 @@
   </ui-gmap-google-map>
 
   <div class="map-ui-style" ng-class="slide ? 'left-minus' : ''">
-
     <div class="form-container">
       <h6 class="title">Place searches</h6>
 
@@ -50,11 +46,6 @@
         </div>
         <div class="btn-group btn-group-sm space-top">
           <button class="btn btn-primary space-right" ng-click="placeSearch()" type="submit">Submit</button>
-          <div class="btn-container">
-            <button class="btn btn-submit" ng-click="findMe()">Find Me</button>
-            <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
-          </div>
-
           <button class="btn btn-danger" ng-click="clearMap()">Clear Map</button>
         </div>
       </form>

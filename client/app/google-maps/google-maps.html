@@ -6,11 +6,18 @@
     <input type="text" input id="pac-input" placeholder="Enter Your Location">
   </script>
 
-  <ui-gmap-google-map class="testing" center="map.center" zoom="map.zoom" draggable="true" options="options" control="map.control" events="map.events">
-    <ui-gmap-search-box template="searchbox.template" events="searchbox.events" position="searchbox.position"></ui-gmap-search-box>
-    <ui-gmap-circle center="circle.center" stroke="circle.stroke" fill="circle.fill" radius="circle.radius" visible="circle.visible" geodesic="circle.geodesic" editable="circle.editable" draggable="circle.draggable" clickable="circle.clickable" control="circle.control" events="circle.events"></ui-gmap-circle>
-    <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m._id" options="m.options" events="m.events" icon="m.icon" click="onMarkerClick(m)">
-      <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl" templateParameter="m.templateParameter">
+  <ui-gmap-google-map class="testing" center="map.center" zoom="map.zoom" draggable="true" options="options"
+                      control="map.control" events="map.events">
+    <ui-gmap-search-box template="searchbox.template" events="searchbox.events"
+                        position="searchbox.position"></ui-gmap-search-box>
+    <ui-gmap-circle center="circle.center" stroke="circle.stroke" fill="circle.fill" radius="circle.radius"
+                    visible="circle.visible" geodesic="circle.geodesic" editable="circle.editable"
+                    draggable="circle.draggable" clickable="circle.clickable" control="circle.control"
+                    events="circle.events"></ui-gmap-circle>
+    <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m._id" options="m.options" events="m.events"
+                    icon="m.icon" click="onMarkerClick(m)">
+      <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl"
+                      templateParameter="m.templateParameter">
         <div>
           <b>{{placesNearby[m._id][0]}}</b><br>
           <img ng-src={{placesNearby[m._id][1]}}><br>
@@ -22,63 +29,75 @@
     </ui-gmap-marker>
   </ui-gmap-google-map>
 
-<div class="map-ui-style" ng-class="slide ? 'left-minus' : ''">
+  <div class="map-ui-style" ng-class="slide ? 'left-minus' : ''">
 
-<div class="form-container">
-  <h6 class="title">Place searches</h4>
-  <form class="form" role="form">
-    <div>
-    <label class="control-label">Select a Category:</label>
-    <div ng-dropdown-multiselect="" options="places" selected-model="place.types" extra-settings="scrollSettings"> </div>
-        {{place.type | json}}
-    <label class="control-label">Search for a Place: </label>
-      <input class="form-control" type="text" ng-model="place.keywords"></input>
+    <div class="form-container">
+      <h6 class="title">Place searches</h6>
+
+      <form class="form" role="form">
+        <div>
+          <label class="control-label">Select a Category:</label>
+
+          <div ng-dropdown-multiselect="" options="places" selected-model="place.types"
+               extra-settings="scrollSettings"></div>
+          {{place.type | json}}
+          <label class="control-label">Search for a Place: </label>
+          <input class="form-control" type="text" ng-model="place.keywords">
+        </div>
+        <div class="space-top">
+          <label class="control-label">Radius for Search(meters)</label>
+          <input type="text" class="form-control" ng-model="place.radius">
+        </div>
+        <div class="btn-group btn-group-sm space-top">
+          <button class="btn btn-primary space-right" ng-click="placeSearch()" type="submit">Submit</button>
+          <div class="btn-container">
+            <button class="btn btn-submit" ng-click="findMe()">Find Me</button>
+            <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
+          </div>
+
+          <button class="btn btn-danger" ng-click="clearMap()">Clear Map</button>
+        </div>
+      </form>
     </div>
-    <div class="space-top">
-      <label class="control-label">Radius for Search(meters)</label>
-      <input type="text" class="form-control" ng-model="place.radius"></input>
-    </div>
-    <div class="btn-group btn-group-sm space-top">
-      <button class="btn btn-primary space-right" ng-click="placeSearch()" type="submit">Submit</button>
-      <button class="btn btn-danger" ng-click="clearMap()">Clear Map</button>
-    </div>
-  </form>
-</div>
 
 
-<div class="info-chat-container" ng-controller="midUpCtrl" ng-init="init()">
-  <div class="all-rooms">
-    <h6 class="title space-top">Info on MidUp</h4>
-    <p class="label-style">People Attending</p>
-    <p class="label-style">Possilbe Locations</p>
-    <p class="label-style">Etc.</p>
+    <div class="info-chat-container" ng-controller="midUpCtrl" ng-init="init()">
+      <div class="all-rooms">
+        <h6 class="title space-top">Info on MidUp</h6>
+          <p class="label-style">People Attending</p>
+
+          <p class="label-style">Possilbe Locations</p>
+
+          <p class="label-style">Etc.</p>
+
+      </div>
+      <h6 class="no-top-margin title">Chat About MidUp</h6>
+        <div class="chat-box" scroll-glue>
+          <div ng-repeat="message in messages">
+            <span class="chatUserName">{{message.username}} </span><span class="message-date">{{message.date | date: 'MMM dd @ h:mma'}}  </span><span
+            class="message">{{message.message}} </span>
+          </div>
+        </div>
+        <div class="chat-input-submit">
+          <textarea ng-model="userMessage"></textarea><br>
+
+          <div class="btn-group btn-group-sm space-top">
+            <button class="btn btn-default" ng-click="sendChat()">Submit</button>
+          </div>
+        </div>
+    </div>
+
+    <div class="btn-container">
+      <div class="btn-group btn-group-sm space-top">
+        <button class="btn btn-submit space-right" ng-click="findMe()">Find Me</button>
+        <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
+      </div>
+    </div>
 
   </div>
-  <h6 class="no-top-margin title">Chat About MidUp</h4>
-  <div class="chat-box" scroll-glue>
-    <div ng-repeat="message in messages">
-      <span class="chatUserName">{{message.username}} </span><span class="message-date">{{message.date | date: 'MMM dd @ h:mma'}}  </span><span class="message">{{message.message}} </span>
-    </div>
+  <!-- map-ui-style container -->
+
+  <div class="gui-slider" ng-click="slider()" ng-class="slide ? 'left-zero' : ''">
+    <button class="">O</button>
   </div>
-  <div class="chat-input-submit">
-    <textarea ng-model="userMessage"></textarea><br>
-
-    <div class="btn-group btn-group-sm space-top">
-    <button class="btn btn-default" ng-click="sendChat()">Submit</button>
-    </div>
-  </div>
-</div> 
-
-<div class="btn-container">
-  <div class="btn-group btn-group-sm space-top">
-  <button class="btn btn-submit space-right" ng-click="findMe()">Find Me</button>
-  <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
-  </div>
-</div>
-
-</div><!-- map-ui-style container -->
-
-<div class="gui-slider" ng-click="slider()" ng-class="slide ? 'left-zero' : ''">
-  <button class="">O</button>
-</div>
 </div> <!-- MapsCtrl Ends -->

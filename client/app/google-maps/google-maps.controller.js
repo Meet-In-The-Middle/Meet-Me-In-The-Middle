@@ -112,7 +112,7 @@ $scope.circle = {
    //     latitude: 44,
    //     longitude: -108
    // },
-   radius: 10000, // need a default radius???
+   radius: 1000, // need a default radius???
    stroke: {
        color: '#08B21F',
        weight: 2,
@@ -246,7 +246,7 @@ $scope.circle = {
     if(!isNaN(Number(place.radius))){
       console.log("RADIUS: ", place.radius);
       $scope.circle.radius = Number(place.radius);
-      return;
+     // return;
     }
     if($scope.circle.center){
       var request = {
@@ -257,17 +257,18 @@ $scope.circle = {
         radius: $scope.circle.radius
       };
       if(place.types.length){
-        var types = '';
+        var types = [];
         place.types.forEach(function(x){
           console.log('x:' + x);
           console.log('x.type:' + x.type);
-          types = types + '' + x.type;})
+          types.push(x.type);
+        });
         console.log('!!!!!!!!!types!!!!!!!!');
-        request.types = [types];
+        request.types = types;
       }
       else if(place.keywords){
         console.log('!!!!!!!!!category name!!!!!!!!');
-        request.keyword = [place.keyword.toLowerCase()];
+        request.keyword = [place.keywords.toLowerCase()];
         //request.types.push(place.category.name.toLowerCase());//.toString()];
       }
 
@@ -288,13 +289,13 @@ $scope.circle = {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
         //placesNearby = {};
-        //places_Nearby = [];
+        places_Nearby = [];
         console.log('place results: ', results);
         for (var i = 0; i < results.length; i++) {
           //console.log(results[i]);
           //Update places object
 
-          // updatePlaces(results[i], i);
+           updatePlaces(results[i], results[i].id);
 
           // console.log(results[i]);
           // if(results[i].photos){
@@ -313,6 +314,7 @@ $scope.circle = {
         }
         //console.log(places_Nearby);
         $scope.placesNearby = places_Nearby;
+        console.log("!@#$%^^&*: "+ $scope.placesNearby[0]);
       }
       else{
         alert("directions response " +status);
@@ -322,15 +324,16 @@ $scope.circle = {
 
   var addPlace = function (place) {
     //Format the icon to be displayed
-    // var icon = {
-    //   url: place.icon,
-    //   origin: new google.maps.Point(0,0),
-    //   anchor: new google.maps.Point(0, 0),
-    //   scaledSize: new google.maps.Size(20, 20)
-    // };
+     var icon = {
+       url: place.icon,
+       origin: new google.maps.Point(0,0),
+       anchor: new google.maps.Point(0, 0),
+       scaledSize: new google.maps.Size(20, 20)
+     };
 
     //Define the marker
     $scope.markers[place.id] = {
+       icon: icon,
       _id: place.id,
       coords: {
         latitude: place.geometry.location.lat(),
@@ -372,10 +375,12 @@ $scope.circle = {
 
         }
       }
-      if(place.opening_hours.open_now){
-        places_Nearby[id].push('Currently open.');
-      } else {
-        places_Nearby[id].push('Currently closed.');
+      if(place.opening_hours) {
+        if(place.opening_hours.open_now){
+          places_Nearby[id].push('Currently open.');
+        } else {
+          places_Nearby[id].push('Currently closed.');
+        }
       }
     }
   }

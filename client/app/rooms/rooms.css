@@ -35,6 +35,7 @@
 .info-chat-container {
 }
 
+
 .chatUserName {
   color: #0000ff;
   font-weight: 600;
@@ -44,3 +45,18 @@
   font-style: italic;
   font-size: 0.9em;
 }
+
+.place-select {
+  width: 200px;
+  overflow:scroll;
+  overflow-x:hidden;
+  overflow-y: scroll;
+  height: 50px;
+}
+
+#selectPlaces {
+    overflow:scroll;
+    overflow-x:hidden;
+    overflow-y: scroll;
+}
+

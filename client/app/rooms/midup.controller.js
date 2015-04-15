@@ -4,6 +4,38 @@ angular.module('meetMeInTheMiddleApp')
 
 .controller('midUpCtrl', ['$scope', '$http', '$location','Auth', 'MainFactory', 'SocketFactory',
   function ($scope, $http, $location, Auth, MainFactory, SocketFactory) {
+
+    //Populate select box with the places nearby options
+    $scope.places_Nearby = MainFactory.places_Nearby;
+    //Holder for items selected
+    $scope.possiblePlaces = [];
+    $scope.selectedPlace = [];
+    $scope.selectedPlaces = [];
+
+    console.log('cont', $scope.places_Nearby);
+
+
+    $scope.addPlace = function(string){
+      if($scope.selectedPlaces.indexOf(string) === -1){
+        console.log('about to push');
+        $scope.selectedPlaces.push(string);
+      }
+      console.log('running');
+    }
+    $scope.removePlace = function(){
+      var tempArr = $scope.selectedPlaces;
+      var i = tempArr.indexOf($scope.selectedPlace.length-1);
+      $scope.selectedPlaces = tempArr.splice(i);
+      //console.log('about to push');
+      //$scope.selectedPlaces.push(string);
+    // }
+      console.log('running');
+    }  
+
+
+    //console.log('cont', $scope.places_Nearby);
+    
+
     var user = Auth.getCurrentUser();
     var userId = user._id;
     var username = user.name;

@@ -8,7 +8,8 @@ angular.module('meetMeInTheMiddleApp', [
   'ui.bootstrap',
   'uiGmapgoogle-maps',
   'angularFileUpload',
-  'luegg.directives'
+  'luegg.directives',
+  'angularjs-dropdown-multiselect'
 ])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
     $urlRouterProvider

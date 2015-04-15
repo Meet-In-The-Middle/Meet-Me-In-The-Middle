@@ -355,4 +355,3 @@ exports.getRecentChatMessages = function(roomId, callback) {
     }
   });
 };
-

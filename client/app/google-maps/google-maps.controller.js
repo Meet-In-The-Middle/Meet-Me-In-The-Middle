@@ -128,6 +128,24 @@ $scope.circle = {
    control: {}
 };
 
+// $scope.circle.events = {
+//         dragend: function(circle){
+//           console.log(">>>>>>>>> circle dragend");
+//           var center = circle.getCenter();
+//           var newCenter = {};
+//           newCenter.lat = center.k;
+//           newCenter.lng = center.D;
+//           circle.setCenter(newCenter);
+//           socket.emit('circle-move', $scope.circle.center);
+//         },
+//         radius_changed:  function(circle){
+//           console.log(">>>>>>>>> radius changed");
+//           circleRadius = circle.getRadius();
+//           $scope.circle.radius = circleRadius;
+//           socket.emit('circle-radius-change', $scope.circle.radius);
+//         }
+//       }
+
   uiGmapGoogleMapApi.then(function(maps) {
     maps = maps;
     $scope.googleVersion = maps.version;
@@ -212,11 +230,17 @@ $scope.circle = {
 
 
   socket.on('join-room-reply', function(userData) {
+    console.log('>>>>>>>>>JOIN ROOM REPLY<<<<<<<<<<');
     console.log('userData is ', userData);
     for(var marker in userData) {
-      if(userData[marker]._id === Auth.getCurrentUser()._id){
-        userInfo = userData[marker];
+      // if(userData[marker]._id === Auth.getCurrentUser()._id){
+      //   userInfo = userData[marker];
+      // }
+      if(userData[marker]._id === Auth.getCurrentUser()._id && userData[marker].owner === true){
+        console.log("!!!!!!!!!CIRCLE OWNER!!!!!!!!!!");
+        circleOwner();
       }
+
       console.log(123);
       // console.log('latitude is ', Number(userData[marker].coords.latitude));
       // console.log('longitude is ', Number(userData[marker].coords.longitude));
@@ -515,31 +539,37 @@ $scope.circle = {
     anchor: new google.maps.Point(20, 40),
   };
 
+  var circleOwner = function(){
+    $scope.circle.draggable = true;
+    $scope.circle.editable = true;
+    $scope.circle.events = {
+      dragend: function(circle){
+        console.log(">>>>>>>>> circle dragend");
+        var center = circle.getCenter();
+        var newCenter = {};
+        newCenter.lat = center.k;
+        newCenter.lng = center.D;
+        circle.setCenter(newCenter);
+        socket.emit('circle-move', $scope.circle.center);
+      },
+      radius_changed:  function(circle){
+        console.log(">>>>>>>>> radius changed");
+        circleRadius = circle.getRadius();
+        $scope.circle.radius = circleRadius;
+        socket.emit('circle-radius-change', $scope.circle.radius);
+      }
+    }
+  }
+
   var addMarker = function (latitude, longitude, id) {
     console.log('add id: ', id);
-    console.log('---------- ',userInfo);
-    console.log(Auth.getCurrentUser());
-    if(id === Auth.getCurrentUser()._id && userInfo.owner === true){
-       console.log('I AM THE OWNER!!!');
-      $scope.circle.draggable = true;
-      $scope.circle.editable = true;
-      $scope.circle.events = {
-        dragend: function(circle){
-          var center = circle.getCenter();
-          var newCenter = {};
-          newCenter.lat = center.k;
-          newCenter.lng = center.D;
-          circle.setCenter(newCenter);
-          socket.emit('circle-move', $scope.circle.center);
-        },
-        radius_changed:  function(circle){
-          circleRadius = circle.getRadius();
-          $scope.circle.radius = circleRadius;
-          socket.emit('circle-radius-change', $scope.circle.radius);
-        }
-      }
-      $scope.$apply();
-    }
+    // console.log('---------- ',userInfo);
+    // console.log(Auth.getCurrentUser());
+    // if(id === Auth.getCurrentUser()._id && userInfo.owner === true){
+    //   console.log('I AM THE OWNER!!!');
+      // $scope.circle.draggable = true;
+      // $scope.circle.editable = true;
+    // }
 
     if(id === Auth.getCurrentUser()._id){
       $scope.markers[id] = {

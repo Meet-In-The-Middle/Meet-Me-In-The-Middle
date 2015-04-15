@@ -43,17 +43,17 @@ angular.module('meetMeInTheMiddleApp')
           })
       };
 
-      var addUserToRoom = function(userRoomObj, cb) {
-        console.log('addUserToRoom in service')
-        $http.post('api/rooms/adduser', userRoomObj)
-          .success(function(data) {
-            console.log('data coming back in service ', data);
-            cb(data);
-          })
-          .error(function(error) {
-            console.log('there was an error adding User to Room ', error);
-          });
-      };
+      // var addUserToRoom = function(userRoomObj, cb) {
+      //   console.log('addUserToRoom in service')
+      //   $http.post('api/rooms/adduser', userRoomObj)
+      //     .success(function(data) {
+      //       console.log('data coming back in service ', data);
+      //       cb(data);
+      //     })
+      //     .error(function(error) {
+      //       console.log('there was an error adding User to Room ', error);
+      //     });
+      // };
 
     var markers = {
 
@@ -63,7 +63,7 @@ angular.module('meetMeInTheMiddleApp')
         loadUserImage: loadUserImage,
         createRoom: createRoom,
         getRoomsForUser: getRoomsForUser,
-        addUserToRoom: addUserToRoom,
+        // addUserToRoom: addUserToRoom,
       };
     }
     ])

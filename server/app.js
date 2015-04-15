@@ -115,6 +115,7 @@ io.on('connection', function (socket) {
     //socket.emit('move-pin', data);
     // console.log('TESTING SOCKET.IO' + socket.id);
     // console.dir(dataCollection);
+    });
 
     socket.on('circle-move', function(center){
       io.emit('circle-move-replay', center);
@@ -128,8 +129,6 @@ io.on('connection', function (socket) {
       io.emit('place-search-reply', request);
     });
 
-
-  });
 
   //socket.on('updateMap', function(data) {
   //   console.log('data is ', data);

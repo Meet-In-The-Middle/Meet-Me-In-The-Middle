@@ -281,11 +281,17 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
       // }
     }
     console.log('usersInRoom ', usersInRoom);
-    room.save();
+
+    ////>>>>>>>>>>>>>>>>>>>>>>>
+    //room.save();
+    ////>>>>>>>>>>>>>>>>>>>>>>>
+
     Rooms.findById(roomId, function (err, room) {
       //room.users = usersInRoom;
       //room.save();
       if (!err) {
+        room.users = usersInRoom;
+        room.save();
         User.findById(userId, function (err, user) {
           if (err) {
             return cb(_, err);

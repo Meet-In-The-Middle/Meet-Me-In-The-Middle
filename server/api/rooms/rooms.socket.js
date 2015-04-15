@@ -55,7 +55,7 @@ exports.roomSockets = function (socket) {
       to: 'jsnisenson@gmail.com',
       from: 'jsnisenson@gmail.com',
       subject: 'Jonah Testing Sendgrid Email',
-      html: 'You have been invited by ' + username + ' to be a part of this MidUp <a href="http://jn.ngrok.com/?midup='+roomId+'">'+roomName+'</a>'
+      html: 'You have been invited by ' + username + ' to be a part of this MidUp <a href="http://localhost:9000/?midup='+roomId+'">'+roomName+'</a>'
     };
     var email = new sendgrid.Email(params);
     //addTo sends email to everyone in the array but independently (i.e. user won't see other users emails)

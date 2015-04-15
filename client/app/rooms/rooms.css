@@ -80,12 +80,14 @@
 }
 
 .room input.email-input {
+  display: inline-block;
   height: auto !important;
   width: 50%;
 }
 
 .room input.send-invites {
   height: auto !important;
+  padding: 8px;
 }
 
 .invite-people {

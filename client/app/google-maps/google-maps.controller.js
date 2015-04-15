@@ -297,7 +297,7 @@ $scope.circle = {
       }
 
       console.log('place search request: ', request);
-      socket.emit('place-search', request);
+      socket.emit('place-search', request, roomId);
       return;
     }
     else{
@@ -550,15 +550,16 @@ $scope.circle = {
         newCenter.lat = center.k;
         newCenter.lng = center.D;
         circle.setCenter(newCenter);
-        socket.emit('circle-move', $scope.circle.center);
+        socket.emit('circle-move', $scope.circle.center, roomId);
       },
       radius_changed:  function(circle){
         console.log(">>>>>>>>> radius changed");
         circleRadius = circle.getRadius();
         $scope.circle.radius = circleRadius;
-        socket.emit('circle-radius-change', $scope.circle.radius);
+        socket.emit('circle-radius-change', $scope.circle.radius, roomId);
       }
     }
+    $scope.$apply();
   }
 
   var addMarker = function (latitude, longitude, id) {

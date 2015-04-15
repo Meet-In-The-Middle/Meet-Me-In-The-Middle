@@ -7,6 +7,7 @@
 var Rooms = require('./rooms.model');
 var RoomsController = require('./rooms.controller');
 var io = require('../../app').io;
+var sendgrid  = require('sendgrid')('midup', '7hZW0cRLUm1K8inC');
 
 exports.roomSockets = function (socket) {
   var roomId;
@@ -38,7 +39,6 @@ exports.roomSockets = function (socket) {
       }
     });
 
-
      // listen for client emitting to event 'roomId' which segregates room
     socket.on(roomId, function(userId, username, message){
       //console.log('####################### in socket.on', userId, username, message);
@@ -47,7 +47,29 @@ exports.roomSockets = function (socket) {
           io.sockets.in(roomId).emit('server-chat-response', messageObj);
       });
     });
+  });
 
+  socket.on('email-invites', function(data, roomId, username, roomName) {
+    console.log('999email invite data is ', data, roomId, username, roomName);
+    var params = {
+      to: 'jsnisenson@gmail.com',
+      from: 'jsnisenson@gmail.com',
+      subject: 'Jonah Testing Sendgrid Email',
+      html: 'You have been invited by ' + username + ' to be a part of this MidUp <a href="http://jn.ngrok.com/?midup='+roomId+'">'+roomName+'</a>'
+    };
+    var email = new sendgrid.Email(params);
+    //addTo sends email to everyone in the array but independently (i.e. user won't see other users emails)
+/*
+    email.addTo(data);
+*/
+    //send emails and send back to
+    sendgrid.send(email, function(err, json) {
+      if(err) {console.log('sendgrid error ', err); }
+      console.log('////////sendgrid json ', json);
+    });
+
+
+    socket.emit('email-invites-reply', data);
   });
 
   socket.on('disconnect', function(data){

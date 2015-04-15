@@ -40,7 +40,7 @@ angular.module('meetMeInTheMiddleApp')
     var userId = user._id;
     var username = user.name;
     var socket = SocketFactory.socket;
-    //console.log('user  ', user);
+    console.log('socket is ', socket);
     $scope.user = {};
     $scope.messages = [];
     var url = $location.$$path.split('/');

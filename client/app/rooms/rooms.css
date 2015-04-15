@@ -32,6 +32,7 @@
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
+
 .info-chat-container {
 }
 
@@ -60,3 +61,47 @@
     overflow-y: scroll;
 }
 
+.hide-this {
+  display:none;
+}
+
+.midup-links {
+  font-size: 1.4em;
+}
+
+.email-input {
+  -webkit-transition:all linear 0.5s;
+  transition:all linear 0.5s;
+  background: transparent;
+}
+.email-input.ng-invalid {
+  /*color:white;*/
+  /*background: red;*/
+}
+
+.room input.email-input {
+  height: auto !important;
+  width: 50%;
+}
+
+.room input.send-invites {
+  height: auto !important;
+}
+
+.invite-people {
+  float: right;
+}
+.instructions-emails {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.ng-message-commas {
+  color: red;
+  font-size: 0.9em;
+}
+
+.ng-message-sent {
+  color: blue;
+  font-size: 0.9em;
+}

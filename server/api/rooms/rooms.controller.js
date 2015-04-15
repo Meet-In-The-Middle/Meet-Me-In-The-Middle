@@ -244,7 +244,7 @@ exports.getUsersForRoom = function (data, cb) {
  */
 exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
   //console.log('called addUserToRoom');
-  //console.log('userRoomObj', userRoomObj);
+  console.log('userRoomObj', userRoomObj);
   var userId = userRoomObj.user._id;
   var roomId = userRoomObj.roomId;
   var roomName;
@@ -262,6 +262,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
     var preExistingUser = false;
     usersInRoom = room.users;
     for (var j = 0, len = usersInRoom.length; j < len; j++) {
+      console.log('got here Jonah');
       if (usersInRoom[j]._id === userId) {
         if( userRoomObj.user.coords.latitude !== "" ) {
           usersInRoom[j].coords.latitude = userRoomObj.user.coords.latitude;
@@ -279,9 +280,11 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
         usersInRoom.push(userRoomObj.user);
       // }
     }
+    console.log('usersInRoom ', usersInRoom);
+    room.save();
     Rooms.findById(roomId, function (err, room) {
-      room.users = usersInRoom;
-      room.save();
+      //room.users = usersInRoom;
+      //room.save();
       if (!err) {
         User.findById(userId, function (err, user) {
           if (err) {
@@ -308,7 +311,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
             });
             //callback for sending data back to client
             Rooms.findById(roomId, function (err, room) {
-              console.log('!!!!!!!ROOM: ', room);
+              console.log('+++++++ROOM: ', room);
               var usersObj = room.users.reduce(function (a, b) {
                 a[b._id] = b;
                 return a;

@@ -68,7 +68,6 @@ angular.module('meetMeInTheMiddleApp')
         //same image file name so we need to
         //append a random string as a param to force ng-src to reload the image
         $scope.user.image = imageUrl + '?cb=' + random;
-
       });
     };
 

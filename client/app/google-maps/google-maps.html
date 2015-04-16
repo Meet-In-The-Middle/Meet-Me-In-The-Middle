@@ -1,15 +1,5 @@
 <!-- <div id="gmap-nav" ng-include="'components/navbar/navbar.html'" class="navBar"></div> -->
 
-
-
-
-
-
-
-
-
-
-
 <nav id="gmap-nav" role="navigation" ng-controller="NavbarCtrl">
         <!-- LOGO CONTAINER -->
   <div class="gmap-logo">
@@ -59,31 +49,6 @@
 </nav>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div ng-controller="MapsCtrl">
 
   <script type="text/ng-template" id="searchbox.tpl.html">
@@ -116,10 +81,10 @@
 
       <form class="form" role="form">
         <div>
-          <label class="control-label">Select a Category:</label>
 
-          <div ng-dropdown-multiselect="" options="places" selected-model="place.types"
+          <div style="display: inline-block;" ng-dropdown-multiselect="" options="places" selected-model="place.types"
                extra-settings="scrollSettings"></div>
+          <label class="control-label">Select a Category</label>
           {{place.type | json}}
           <label class="control-label">Search for a Place: </label>
           <input class="form-control" type="text" ng-model="place.keywords">
@@ -138,9 +103,9 @@
 
     <div class="info-chat-container" ng-controller="midUpCtrl" ng-init="init()">
       <div class="all-rooms">
-        <h6 class="title space-top">Info on MidUp</h6>
+        <h6 class="title space-top">Possible MidUps</h6>
 
-          <p class="label-style">Possilbe Locations:</p>
+          <!--<p class="label-style"></p>-->
             <select class="form-control" size="5" ng-model="test">
               <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[test])">{{value[0]}}</option>
             </select>
@@ -149,15 +114,14 @@
       <h6 class="no-top-margin title">Chat About MidUp</h6>
         <div class="chat-box" scroll-glue>
           <div ng-repeat="message in messages">
-            <span class="chatUserName">{{message.username}} </span><span class="message-date">{{message.date | date: 'MMM dd @ h:mma'}}  </span><span
-            class="message">{{message.message}} </span>
+            <span class="chatUserName">{{message.username}}:    </span>
+            <span class="message">{{message.message}} </span>
           </div>
         </div>
         <div class="chat-input-submit">
-          <textarea ng-model="userMessage"></textarea><br>
-
-          <div class="btn-group btn-group-sm space-top">
-            <button class="btn btn-default" ng-click="sendChat()">Submit</button>
+          <textarea ng-model="userMessage"></textarea>
+          <div class="btn-group btn-group-sm reverse-margin">
+            <button class="btn-xs" ng-click="sendChat()">Submit</button>
           </div>
         </div>
     </div>

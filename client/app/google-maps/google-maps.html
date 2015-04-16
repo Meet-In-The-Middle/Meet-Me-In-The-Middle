@@ -61,12 +61,12 @@
     <div class="info-chat-container" ng-controller="midUpCtrl" ng-init="init()">
       <div class="all-rooms">
         <h6 class="title space-top">Info on MidUp</h6>
-          <p class="label-style">People Attending</p>
 
-          <p class="label-style">Possilbe Locations</p>
-
-          <p class="label-style">Etc.</p>
-
+          <p class="label-style">Possilbe Locations:</p>
+            <select class="form-control" size="5" ng-model="test">
+              <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[test])">{{value[0]}}</option>
+            </select>
+            <br>
       </div>
       <h6 class="no-top-margin title">Chat About MidUp</h6>
         <div class="chat-box" scroll-glue>

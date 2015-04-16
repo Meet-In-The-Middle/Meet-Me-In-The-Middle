@@ -44,10 +44,6 @@ angular.module('meetMeInTheMiddleApp')
       };
 
 
-    var markers = {
-
-    };
-
       return {
         loadUserImage: loadUserImage,
         createRoom: createRoom,

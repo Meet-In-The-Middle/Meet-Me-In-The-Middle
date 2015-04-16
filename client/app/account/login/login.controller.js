@@ -15,7 +15,6 @@ angular.module('meetMeInTheMiddleApp')
         })
         .then( function() {
           // Logged in, redirect to mymidups
-            console.log('REDIRECT TO MYMIDUPS?');
           if( $rootScope.returnToState === "/mymidups/:Id" ) {
             $location.path("/mymidups/" + $rootScope.returnToStateParams);
           } else {

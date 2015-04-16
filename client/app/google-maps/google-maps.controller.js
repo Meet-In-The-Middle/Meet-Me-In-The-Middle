@@ -84,7 +84,7 @@ $scope.places = [
     { id: 7, type: 'cafe', label: 'Cafe'},
     { id: 8, type: 'casino', label: 'Casino'},
     { id: 9, type: 'food', label: 'Food'},
-    { id: 10, type: 'hotel', label: 'Hotel'},            
+    { id: 10, type: 'hotel', label: 'Hotel'},
     { id: 11, type: 'restaurant', label: 'Restaurant'},
     { id: 12, type: 'library', label: 'Library'},
     { id: 13, type: 'movie', label: 'Movie Theater'},
@@ -101,10 +101,10 @@ $scope.places = [
 //$scope.test = [];
 /*$scope.places = [
     { id: 1, label: 'Amusement Park'},
-    { id: 2, label: 'Art Gallery'} 
+    { id: 2, label: 'Art Gallery'}
 ];*/
 
-    
+
 
 
 $scope.circle = {
@@ -232,6 +232,7 @@ $scope.circle = {
 
   socket.on('join-room-reply', function(userData) {
     console.log('>>>>>>>>>JOIN ROOM REPLY<<<<<<<<<<');
+    //userData is object of objects; Each user object has imageUrl property for thumbnail
     console.log('userData is ', userData);
     for(var marker in userData) {
       // if(userData[marker]._id === Auth.getCurrentUser()._id){
@@ -276,7 +277,7 @@ $scope.circle = {
     if($scope.circle.center){
       var request = {
         location: {
-          lat: $scope.circle.center.latitude, 
+          lat: $scope.circle.center.latitude,
           lng: $scope.circle.center.longitude
         },
         radius: $scope.circle.radius
@@ -332,7 +333,7 @@ $scope.circle = {
           //console.log(results[i]);
 
           // if(i === 0){ placeDetails(results[i].id); }
-          
+
           addPlace(results[i]);
 
           // $scope.$apply();
@@ -415,7 +416,7 @@ $scope.circle = {
   $scope.closeClick = function (marker) {
     marker.showWindow = false;
   };
-  
+
   $scope.onMarkerClick = function (marker) {
     //Added if else statement for ng-click call from Possible Locations:
     if(marker.showWindow === false){

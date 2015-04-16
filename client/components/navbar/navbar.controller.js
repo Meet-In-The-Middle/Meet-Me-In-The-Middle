@@ -18,6 +18,14 @@ angular.module('meetMeInTheMiddleApp')
       $location.path('/login');
     };
 
+    $scope.login = function() {
+      $location.path('/login');
+    };
+
+    $scope.signup = function() {
+      $location.path('/signup');
+    };
+
     $scope.isActive = function(route) {
       return route === $location.path();
     };

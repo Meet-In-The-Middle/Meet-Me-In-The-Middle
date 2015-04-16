@@ -7,23 +7,6 @@ var User = require('../user/user.model')
 // Get list of rooms
 exports.index = function (req, res) {
   console.log('got into index');
-  /*  User.findById(userId, function (err, user) {
-   if(user.authenticate(oldPass)) {
-   user.password = newPass;
-   user.save(function(err) {
-   if (err) return validationError(res, err);
-   res.send(200);
-   });
-   } else {
-   res.send(403);
-   }
-   });*/
-
-
-  /*Rooms.find(function (err, roomss) {
-   if(err) { return handleError(res, err); }
-   return res.json(200, roomss);
-   });*/
 };
 
 // Get a single rooms' user objects
@@ -43,21 +26,6 @@ exports.show = function (req, res) {
 // in for user in User Collection
 exports.create = function (req, res) {
   console.log('req.body.user is ', req.body.user);
-  /*  var userRoomObj = {
-   roomId: roomId,
-   name: $scope.editableText,
-   user: {
-   _id: user._id,
-   name: user.name,
-   coords: {
-   latitude: "",
-   longitude: "",
-   },
-   owner: false
-   },
-   info: 'How awesome',
-   active: true
-   };*/
   var newRoom = {
     name: req.body.name,
     info: req.body.info,
@@ -86,7 +54,7 @@ exports.create = function (req, res) {
     return res.json(201, room);
   });
 };
-
+//REPLACED BY addUserToRoomOrUpdate (keep until we sure not using http requests. originally called by http request)
 // Updates an existing room in the DB. Called when a user joins a room in 'midup.controller.js'
 // Will add user to room if not already part of room
 exports.update = function (req, res) {
@@ -127,7 +95,6 @@ exports.update = function (req, res) {
               flag = true;
               break;
             }
-
           }
           if (!flag) {
             user.memberOfRooms.push({roomId: roomId, name: roomName});
@@ -271,6 +238,14 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
           usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude;
         }
         usersInRoom[j].name = userRoomObj.user.name;
+        //add user profile imageUrl to the user in the room so we can return imageUrl for markers
+        User.findById(userId, function (err, user) {
+          if (err) {
+            console.log('err in User.findById is ', err);
+          } else {
+            usersInRoom[j].imageUrl = user.imageUrl;
+          }
+        });
         preExistingUser = true;
         break;
       }
@@ -281,13 +256,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
       // }
     }
     console.log('usersInRoom ', usersInRoom);
-
-    ////>>>>>>>>>>>>>>>>>>>>>>>
-    //room.save();
-    ////>>>>>>>>>>>>>>>>>>>>>>>
-
     Rooms.findById(roomId, function (err, room) {
-
       if (!err) {
         room.users = usersInRoom;
         room.save();

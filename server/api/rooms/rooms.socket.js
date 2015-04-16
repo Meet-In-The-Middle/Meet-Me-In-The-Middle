@@ -52,19 +52,19 @@ exports.roomSockets = function (socket) {
   socket.on('email-invites', function(data, roomId, username, roomName) {
     console.log('999email invite data is ', data, roomId, username, roomName);
     var params = {
-      to: 'jsnisenson@gmail.com',
+      //to: 'jsnisenson@gmail.com',
       from: 'jsnisenson@gmail.com',
       subject: 'Jonah Testing Sendgrid Email',
-      html: 'You have been invited by ' + username + ' to be a part of this MidUp <a href="http://jn.ngrok.com/?midup='+roomId+'">'+roomName+'</a>'
+      html: 'You have been invited by ' + username + ' to be a part of this MidUp <a href="http://jn.ngrok.com/mymidups/'+roomId+'">'+roomName+'</a>'
     };
     var email = new sendgrid.Email(params);
     //addTo sends email to everyone in the array but independently (i.e. user won't see other users emails)
-/*
     email.addTo(data);
-*/
     //send emails and send back to
     sendgrid.send(email, function(err, json) {
       if(err) {console.log('sendgrid error ', err); }
+      //Add user to DB as invited
+      //var invited =
       console.log('////////sendgrid json ', json);
     });
 

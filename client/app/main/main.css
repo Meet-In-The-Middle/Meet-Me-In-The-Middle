@@ -30,7 +30,7 @@
 }*/
 
 /*
-    Overall 
+    Overall
 */
 .margin-top {
     margin-top: 100px;
@@ -52,4 +52,9 @@
 .owl-stage {
     margin: 0 auto;
 
+}
+
+.hello-user {
+  margin-top: 20px;
+  color: #A71901;
 }

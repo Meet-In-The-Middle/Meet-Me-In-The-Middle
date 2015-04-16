@@ -54,7 +54,7 @@ exports.create = function (req, res) {
     return res.json(201, room);
   });
 };
-
+//REPLACED BY addUserToRoomOrUpdate (keep until we sure not using http requests. originally called by http request)
 // Updates an existing room in the DB. Called when a user joins a room in 'midup.controller.js'
 // Will add user to room if not already part of room
 exports.update = function (req, res) {
@@ -238,6 +238,14 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
           usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude;
         }
         usersInRoom[j].name = userRoomObj.user.name;
+        //add user profile imageUrl to the user in the room so we can return imageUrl for markers
+        User.findById(userId, function (err, user) {
+          if (err) {
+            console.log('err in User.findById is ', err);
+          } else {
+            usersInRoom[j].imageUrl = user.imageUrl;
+          }
+        });
         preExistingUser = true;
         break;
       }

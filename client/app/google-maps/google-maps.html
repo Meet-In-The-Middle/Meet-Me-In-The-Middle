@@ -1,15 +1,5 @@
 <!-- <div id="gmap-nav" ng-include="'components/navbar/navbar.html'" class="navBar"></div> -->
 
-
-
-
-
-
-
-
-
-
-
 <nav id="gmap-nav" role="navigation" ng-controller="NavbarCtrl">
         <!-- LOGO CONTAINER -->
   <div class="gmap-logo">
@@ -57,31 +47,6 @@
   </div>
 
 </nav>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <div ng-controller="MapsCtrl">
@@ -149,7 +114,7 @@
       <h6 class="no-top-margin title">Chat About MidUp</h6>
         <div class="chat-box" scroll-glue>
           <div ng-repeat="message in messages">
-            <span class="chatUserName">{{message.username}} </span><span class="message-date">{{message.date | date: 'MMM dd @ h:mma'}}  </span><span
+            <span class="chatUserName">{{message.username}}    </span><span>
             class="message">{{message.message}} </span>
           </div>
         </div>

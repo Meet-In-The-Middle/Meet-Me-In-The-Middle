@@ -8,8 +8,14 @@ angular.module('meetMeInTheMiddleApp')
         templateUrl: 'app/rooms/rooms.html',
         controller: 'roomsCtrl',
         authenticate: true
-
       })
+      .state('rooms2', {
+        url: '/mymidups/',
+        templateUrl: 'app/rooms/rooms.html',
+        controller: 'roomsCtrl',
+        authenticate: true
+      })
+
       .state('room', {
         url:'/mymidups/:Id',
         templateUrl: 'app/google-maps/google-maps.html',

@@ -86,7 +86,7 @@ angular.module('meetMeInTheMiddleApp')
 
 
       MainFactory.createRoom(userRoomObj, function() {
-        $scope.getRooms();
+        getRooms();
       });
       $scope.disableEditor();
     };

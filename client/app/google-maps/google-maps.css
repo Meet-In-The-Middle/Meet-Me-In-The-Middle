@@ -79,31 +79,38 @@ body {
 .form-container {
 }
 
-  .title {
-    margin:0;
-    padding: 0;
-    text-align: center;
-    background: tomato;
-    margin-bottom: 10px;
-  }
+.title {
+  margin: -15px -12px -5px -12px;
+  padding: 5px 0;
+  text-align: center;
+  background: #4D100D;
+  margin-bottom: 10px;
+  color: #fff;
+  font-size: 0.9em;
+}
 
-  label {
-    font-size: 14px;
-  }
+label {
+  font-size: 14px;
+}
 
-  input {
-    height: 20px;
-    display: block;
-    margin:0;
-    padding: 0;
-  }
+input {
+  height: 20px;
+  display: block;
+  margin:0;
+  padding: 0;
+}
 
-  .space-top {
-    margin-top: 10px;
-  }
-  .space-right {
-    margin-right: 10px;
-  }
+.space-top {
+  margin-top: 2px;
+}
+.space-right {
+  margin-right: 10px;
+}
+
+.reverse-margin {
+  margin-top: -23px;
+}
+
 /* Chat style */
 .info-chat-container {
 }
@@ -111,6 +118,7 @@ body {
 .label-style {
   font-size: 14px;
   font-weight: bold;
+  margin-top: -6px;
 }
 
 /* Button Style */
@@ -155,7 +163,7 @@ body {
 }
 
 #gmap-nav {
-  position: absolute; 
+  position: absolute;
   z-index: 5;
   top: 0;
   width: 80%;
@@ -228,6 +236,8 @@ body {
 
 
 
+
+
 /* Styling of chat window done in client/rooms/rooms.css*/
 @media screen and (max-width: 600px){
   .map-ui-style {
@@ -239,5 +249,6 @@ body {
 
 select {
   min-width:50px;
-  
 }
+
+

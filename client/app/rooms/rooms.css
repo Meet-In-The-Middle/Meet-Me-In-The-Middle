@@ -27,10 +27,11 @@
 }
 
 .chat-input-submit textarea {
-  width: 100%;
+  width: 70%;
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+  font-size: 0.7em;
 }
 
 .info-chat-container {

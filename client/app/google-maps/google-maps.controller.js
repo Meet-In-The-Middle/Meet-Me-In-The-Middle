@@ -71,7 +71,8 @@ $scope.scrollSettings = {
     scrollable: true,
     displayProp: 'label',
     idProp: 'type',
-    externalIdProp: 'type'
+    externalIdProp: 'type',
+    buttonClasses: 'btn-sm'
 };
 
 $scope.places = [

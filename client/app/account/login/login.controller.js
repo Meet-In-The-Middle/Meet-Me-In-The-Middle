@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .controller('LoginCtrl', function ($scope, Auth, $location, $window) {
+  .controller('LoginCtrl', function ($scope, $rootScope, Auth, $location, $window) {
     $scope.user = {};
     $scope.errors = {};
 
@@ -15,7 +15,12 @@ angular.module('meetMeInTheMiddleApp')
         })
         .then( function() {
           // Logged in, redirect to mymidups
-          $location.path('/mymidups');
+            console.log('REDIRECT TO MYMIDUPS?');
+          if( $rootScope.returnToState === "/mymidups/:Id" ) {
+            $location.path("/mymidups/" + $rootScope.returnToStateParams);
+          } else {
+            $location.path('/mymidups');
+          }
         })
         .catch( function(err) {
           $scope.errors.other = err.message;

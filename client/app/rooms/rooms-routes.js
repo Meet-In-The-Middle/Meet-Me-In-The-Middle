@@ -6,7 +6,7 @@ angular.module('meetMeInTheMiddleApp')
       .state('rooms', {
         url: '/mymidups',
         templateUrl: 'app/rooms/rooms.html',
-        //controller: 'roomsCtrl',
+        controller: 'roomsCtrl',
         authenticate: true
 
       })

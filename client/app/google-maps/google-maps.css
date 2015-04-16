@@ -149,6 +149,78 @@ body {
   left: 0;
 }
 
+.container {
+  width: 80%;
+}
+
+#gmap-nav {
+  position: absolute; 
+  z-index: 5;
+  top: 0;
+  width: 80%;
+  left: 20%;
+  background: white;
+  /*top: -50px;*/
+  transition: top 1s;
+}
+
+.gmap-logo {
+  width:5%;
+  float: left;
+  margin-top: 10px;
+}
+.gmap-button-group{
+  width: 220px;
+  float: right;
+}
+
+.gmap-button-group span {
+  display: inline-block;
+  margin: 0 5px;
+  margin-top: 13px;
+  float: right;
+}
+
+.fa.fa-cog{
+  margin-top: 5px !important;
+}
+.navbar-right div{
+  display: inline-block;
+  margin: 5px 10px;
+  margin-top: 13px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Styling of chat window done in client/rooms/rooms.css*/
 @media screen and (max-width: 600px){
   .map-ui-style {

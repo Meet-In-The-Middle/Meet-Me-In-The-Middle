@@ -1,10 +1,88 @@
-<style>
-  #mainmenu{
-    height: 100px;
-    position: absolute;
-  }
-</style>
-<div id="gmap-nav" ng-include="'components/navbar/navbar.html'" class="navBar"></div>
+<!-- <div id="gmap-nav" ng-include="'components/navbar/navbar.html'" class="navBar"></div> -->
+
+
+
+
+
+
+
+
+
+
+
+<nav id="gmap-nav" role="navigation" ng-controller="NavbarCtrl">
+        <!-- LOGO CONTAINER -->
+  <div class="gmap-logo">
+          <a href="/"><!-- SCROLLS TO TOP OF THE PAGE -->
+
+              <!--PLACE URL OF YOUR LOGO BELOW-->
+              <img src="assets/images/logoMidUp.jpg" width=150 height=30>
+
+          </a>
+
+  </div>
+
+  <!-- MAIN MENU BUTTONS CONTAINER -->
+  <div class="gmap-button-group">
+      <span ng-show="isLoggedIn()" ng-class="{active: isActive('/logout')}"><a href="" ng-click="logout()" class="in-button" >Logout</a></li></span>
+
+      <span ng-show="isLoggedIn()" ng-class="{active: isActive('/settings')}"><a href="/settings" class="gmap-cog"><span class="fa fa-cog"></span></a></span>
+
+      <span ng-show="isLoggedIn()"><p>Hello {{ getCurrentUser().name }}</p> </span>
+
+      <span ng-show="isAdmin()" ng-class="{active: isActive('/admin')}"><a class="in-button" href="/admin">Admin</a></span>
+
+      <!-- data-toggle="modal" data-target="#joinUs" -->
+      <span ng-hide="isLoggedIn()" ng-class="{active: isActive('/login')}"><a class="in-button"  href="/login">Login</a></span>
+
+
+
+      <!-- DOWNLOAD BUTTON - PLACE LINK TO YOUR APP HERE -->
+      <span ng-hide="isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup" class="in-button" style="color:white;">Sign up</a></span>
+
+  </div>
+
+  <!-- MAIN MENU CONTAINER -->
+  <div>
+    <div class="navbar-right">
+        <!-- MAIN MENU POSITIONS -->
+        <div ng-hide="!isLoggedIn()"><a href="/mymidups" >My MidUps</a></div>
+        <div ng-hide="!isLoggedIn()"><a href="/profile" >Profile</a></div>
+    </div>
+      <div class="navbar-right">
+              <!-- MAIN MENU POSITIONS -->
+        <div><a href="" ng-click="linkTo('/#about')">About</a></div>
+        <div><a href="" ng-click="linkTo('/#team')">Team</a></div>
+      </div>
+  </div>
+
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div ng-controller="MapsCtrl">
 

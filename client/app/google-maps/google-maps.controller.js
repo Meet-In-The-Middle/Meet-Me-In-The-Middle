@@ -676,6 +676,7 @@ $scope.circle = {
     var map = document.querySelector('.angular-google-map-container');
     var searchBox = document.querySelector('#pac-input');
     var gmapNav = document.querySelector('#gmap-nav');
+    var gmapFindMe = document.querySelector('.gmap-find-me');
 
     var mapWidth = parseInt(window.getComputedStyle(map).width);
     var bodyWidth = parseInt(window.getComputedStyle(document.body).width);
@@ -685,10 +686,12 @@ $scope.circle = {
       map.style.width = '100%';
       searchBox.style.marginLeft = '2%';
       gmapNav.style.top = '-50px';
+      gmapFindMe.style.left = '80px';
     } else {
       map.style.width = '88%';
       searchBox.style.marginLeft = '10%';
       gmapNav.style.top = '0';
+      gmapFindMe.style.left = '21%';
     }
   }
 }]);

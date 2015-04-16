@@ -162,17 +162,18 @@
         </div>
     </div>
 
-    <div class="btn-container">
-      <div class="btn-group btn-group-sm space-top">
-        <button class="btn btn-submit space-right" ng-click="findMe()">Find Me</button>
-        <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
-      </div>
-    </div>
 
   </div>
   <!-- map-ui-style container -->
 
   <div class="gui-slider" ng-click="slider()" ng-class="slide ? 'left-zero' : ''">
     <button style="background:tomato">O</button>
+  </div>
+
+  <div class="btn-container gmap-find-me">
+    <div class="btn-group btn-group-sm space-top">
+      <button class="btn btn-submit space-right" ng-click="findMe()">Find Me</button>
+      <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
+    </div>
   </div>
 </div> <!-- MapsCtrl Ends -->

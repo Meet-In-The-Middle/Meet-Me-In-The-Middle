@@ -378,6 +378,7 @@ $scope.circle = {
     if(places_Nearby[id] === undefined) {
       places_Nearby[id] = [];
      for(var x = 0; x < placeInfo.length ; x++){
+        console.log("PLACEPLACEPLACE:       " + JSON.stringify(place, null, 2));
         if(place[placeInfo[x]] !== undefined) {
           if(placeTags[x] === 'Price Level: '){
             var y = place[placeInfo[x]];
@@ -665,13 +666,18 @@ $scope.circle = {
   $scope.slider = function (){
     $scope.slide = !$scope.slide;
     var map = document.querySelector('.angular-google-map-container');
+    var searchBox = document.querySelector('#pac-input');
+
     var mapWidth = parseInt(window.getComputedStyle(map).width);
     var bodyWidth = parseInt(window.getComputedStyle(document.body).width);
     var ratio = mapWidth / bodyWidth;
+
     if(ratio < .9){
       map.style.width = '100%';
+      searchBox.style.marginLeft = '2%';
     } else {
       map.style.width = '88%';
+      searchBox.style.marginLeft = '10%';
     }
   }
 }]);

@@ -1,4 +1,10 @@
-<div ng-include="'components/navbar/navbar.html'" class="navBar"></div>
+<style>
+  #mainmenu{
+    height: 100px;
+    position: absolute;
+  }
+</style>
+<div id="gmap-nav" ng-include="'components/navbar/navbar.html'" class="navBar"></div>
 
 <div ng-controller="MapsCtrl">
 

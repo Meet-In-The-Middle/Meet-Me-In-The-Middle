@@ -54,8 +54,6 @@ body {
   height:50%;
   position: absolute;
   top: 0; right: 0; bottom: 0;
-  /*TODO: left:0*/
-  /*left: 0;*/
   width: 88%;
   height: 100%;
   transition: width 1s;
@@ -131,7 +129,6 @@ body {
   height: 30px;
   padding:0;
   transition: margin 1s;
-  /*TODO: show*/
 }
 
 #pac-input:focus {

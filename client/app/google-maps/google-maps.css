@@ -54,8 +54,6 @@ body {
   height:50%;
   position: absolute;
   top: 0; right: 0; bottom: 0;
-  /*TODO: left:0*/
-  /*left: 0;*/
   width: 88%;
   height: 100%;
   transition: width 1s;
@@ -125,13 +123,14 @@ body {
   font-family: Roboto;
   font-size: 15px;
   font-weight: 300;
-  margin-left: 12px;
-  padding: 0 11px 0 13px;
+  margin-left: 145px;
   text-overflow: ellipsis;
-  width: 400px;
-  right: 0;
-  /*TODO: show*/
+  width: 300px;
+  height: 30px;
+  padding:0;
+  transition: margin 1s;
 }
+
 #pac-input:focus {
   border-color: #4d90fe;
 }
@@ -154,5 +153,7 @@ body {
 @media screen and (max-width: 600px){
   .map-ui-style {
     top: 70%;
+    width: 100%;
+    left: 0;
   }
 }

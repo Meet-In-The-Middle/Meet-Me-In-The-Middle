@@ -43,8 +43,9 @@ angular.module('meetMeInTheMiddleApp')
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
   $scope.options = {scrollwheel: false, scaleControl: true};
   $scope.markers = {};
-  $scope.place = {types:[], keywords:'', radius: '1000'};
-  $scope.placesNearby = [];
+  $scope.place = {types:[], keywords:'', radius: ''};
+  $scope.placesNearby = {};
+  $scope.test;
  /* $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Cafe'},
@@ -312,8 +313,8 @@ $scope.circle = {
     service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
-        //placesNearby = {};
-        places_Nearby = [];
+        places_Nearby = {};
+        //places_Nearby = [];
         console.log('place results: ', results);
         for (var i = 0; i < results.length; i++) {
           //console.log(results[i]);
@@ -338,7 +339,8 @@ $scope.circle = {
         }
         //console.log(places_Nearby);
         $scope.placesNearby = places_Nearby;
-        console.log("!@#$%^^&*: "+ $scope.placesNearby[0]);
+        console.log("!@#$%^^&*: "+ $scope.placesNearby);
+        $scope.$apply();
       }
       else{
         alert("directions response " +status);
@@ -413,8 +415,14 @@ $scope.circle = {
   $scope.closeClick = function (marker) {
     marker.showWindow = false;
   };
+  
   $scope.onMarkerClick = function (marker) {
-    marker.showWindow = true;
+    //Added if else statement for ng-click call from Possible Locations:
+    if(marker.showWindow === false){
+      marker.showWindow = true;
+    } else {
+      $scope.closeClick(marker);
+    }
   };
 
   $scope.findMe = function () {

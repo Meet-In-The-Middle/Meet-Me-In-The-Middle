@@ -287,8 +287,7 @@ exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
     ////>>>>>>>>>>>>>>>>>>>>>>>
 
     Rooms.findById(roomId, function (err, room) {
-      //room.users = usersInRoom;
-      //room.save();
+
       if (!err) {
         room.users = usersInRoom;
         room.save();

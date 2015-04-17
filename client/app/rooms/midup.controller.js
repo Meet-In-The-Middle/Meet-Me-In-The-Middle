@@ -30,11 +30,11 @@ angular.module('meetMeInTheMiddleApp')
       //$scope.selectedPlaces.push(string);
     // }
       console.log('running');
-    }  
+    }
 
 
     //console.log('cont', $scope.places_Nearby);
-    
+
 
     var user = Auth.getCurrentUser();
     var userId = user._id;

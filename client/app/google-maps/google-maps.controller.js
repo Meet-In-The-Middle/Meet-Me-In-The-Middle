@@ -130,6 +130,26 @@ $scope.circle = {
    control: {}
 };
 
+$scope.circle.draggable = true;
+$scope.circle.editable = true;
+$scope.circle.events = {
+  dragend: function(circle){
+    console.log(">>>>>>>>> circle dragend");
+    var center = circle.getCenter();
+    var newCenter = {};
+    newCenter.lat = center.k;
+    newCenter.lng = center.D;
+    circle.setCenter(newCenter);
+    socket.emit('circle-move', $scope.circle.center, roomId);
+  },
+  radius_changed:  function(circle){
+    console.log(">>>>>>>>> radius changed");
+    circleRadius = circle.getRadius();
+    $scope.circle.radius = circleRadius;
+    socket.emit('circle-radius-change', $scope.circle.radius, roomId);
+  }
+};
+
 // $scope.circle.events = {
 //         dragend: function(circle){
 //           console.log(">>>>>>>>> circle dragend");
@@ -147,6 +167,75 @@ $scope.circle = {
 //           socket.emit('circle-radius-change', $scope.circle.radius);
 //         }
 //       }
+
+  /////////////////TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY //////////////////
+  var user = Auth.getCurrentUser();
+  var userRoomObj = {
+    roomId: roomId,
+    user: {
+      _id: user._id,
+      name: user.name,
+      coords: {
+        latitude: "",  //if user already is in room and has coords, DB will ignore ""
+        longitude: ""
+      },
+      owner: false
+    },
+    info: 'How awesome',
+    active: true
+  };
+
+
+  //Comment or Uncomment addUserToRoom function to test HTTP vs Socket.IO
+  //var addUserToRoom = function(userRoomObjToSend, cb) {
+  //
+  //  console.log('called addUserToRoom');
+  //  $http.post('api/rooms/adduser', userRoomObjToSend)
+  //    .success(function(userData) {
+  //      console.log('TTTTTTT data coming back from addUserToRoom http ', userData);
+  //      for(var marker in userData) {
+  //        // if(userData[marker]._id === Auth.getCurrentUser()._id){
+  //        //   userInfo = userData[marker];
+  //        // }
+  //
+  //        console.log(123);
+  //        // console.log('latitude is ', Number(userData[marker].coords.latitude));
+  //        // console.log('longitude is ', Number(userData[marker].coords.longitude));
+  //        if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
+  //          addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
+  //        }
+  //      }
+  //    })
+  //    .error(function(error) {
+  //      console.log('there was an error adding User to Room ', error);
+  //    });
+  //};
+
+  ////////////////////////// END NEW CODE FOR TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY ////////////////
+/*
+  Comment or Uncomment all code below up to END (while doing oppososite to addUserToRoom above)
+*/
+  //socket.emit('join-room', userRoomObj);
+
+  socket.on('join-room-reply', function(userData) {
+    console.log('>>>>>>>>>JOIN ROOM REPLY<<<<<<<<<<');
+    //userData is object of objects; Each user object has imageUrl property for thumbnail
+    console.log('userData is ', userData);
+    for(var marker in userData) {
+      // if(userData[marker]._id === Auth.getCurrentUser()._id){
+      //   userInfo = userData[marker];
+      // }
+
+      console.log(123);
+      // console.log('latitude is ', Number(userData[marker].coords.latitude));
+      // console.log('longitude is ', Number(userData[marker].coords.longitude));
+      if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
+        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
+      }
+    }
+  });
+
+  ////////////////////STOPPING POINT FOR COMMMENT OUT SOCKET..IO JOIN ROOM ////////////////
 
   uiGmapGoogleMapApi.then(function(maps) {
     maps = maps;
@@ -169,6 +258,10 @@ $scope.circle = {
       instanceMap = instances[0].map;
       service = new maps.places.PlacesService(instanceMap);
       directionsDisplay.setMap(instanceMap);
+    //after map has rendered, get data from DB for user markers
+    //addUserToRoom is the HTTP post method which has issues showing midpoint and route, 'join-room' is socket.io method to accomplish same thing
+      //addUserToRoom(userRoomObj);
+      socket.emit('join-room', userRoomObj);
     });
   });
 
@@ -230,73 +323,6 @@ $scope.circle = {
     // }
   });
 
-  /////////////////TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY //////////////////
-  var addUserToRoom = (function(userRoomObj, cb) {
-    console.log('called addUserToRoom');
-    var user = Auth.getCurrentUser();
-    var userRoomObj = {
-      roomId: roomId,
-      user: {
-        _id: user._id,
-        name: user.name,
-        coords: {
-          latitude: "",  //if user already is in room and has coords, DB will ignore ""
-          longitude: ""
-        },
-        owner: false
-      },
-      info: 'How awesome',
-      active: true
-    };
-    socket.emit('join-room', userRoomObj);
-    //$http.post('api/rooms/adduser', userRoomObj)
-    //  .success(function(userData) {
-    //    console.log('TTTTTTT data coming back from addUserToRoom http ', userData);
-    //    for(var marker in userData) {
-    //      // if(userData[marker]._id === Auth.getCurrentUser()._id){
-    //      //   userInfo = userData[marker];
-    //      // }
-    //      if(userData[marker]._id === Auth.getCurrentUser()._id && userData[marker].owner === true){
-    //        console.log("!!!!!!!!!CIRCLE OWNER!!!!!!!!!!");
-    //        circleOwner();
-    //      }
-    //
-    //      console.log(123);
-    //      // console.log('latitude is ', Number(userData[marker].coords.latitude));
-    //      // console.log('longitude is ', Number(userData[marker].coords.longitude));
-    //      if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
-    //        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
-    //      }
-    //    }
-    //  })
-    //  .error(function(error) {
-    //    console.log('there was an error adding User to Room ', error);
-    //  });
-  })();
-
-  ////////////////////////// END NEW CODE FOR TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY ////////////////
-//
-  socket.on('join-room-reply', function(userData) {
-    console.log('>>>>>>>>>JOIN ROOM REPLY<<<<<<<<<<');
-    //userData is object of objects; Each user object has imageUrl property for thumbnail
-    console.log('userData is ', userData);
-    for(var marker in userData) {
-      // if(userData[marker]._id === Auth.getCurrentUser()._id){
-      //   userInfo = userData[marker];
-      // }
-      if(userData[marker]._id === Auth.getCurrentUser()._id && userData[marker].owner === true){
-        console.log("!!!!!!!!!CIRCLE OWNER!!!!!!!!!!");
-        circleOwner();
-      }
-
-      console.log(123);
-      // console.log('latitude is ', Number(userData[marker].coords.latitude));
-      // console.log('longitude is ', Number(userData[marker].coords.longitude));
-      if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
-        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
-      }
-    }
-  });
 
    socket.on('circle-move-replay', function(center){
     $scope.circle.center = center;
@@ -595,29 +621,6 @@ $scope.circle = {
     anchor: new google.maps.Point(20, 40),
   };
 
-  var circleOwner = function(){
-    $scope.circle.draggable = true;
-    $scope.circle.editable = true;
-    $scope.circle.events = {
-      dragend: function(circle){
-        console.log(">>>>>>>>> circle dragend");
-        var center = circle.getCenter();
-        var newCenter = {};
-        newCenter.lat = center.k;
-        newCenter.lng = center.D;
-        circle.setCenter(newCenter);
-        socket.emit('circle-move', $scope.circle.center, roomId);
-      },
-      radius_changed:  function(circle){
-        console.log(">>>>>>>>> radius changed");
-        circleRadius = circle.getRadius();
-        $scope.circle.radius = circleRadius;
-        socket.emit('circle-radius-change', $scope.circle.radius, roomId);
-      }
-    }
-    $scope.$apply();
-  }
-
   var addMarker = function (latitude, longitude, id) {
     console.log('add id: ', id);
     // console.log('---------- ',userInfo);
@@ -742,3 +745,5 @@ $scope.circle = {
     }
   }
 }]);
+
+

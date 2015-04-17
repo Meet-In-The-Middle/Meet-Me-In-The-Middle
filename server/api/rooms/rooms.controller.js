@@ -57,63 +57,14 @@ exports.create = function (req, res) {
 //REPLACED BY addUserToRoomOrUpdate (keep until we sure not using http requests. originally called by http request)
 // Updates an existing room in the DB. Called when a user joins a room in 'midup.controller.js'
 // Will add user to room if not already part of room
-exports.update = function (req, res) {
-  //console.log('called update');
-  //console.log('req.body is ', req.body);
+exports.joinRoomHTTP = function (req, res) {
+  console.log('req.body is ', req.body);
   var userId = req.body.user._id;
   var roomId = req.body.roomId;
   var userRoomObj = req.body;
   var usersInRoom = addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, function(data) {
     res.json(200, data);
   });
-  //return json object of objects of all users in room
-  //Rooms.findById(roomId, function (err, room) {
-  //  if (err) {
-  //    return handleError(res, err);
-  //  }
-  //  if (!room) {
-  //    return res.send(404);
-  //  }
-  //  var roomName = room.name;
-  //  var preExistingUser = false;
-  //  var usersInRoom = room.users;
-  //  for (var j = 0, len = usersInRoom.length; j < len; j++) {
-  //    if (usersInRoom[j]._id === userId) {
-  //      usersInRoom[j].user = req.body.user;
-  //      preExistingUser = true;
-  //      break;
-  //    }
-  //  }
-  //  if (!preExistingUser) {
-  //    usersInRoom.push(req.body.user);
-  //  }
-  //  room.save(function (err) {
-  //    if (err) {
-  //      return handleError(res, err);
-  //    }
-  //    else {
-  //      User.findById(userId, function (err, user) {
-  //        var flag = false;
-  //        var userInRooms = user.memberOfRooms;
-  //        for (var i = 0, len = userInRooms.length; i < len; i++) {
-  //          if (user.memberOfRooms[i].roomId === roomId) {
-  //            new Error('user already a member of this room');
-  //            flag = true;
-  //            break;
-  //          }
-  //        }
-  //        if (!flag) {
-  //          user.memberOfRooms.push({roomId: roomId, name: roomName});
-  //        }
-  //        user.save(function (err) {
-  //          if (err) return validationError(res, err);
-  //        });
-  //      });
-  //    }
-  //    //return json array of all users in room
-  //    return res.json(200, room.users);
-  //  });
-  //});
 };
 
 // Deletes a rooms from the DB.
@@ -215,98 +166,14 @@ exports.getUsersForRoom = function (data, cb) {
  * @param userRoomObj
  * @param cb -- callback used to send data back to client
  */
-exports.addUserToRoomOrUpdate = function (userRoomObj, cb) {
+exports.joinOrUpdateRoomViaSocket = function (userRoomObj, cb) {
   //console.log('called addUserToRoom');
   //console.log('userRoomObj', userRoomObj);
   var userId = userRoomObj.user._id;
   var roomId = userRoomObj.roomId;
   var roomName;
   var usersInRoom;
-
   addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb);
-
-
-  //Rooms.findById(roomId, function (err, room) {
-  //  //console.log('room is ', room);
-  //  if (err) {
-  //    return cb(_, err);
-  //  }
-  //  if (!room) {
-  //    return cb(_, err);
-  //  }
-  //  roomName = room.name;
-  //  room.info = "changed to not awesome";
-  //  var preExistingUser = false;
-  //  usersInRoom = room.users;
-  //  for (var j = 0, len = usersInRoom.length; j < len; j++) {
-  //    //console.log('got here Jonah');
-  //    if (usersInRoom[j]._id === userId) {
-  //      if (userRoomObj.user.coords.latitude !== "") {
-  //        usersInRoom[j].coords.latitude = userRoomObj.user.coords.latitude;
-  //      }
-  //      if (userRoomObj.user.coords.longitude !== "") {
-  //        usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude;
-  //      }
-  //      usersInRoom[j].name = userRoomObj.user.name;
-  //      //add user profile imageUrl to the user in the room so we can return imageUrl for markers
-  //      User.findById(userId, function (err, user) {
-  //        if (err) {
-  //          console.log('err in User.findById is ', err);
-  //        } else {
-  //          usersInRoom[j].imageUrl = user.imageUrl;
-  //        }
-  //      });
-  //      preExistingUser = true;
-  //      break;
-  //    }
-  //  }
-  //  if (!preExistingUser) {
-  //    // if( userRoomObj.user.coords.latitude !== "" || userRoomObj.user.coords.longitude !== "" ) {
-  //    usersInRoom.push(userRoomObj.user);
-  //    // }
-  //  }
-  //  //console.log('usersInRoom ', usersInRoom);
-  //  Rooms.findById(roomId, function (err, room) {
-  //    if (!err) {
-  //      room.users = usersInRoom;
-  //      room.save();
-  //      User.findById(userId, function (err, user) {
-  //        if (err) {
-  //          return cb(_, err);
-  //        } else if (user === null || user === undefined) {
-  //          //return cb(_, _, true);
-  //        }
-  //        else {
-  //          var flag = false;
-  //          var userInRooms = user.memberOfRooms;
-  //          for (var i = 0, len = userInRooms.length; i < len; i++) {
-  //            if (user.memberOfRooms[i].roomId === roomId) {
-  //              //console.log('user already a member of this room');
-  //              flag = true;
-  //              break;
-  //            }
-  //
-  //          }
-  //          if (!flag) {
-  //            user.memberOfRooms.push({roomId: roomId, name: roomName});
-  //          }
-  //          user.save(function (err) {
-  //            if (err) return cb(_, err);
-  //          });
-  //          //callback for sending data back to client
-  //          Rooms.findById(roomId, function (err, room) {
-  //            //console.log('+++++++ROOM: ', room);
-  //            var usersObj = room.users.reduce(function (a, b) {
-  //              a[b._id] = b;
-  //              return a;
-  //            }, {});
-  //            cb(usersObj);
-  //          });
-  //        }
-  //      });
-  //    }
-  //  });
-  //});
 };
 
 exports.updateRoomChats = function (roomId, userId, username, message, callback) {

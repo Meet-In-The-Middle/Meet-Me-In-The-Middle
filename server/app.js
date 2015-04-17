@@ -46,7 +46,7 @@ io.on('connection', function (socket) {
     // If it's new socket.id
     // dataCollection[data.roomId] = {};
     // dataCollection[data.roomId][data._id] = data;
-    //console.log('move-pin data ', data);
+    console.log('!!!!!!!!move-pin data ', data);
     // console.log(JSON.stringify(data._id));
     // var userId = data._id;
 
@@ -55,7 +55,7 @@ io.on('connection', function (socket) {
     if(dataCollection[data.roomId] === undefined){
       dataCollection[data.roomId] = {};
       dataCollection[data.roomId][data._id] = data;
-    } 
+    }
     else{
       dataCollection[data.roomId][data._id] = data;
     }
@@ -90,7 +90,7 @@ io.on('connection', function (socket) {
     //   console.log('UPDATE ROOM - USRS DATA: ', usersData);
     //   //do something with usersData maybe
     //});
-    RoomsController.addUserToRoomOrUpdate(userRoomObj, function(returnData, err, noUser) {
+    RoomsController.joinOrUpdateRoomViaSocket(userRoomObj, function(returnData, err, noUser) {
       //console.log('returnData is ', returnData);
       if( err ) {
         socket.emit('error', err);
@@ -104,7 +104,7 @@ io.on('connection', function (socket) {
 
     // Sendback all the data
     //dataCollection = {socket.id1:{longitude:num, latitude: num, roomNumber: num}, ..., socket.idN:{longitude:num, latitude:num, roomNumber: num}}
-    
+
     // io.emit('move-pin-reply', dataCollection);
     // io.emit('move-pin-reply', dataCollection[data.roomId]);
     io.sockets.in(data.roomId).emit('move-pin-reply', dataCollection[data.roomId]);
@@ -151,7 +151,7 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function(data){
     //delete dataCollection[socket.id];
     //io.emit('move-pin-reply', dataCollection);
-  })
+  });
 
   var roomSockets = require('./api/rooms/rooms.socket.js')
   roomSockets.roomSockets(socket);

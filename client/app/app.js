@@ -11,27 +11,6 @@ angular.module('meetMeInTheMiddleApp', [
   'luegg.directives',
   'angularjs-dropdown-multiselect'
 ])
-  //.run(['$rootScope', '$state', '$stateParams', 'Auth',
-  //  function($rootScope, $state, $stateParams, Auth) {
-  //    //access $state and $stateParams from any scope within the application
-  //    $rootScope.$state = $state;
-  //    //console.log('$state ', $state);
-  //    $rootScope.$stateParams = $stateParams;
-  //    //console.log('$stateParams is ', $stateParams);
-  //    $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
-  //      console.log('event is ', event);
-  //      console.log('toState is ', toState);
-  //      console.log('toParams is ', toParams);
-  //      console.log('fromState is ', fromState);
-  //      $rootScope.returnToState = toState.url;
-  //      //$rootScope.returnToState =
-  //      //$state.previous = fromState;
-  //    });
-  //    $rootScope.$on("$routeChangeStart", function ( next, current) {
-  //      console.log('next is ', next);
-  //      console.log('current is ', current);
-  //    });
-  //  }])
   .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
     $urlRouterProvider
       .otherwise('/');

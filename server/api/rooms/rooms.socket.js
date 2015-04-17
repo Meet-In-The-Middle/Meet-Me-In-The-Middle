@@ -14,7 +14,7 @@ exports.roomSockets = function (socket) {
 
   socket.on('join-room', function (data) {
     roomId = data.roomId;
-    RoomsController.addUserToRoomOrUpdate(data, function (returnData, err, noUser) {
+    RoomsController.joinOrUpdateRoomViaSocket(data, function (returnData, err, noUser) {
       if (err) {
         socket.emit('error', err);
       } else if (noUser) {

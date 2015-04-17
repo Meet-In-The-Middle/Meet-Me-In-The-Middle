@@ -51,7 +51,7 @@ angular.module('meetMeInTheMiddleApp')
      * init called when page loads
      */
     $scope.init = function() {
-      addUserToRoom();
+      //addUserToRoom();  //commented out while we test socket.io vs http request when joining midUp
       loadChatMessages();
     };
     /**
@@ -59,24 +59,24 @@ angular.module('meetMeInTheMiddleApp')
      * with emit 'join-room' event
      * set up 'serversend' listener for chat messages
      */
-    var addUserToRoom = function() {
-      //User object to be sent to server and DB
-      var userRoomObj = {
-        roomId: roomId,
-        user: {
-          _id: user._id,
-          name: user.name,
-          coords: {
-            latitude: "",
-            longitude: ""
-          },
-          owner: false
-        },
-        info: 'How awesome',
-        active: true
-      };
-      socket.emit('join-room', userRoomObj);
-    };
+    //var addUserToRoom = function() {
+    //  //User object to be sent to server and DB
+    //  var userRoomObj = {
+    //    roomId: roomId,
+    //    user: {
+    //      _id: user._id,
+    //      name: user.name,
+    //      coords: {
+    //        latitude: "",
+    //        longitude: ""
+    //      },
+    //      owner: false
+    //    },
+    //    info: 'How awesome',
+    //    active: true
+    //  };
+    //  socket.emit('join-room', userRoomObj);
+    //};
 
     var loadChatMessages = function() {
       socket.on('chat-messages', function(data) {

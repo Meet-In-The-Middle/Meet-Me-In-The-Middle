@@ -11,7 +11,7 @@ angular.module('meetMeInTheMiddleApp')
 }])
 
 .controller('MapsCtrl', ['$scope', '$q', '$http', '$location', 'Auth','uiGmapGoogleMapApi', 'uiGmapIsReady', 'MainFactory', 'SocketFactory',
-    function ($scope, $q, $log, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, MainFactory, SocketFactory) {
+    function ($scope, $q, $http, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, MainFactory, SocketFactory) {
   var socket = io();
   SocketFactory.socket = socket;
   var geolocationAvailable;
@@ -230,7 +230,52 @@ $scope.circle = {
     // }
   });
 
+  /////////////////TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY //////////////////
+  var addUserToRoom = (function(userRoomObj, cb) {
+    console.log('called addUserToRoom');
+    var user = Auth.getCurrentUser();
+    var userRoomObj = {
+      roomId: roomId,
+      user: {
+        _id: user._id,
+        name: user.name,
+        coords: {
+          latitude: "",  //if user already is in room and has coords, DB will ignore ""
+          longitude: ""
+        },
+        owner: false
+      },
+      info: 'How awesome',
+      active: true
+    };
+    socket.emit('join-room', userRoomObj);
+    //$http.post('api/rooms/adduser', userRoomObj)
+    //  .success(function(userData) {
+    //    console.log('TTTTTTT data coming back from addUserToRoom http ', userData);
+    //    for(var marker in userData) {
+    //      // if(userData[marker]._id === Auth.getCurrentUser()._id){
+    //      //   userInfo = userData[marker];
+    //      // }
+    //      if(userData[marker]._id === Auth.getCurrentUser()._id && userData[marker].owner === true){
+    //        console.log("!!!!!!!!!CIRCLE OWNER!!!!!!!!!!");
+    //        circleOwner();
+    //      }
+    //
+    //      console.log(123);
+    //      // console.log('latitude is ', Number(userData[marker].coords.latitude));
+    //      // console.log('longitude is ', Number(userData[marker].coords.longitude));
+    //      if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
+    //        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
+    //      }
+    //    }
+    //  })
+    //  .error(function(error) {
+    //    console.log('there was an error adding User to Room ', error);
+    //  });
+  })();
 
+  ////////////////////////// END NEW CODE FOR TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY ////////////////
+//
   socket.on('join-room-reply', function(userData) {
     console.log('>>>>>>>>>JOIN ROOM REPLY<<<<<<<<<<');
     //userData is object of objects; Each user object has imageUrl property for thumbnail

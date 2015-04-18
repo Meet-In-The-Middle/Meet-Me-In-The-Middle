@@ -140,13 +140,13 @@ $scope.circle.events = {
     newCenter.lat = center.k;
     newCenter.lng = center.D;
     circle.setCenter(newCenter);
-    socket.emit('circle-move', $scope.circle.center, roomId);
+    // socket.emit('circle-move', $scope.circle.center, roomId);
   },
   radius_changed:  function(circle){
     console.log(">>>>>>>>> radius changed");
     circleRadius = circle.getRadius();
     $scope.circle.radius = circleRadius;
-    socket.emit('circle-radius-change', $scope.circle.radius, roomId);
+    // socket.emit('circle-radius-change', $scope.circle.radius, roomId);
   }
 };
 
@@ -324,17 +324,17 @@ $scope.circle.events = {
   });
 
 
-   socket.on('circle-move-replay', function(center){
-    $scope.circle.center = center;
-    console.dir('circle moved emit received  ' + JSON.stringify(center));
-    $scope.$apply();
-   });
+   // socket.on('circle-move-replay', function(center){
+   //  $scope.circle.center = center;
+   //  console.dir('circle moved emit received  ' + JSON.stringify(center));
+   //  $scope.$apply();
+   // });
 
-   socket.on('circle-radius-change-reply', function(radius){
-    $scope.circle.radius = radius;
-    console.dir('circle radius changed emit received  ' + radius);
-    $scope.$apply();
-   });
+   // socket.on('circle-radius-change-reply', function(radius){
+   //  $scope.circle.radius = radius;
+   //  console.dir('circle radius changed emit received  ' + radius);
+   //  $scope.$apply();
+   // });
 
 
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
@@ -371,19 +371,8 @@ $scope.circle.events = {
       }
 
       console.log('place search request: ', request);
-      socket.emit('place-search', request, roomId);
-      return;
-    }
-    else{
-      alert('Error! No marker set on Map. Please add at least one marker to the map.');
-      return;
-    }
-  };
-
-  socket.on('place-search-reply', function(request){
-   //var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
-   console.log('socket request: ', request);
-    service.nearbySearch(request, function (results, status) {
+      // socket.emit('place-search', request, roomId);
+      service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
         places_Nearby = {};
@@ -392,9 +381,7 @@ $scope.circle.events = {
         for (var i = 0; i < results.length; i++) {
           //console.log(results[i]);
           //Update places object
-
            updatePlaces(results[i], results[i].id);
-
           // console.log(results[i]);
           // if(results[i].photos){
           //   console.log(results[i].photos[0].getUrl);
@@ -403,11 +390,8 @@ $scope.circle.events = {
           //   console.log(test());
           // }
           //console.log(results[i]);
-
           // if(i === 0){ placeDetails(results[i].id); }
-
           addPlace(results[i]);
-
           // $scope.$apply();
         }
         //console.log(places_Nearby);
@@ -419,7 +403,17 @@ $scope.circle.events = {
         alert("directions response " +status);
       }
     });
-  });
+    }
+    else{
+      alert('Error! No marker set on Map. Please add at least one marker to the map.');
+      return;
+    }
+  };
+
+  // socket.on('place-search-reply', function(request){
+  //  //var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
+  //  console.log('socket request: ', request); 
+  // });
 
   var addPlace = function (place) {
     //Format the icon to be displayed

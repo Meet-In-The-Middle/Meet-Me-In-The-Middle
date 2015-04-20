@@ -404,7 +404,7 @@ exports.getVotes = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log('getVotes Error:' + err);
-    } else {
+    } else {;
       callback(room.locations);
     }
   });

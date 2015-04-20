@@ -8,7 +8,8 @@ var Locations = new Schema({
   name : String,
   votes : Number,
   voters : [],
-  marker : String
+  marker : String,
+  locInfo: []
 })
 
 var RoomsSchema = new Schema({

@@ -318,6 +318,7 @@ $scope.circle.events = {
       }
       if($scope.markers[Auth.getCurrentUser()._id]){
         calculateCenter();
+        calcCircleCenter();
         calcRoute();
       }
     }
@@ -647,6 +648,7 @@ $scope.circle.events = {
     console.log('Request: ', JSON.stringify(request));
     directionsService.route(request, function(response, status) {
       if (status == google.maps.DirectionsStatus.OK) {
+        console.log('!!!!!!!!response: ', response);
         directionsDisplay.setDirections(response);
       } else {
         alert("directions response "+status);

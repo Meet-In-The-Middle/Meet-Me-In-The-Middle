@@ -73,6 +73,20 @@
           <button ng-click="addToVote(m._id)">Add To Vote</button>
         </div>
       </ui-gmap-window>
+     </ui-gmap-marker>
+        <ui-gmap-marker ng-repeat="m in voteMarkers" coords="m.coords" idkey="m._id" options="m.options" events="m.events"
+                    icon="m.icon" click="onMarkerClick(m)">
+      <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl"
+                      templateParameter="m.templateParameter">
+        <div>
+          <b>{{votedPlacesNearby[m._id][0]}}</b><br>
+          <img ng-src={{votedPlacesNearby[m._id][1]}}><br>
+          {{votedPlacesNearby[m._id][2]}}<br>
+          {{votedPlacesNearby[m._id][3]}}<br>
+          {{votedPlacesNearby[m._id][4]}}<br>
+          Votes: {{voteLocations[m._id].votes}}
+        </div>
+      </ui-gmap-window>
     </ui-gmap-marker>
   </ui-gmap-google-map>
 
@@ -110,15 +124,20 @@
             <select class="form-control" size="3" ng-model="possibleMidup">
               <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[possibleMidup])">{{value[0]}}</option>
             </select>
-            <button ng-click="addToVote(possibleMidup)">Add To Vote</button>
+            <div class="btn-group btn-group-sm space-top">
+              <button class="btn btn-primary" ng-click="addToVote(possibleMidup)">Add To Vote</button>
+            </div>
             <br>
              <h6 class="title space-top">MidUps To Vote On</h6>
             <select class="form-control" size="3" ng-model="likes">
-              <option  ng-repeat="value in voteLocationArr | orderBy:'-votes'" value="{{value.id}}" ng-click="onMarkerClick(markers[likes])">
-                {{value.name}}    Votes:{{value.votes}}
+              <option  ng-repeat="value in voteLocationArr | orderBy:'-votes'" value="{{value.id}}" ng-click="onMarkerClick(voteMarkers[likes])">
+                {{value.name}} -> Votes: {{value.votes}}
               </option>
             </select>
-            <button ng-click="vote(likes, 1)">Like</button><button ng-click="vote(likes, -1)">Unlike</button>
+            <div class="btn-group btn-group-sm space-top">
+              <button class="btn btn-primary" ng-click="vote(likes, 1)">Like</button>
+              <button class="btn btn-primary" ng-click="vote(likes, -1)">Unlike</button>
+            </div>
             <br>
       </div>
      <!-- <h6 class="no-top-margin title">Chat About MidUp</h6>-->

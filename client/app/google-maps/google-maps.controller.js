@@ -53,6 +53,8 @@ angular.module('meetMeInTheMiddleApp')
   $scope.voteLocations = {};
   $scope.voteLocationArr = [];
   $scope.likes;
+  $scope.voteMarkers = {};
+  $scope.votedPlacesNearby = {};
  /* $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Cafe'},
@@ -354,6 +356,11 @@ $scope.circle.events = {
     }
     if(!found){
       $scope.voteLocationArr.push($scope.voteLocations[locData.id]);
+      if($scope.markers[locData.id]  !== undefined){
+        delete $scope.markers[locData.id];
+      }
+      $scope.voteMarkers[locData.id] = JSON.parse($scope.voteLocations[locData.id].marker);
+      $scope.votedPlacesNearby[locData.id] = $scope.voteLocations[locData.id].locInfo;
     }
     console.log('someone has added a location');
     console.log($scope.voteLocationArr);
@@ -375,9 +382,13 @@ $scope.circle.events = {
   });
 
     socket.on('vote-data', function(locData){
-      for(var x = 0; x < locData.length; x ++){
+      for(var x = 0; x < locData.length; x++){
         $scope.voteLocations[locData[x].id] = locData[x];
+        $scope.voteMarkers[locData[x].id] = JSON.parse($scope.voteLocations[locData[x].id].marker);
+        $scope.voteMarkers[locData[x].id].showWindow = false;
+        $scope.votedPlacesNearby[locData[x].id] = locData[x].locInfo;  
       }
+      //showWindow: false
       $scope.voteLocationArr = locData;
       console.log('loadedVotes,', locData);
       $scope.$apply();
@@ -463,6 +474,7 @@ $scope.circle.events = {
 
   var addPlace = function (place) {
     //Format the icon to be displayed
+
      var icon = {
        url: place.icon,
        origin: new google.maps.Point(0,0),
@@ -552,13 +564,15 @@ $scope.circle.events = {
       }
     } else {
       console.log('new location');
+
       var locData = 
         { 
           id: locKey,
           name: $scope.placesNearby[locKey][0],
           votes: 1,
           voters: [userId],
-          marker: JSON.stringify($scope.markers[locKey])
+          marker: JSON.stringify($scope.markers[locKey]),
+          locInfo: $scope.placesNearby[locKey]
         };
         console.log('addLoc');
         console.log('roomId', roomId);
@@ -571,12 +585,12 @@ $scope.circle.events = {
   };
 
   $scope.onMarkerClick = function (marker) {
-    //Added if else statement for ng-click call from Possible Locations:
-    if(marker.showWindow === false){
-      marker.showWindow = true;
-    } else {
-      $scope.closeClick(marker);
-    }
+    //Added if else statement for ng-click call from Possible Locations
+      if(marker.showWindow === false){
+        marker.showWindow = true;
+      } else {
+        $scope.closeClick(marker);
+      }
   };
 
   $scope.findMe = function () {

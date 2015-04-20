@@ -70,6 +70,7 @@
           {{placesNearby[m._id][2]}}<br>
           {{placesNearby[m._id][3]}}<br>
           {{placesNearby[m._id][4]}}<br>
+          <button ng-click="addToVote(m._id)">Add To Vote</button>
         </div>
       </ui-gmap-window>
     </ui-gmap-marker>
@@ -106,12 +107,22 @@
         <h6 class="title space-top">Possible MidUps</h6>
 
           <!--<p class="label-style"></p>-->
-            <select class="form-control" size="5" ng-model="test">
-              <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[test])">{{value[0]}}</option>
+            <select class="form-control" size="3" ng-model="possibleMidup">
+              <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[possibleMidup])">{{value[0]}}</option>
             </select>
+            <button ng-click="addToVote(possibleMidup)">Add To Vote</button>
+            <br>
+             <h6 class="title space-top">MidUps To Vote On</h6>
+            <select class="form-control" size="3" ng-model="likes">
+              <option  ng-repeat="value in voteLocationArr | orderBy:'-votes'" value="{{value.id}}" ng-click="onMarkerClick(markers[likes])">
+                {{value.name}}    Votes:{{value.votes}}
+              </option>
+            </select>
+            <button ng-click="vote(likes, 1)">Like</button><button ng-click="vote(likes, -1)">Unlike</button>
             <br>
       </div>
-      <h6 class="no-top-margin title">Chat About MidUp</h6>
+     <!-- <h6 class="no-top-margin title">Chat About MidUp</h6>-->
+        <h6 class="title space-top">Chat About MidUp</h6>
         <div class="chat-box" scroll-glue>
           <div ng-repeat="message in messages">
             <span class="chatUserName">{{message.username}}:    </span>

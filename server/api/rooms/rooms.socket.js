@@ -39,6 +39,17 @@ exports.roomSockets = function (socket) {
       }
     });
 
+    RoomsController.getVotes(roomId, function(locData, err) {
+      if(err) {
+        console.log('getVotes socket error:', err);
+      } else {
+        console.log('no error:', locData);
+        socket.emit('vote-data', locData);
+      }
+    });
+
+
+
      // listen for client emitting to event 'roomId' which segregates room
     socket.on(roomId, function(userId, username, message){
       //console.log('####################### in socket.on', userId, username, message);
@@ -71,6 +82,23 @@ exports.roomSockets = function (socket) {
 
     socket.emit('email-invites-reply', data);
   });
+
+  socket.on('addLoc', function(roomId, locData, userId){ 
+    console.log('updating the db',roomId);
+    RoomsController.addLoc(roomId, locData, userId, function(locData) {
+      console.log('notifying room of locData');
+      io.sockets.in(roomId).emit('addLoc-reply', locData); 
+    });
+  });
+
+  socket.on('vote', function(roomId, likeType, userId, locData){
+    console.log('updating the db like',roomId);
+    RoomsController.updateVote(roomId, likeType, userId, locData, function(locData) {
+      io.sockets.in(roomId).emit('vote-reply', locData); 
+    });  
+  });
+
+
 
   socket.on('disconnect', function(data){
     socket.leave(roomId);

@@ -3,13 +3,23 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+var Locations = new Schema({
+  id: String,
+  name : String,
+  votes : Number,
+  voters : [],
+  marker : String
+})
+
 var RoomsSchema = new Schema({
   name: String,
   users: [],
   info: String,
   active: Boolean,
-  messages: []
+  messages: [],
+  locations: [Locations],
 });
+
 
 module.exports = mongoose.model('Rooms', RoomsSchema);
 

@@ -34,6 +34,10 @@ angular.module('meetMeInTheMiddleApp')
 
   var places_Nearby;
 
+/*$scope.init = function() {
+      loadVotes();
+};*/
+
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
   $scope.options = {
     scrollwheel: false,
@@ -45,7 +49,10 @@ angular.module('meetMeInTheMiddleApp')
   $scope.markers = {};
   $scope.place = {types:[], keywords:'', radius: ''};
   $scope.placesNearby = {};
-  $scope.test;
+  $scope.possibleMidup;
+  $scope.voteLocations = {};
+  $scope.voteLocationArr = [];
+  $scope.likes;
  /* $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Cafe'},
@@ -336,6 +343,44 @@ $scope.circle.events = {
    //  $scope.$apply();
    // });
 
+  socket.on('addLoc-reply', function(locData) {
+    $scope.voteLocations[locData.id] = locData;
+    var found = 0;
+    for(var x = 0; x < $scope.voteLocationArr.length; x++){
+      if($scope.voteLocationArr[x].id === locData.id){
+        found = 1;
+      }
+    }
+    if(!found){
+      $scope.voteLocationArr.push($scope.voteLocations[locData.id]);
+    }
+    console.log('someone has added a location');
+    console.log($scope.voteLocationArr);
+    $scope.$apply();
+  });
+
+  socket.on('vote-reply', function(locData) {
+    console.log('locData', locData);
+    $scope.voteLocations[locData.id] = locData;
+    for(var x = 0; x < $scope.voteLocationArr.length; x++){
+      console.log('array:', $scope.voteLocationArr[x].name, $scope.voteLocationArr[x].id);
+      if($scope.voteLocationArr[x].id === locData.id){
+        console.log('updating array');
+        $scope.voteLocationArr[x] = locData;
+      }
+    }
+    console.log($scope.voteLocationArr[x]);
+    $scope.$apply();
+  });
+
+    socket.on('vote-data', function(locData){
+      for(var x = 0; x < locData.length; x ++){
+        $scope.voteLocations[locData[x].id] = locData[x];
+      }
+      $scope.voteLocationArr = locData;
+      console.log('loadedVotes,', locData);
+      $scope.$apply();
+    });
 
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
   $scope.placeSearch = function () {
@@ -476,6 +521,47 @@ $scope.circle.events = {
           places_Nearby[id].push('Currently closed.');
         }
       }
+    }
+  }
+
+  $scope.vote = function (locKey, likeType) {
+    console.log('in Vote');
+    var userId = Auth.getCurrentUser()._id;
+    //if(likeType === -1 && _.contains($scope.voteLocations[locKey].voters, userId)){
+      console.log('user has voted');
+      socket.emit('vote', roomId, likeType, userId, $scope.voteLocations[locKey]);
+    //} else if(likeType === 1 && !(_.contains($scope.voteLocations[locKey].voters,
+    //  userId))){
+     console.log('user is voting');
+    //  socket.emit('vote', roomId, likeType, userId, $scope.voteLocations[locKey]);
+    //}
+    //console.log('failed all tests');
+  }
+
+  $scope.addToVote = function (locKey) {
+    console.log("addToVote called with:" + locKey);
+    
+    var userId = Auth.getCurrentUser()._id;
+    console.log(userId);
+    if($scope.voteLocations[locKey] !== undefined){
+      console.log('already exists');
+      if(!(_.contains($scope.voteLocations[locKey].voters,userId))){
+        console.log('user has not voted on');
+        socket.emit('vote', roomId, 1, userId, $scope.voteLocations[locKey]);
+      }
+    } else {
+      console.log('new location');
+      var locData = 
+        { 
+          id: locKey,
+          name: $scope.placesNearby[locKey][0],
+          votes: 1,
+          voters: [userId],
+          marker: JSON.stringify($scope.markers[locKey])
+        };
+        console.log('addLoc');
+        console.log('roomId', roomId);
+      socket.emit('addLoc', roomId, locData, userId);
     }
   }
 

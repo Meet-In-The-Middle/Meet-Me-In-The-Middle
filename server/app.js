@@ -132,6 +132,14 @@ io.on('connection', function (socket) {
     //   io.sockets.in(room).emit('place-search-reply', request);
     // });
 
+    socket.on('vote', function(locKey, userId, room){
+      io.sockets.in(room).emit('vote-reply', locKey, userId);
+    });
+
+    socket.on('remove-vote', function(locKey, userId, room){
+      io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
+    });
+
 
   //socket.on('updateMap', function(data) {
   //   console.log('data is ', data);

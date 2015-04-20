@@ -241,7 +241,7 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
           if (err) {
             console.log('err in User.findById is ', err);
           } else {
-            usersInRoom[j].imageUrl = user.imageUrl;
+            //usersInRoom[j].imageUrl = user.imageUrl;
           }
         });
         preExistingUser = true;
@@ -298,3 +298,115 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
     });
   });
 };
+
+
+exports.updateRoomChats = function(roomId, userId, username, message, callback){
+  //Create the message object
+  var chatObj = {
+    userId: userId,
+    username: username,
+    message: message,
+    date: new Date()
+  };
+  //push new chat message to MidUp room messages array
+  Rooms.update(
+    { "_id": roomId },
+    { "$push": {"messages": chatObj }},
+    function(err, numAffected){
+      if(err){
+        console.log('updateRoomChats error:' + err);
+      } else {
+        console.log('updateRoomChats numAffected:' + numAffected);
+        callback(chatObj);
+      }
+    }
+  );
+};
+
+exports.getRecentChatMessages = function(roomId, callback) {
+  Rooms.findById(roomId, function(err, room) {
+    if(err){
+      console.log(err);
+    } else {
+      var messages = room.messages.slice(0, 100);
+      callback(messages, err);
+    }
+  });
+};
+
+exports.updateVote = function(roomId, likeType, userId, locData, callback){
+Rooms.findById(roomId, function(err, room) {
+    if(err){
+      console.log('updateVote Error:' + err);
+    } else {
+      var locations = room.locations;
+      var returnloc = {};
+      locations.forEach(function(x){
+        if(x.id === locData.id) {
+          if(!(_.contains(x.voters, userId)) || likeType === -1) {
+            console.log('found record', x.name, likeType, x.votes + likeType);
+            x.votes = x.votes + likeType;
+            console.log('result', x.votes);
+            if(likeType === 1){
+              console.log('adding to record');
+              x.voters.push(userId);
+            } else {
+              x.voters = _.without(x.voters, userId);
+            }
+          }
+          returnloc = x;
+        }
+      });
+      room.locations = locations;
+      room.save();
+      console.log('room ',room.locations);
+      
+      console.log('update vote');
+      callback(returnloc);
+    }
+    
+  });
+};
+
+exports.addLoc = function (roomId, locData, userId, callback){
+   console.log('roomId', roomId);
+   var found = 0;
+   Rooms.findById(roomId, function(err, room) {
+    if(err){
+      console.log('addLoc Error:' + err);
+    } else {
+      for(var x = 0; x < room.locations.length; x++){
+        if(room.locations[x].id === locData.id){
+          console.log('found id call updateVote');
+          exports.updateVote(roomId, 1, userId, locData, callback);
+          found = 1;
+          break;
+        }
+      }
+      if(!found){
+        Rooms.update(
+        { "_id": roomId },
+        { "$push": {"locations": locData }},
+        function(err, numAffected){
+          if(err){
+            console.log('updateVotes error:' + err);
+          } else {
+            console.log('updateVotes numAffected:' + numAffected);
+            callback(locData);
+          }
+        });
+      }
+    } 
+  });
+};
+
+exports.getVotes = function(roomId, callback) {
+  Rooms.findById(roomId, function(err, room) {
+    if(err){
+      console.log('getVotes Error:' + err);
+    } else {
+      callback(room.locations);
+    }
+  });
+}
+

@@ -104,6 +104,29 @@ io.on('connection', function (socket) {
       io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
     });
 
+    // socket.on('circle-move', function(center, room){
+    //   // io.emit('circle-move-replay', center);
+    //   io.sockets.in(room).emit('circle-move-replay', center);
+    // });
+
+    // socket.on('circle-radius-change', function(radius, room){
+    //   // io.emit('circle-radius-change-reply', radius);
+    //   io.sockets.in(room).emit('circle-radius-change-reply', radius);
+    // });
+
+    // socket.on('place-search', function(request, room){
+    //   // io.emit('place-search-reply', request);
+    //   io.sockets.in(room).emit('place-search-reply', request);
+    // });
+
+    socket.on('vote', function(locKey, userId, room){
+      io.sockets.in(room).emit('vote-reply', locKey, userId);
+    });
+
+    socket.on('remove-vote', function(locKey, userId, room) {
+      io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
+    });
+
     socket.on('circle-move', function(center, room){
       // io.emit('circle-move-replay', center);
       io.sockets.in(room).emit('circle-move-replay', center);
@@ -130,8 +153,6 @@ io.on('connection', function (socket) {
   var roomSockets = require('./api/rooms/rooms.socket.js')
   roomSockets.roomSockets(socket);
 });
-
-
 
 require('./config/express')(app);
 require('./routes')(app);

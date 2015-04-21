@@ -4,6 +4,10 @@
   border-color: #133783;
 }
 
+.btn-facebook, .btn-twitter, .btn-google-plus, .btn-github {
+  color: #fff !important;
+}
+
 .btn-twitter {
   color: #fff;
   background-color: #2daddc;

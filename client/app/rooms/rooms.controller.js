@@ -127,7 +127,6 @@ angular.module('meetMeInTheMiddleApp')
       socket.on('email-invites-reply', function(message) {
         console.log('email-invite-reply ', message);
       });
-
     };
 
   }]);

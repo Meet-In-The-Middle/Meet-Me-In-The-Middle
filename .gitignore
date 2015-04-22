@@ -52,3 +52,4 @@ client/bower_components
 .floo
 .flooignore
 data
+dist

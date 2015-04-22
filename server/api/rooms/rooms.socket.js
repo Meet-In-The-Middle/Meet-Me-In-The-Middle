@@ -63,8 +63,14 @@ exports.roomSockets = function (socket) {
     var params = {
       //to: 'jsnisenson@gmail.com',
       from: 'jsnisenson@gmail.com',
-      subject: 'Jonah Testing Sendgrid Email',
-      html: 'You have been invited by ' + username + ' to be a part of this MidUp <a href="' + process.env.DEPLOY_DOMAIN + '/mymidups/'+roomId+'">'+roomName+'</a>'
+      subject: 'Invitation to MidUp',
+      html: 'Hello, <br><br> ' +
+      'You have been invited by ' + username + ' to be a part of this MidUp <a href="' + process.env.DOMAIN + '/mymidups/'+roomId+'">'+roomName+'</a><br><br>' +
+      'MidUp helps you, your colleagues and your friends interactively find the perfect place to meet up in the middle.' + '<br><br>' +
+      'If the link above does not work, copy and paste this link into a browser to join the MidUp:' + '<br><br>' +
+      'http://' + process.env.DOMAIN + '/mymidups/'+roomId  + '' + '<br><br>' +
+      '- The MidUp Team'
+
     };
     var email = new sendgrid.Email(params);
     //addTo sends email to everyone in the array but independently (i.e. user won't see other users emails)

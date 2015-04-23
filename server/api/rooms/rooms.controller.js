@@ -44,7 +44,7 @@ exports.createRoom = function (req, res) {
       //User.findById(req.body.user._id, function (err, user) {
       User.findById(req.body.user.userId, function (err, user) {
         var roomId = room._id.toString();
-        user.memberOfRooms.push({roomId: roomId, name: req.body.name});
+        user.memberOfRooms.push({roomId: roomId, name: req.body.name, info: req.body.info, createdAt: room.createdAt, owner: true });
         user.save(function (err) {
           if (err) { console.log('err within create in rooms.controller is ', err);};
           //res.send(200);
@@ -70,26 +70,102 @@ exports.joinRoomHTTP = function (req, res) {
 };
 
 // Deletes a rooms from the DB.
-exports.destroy = function (req, res) {
-  Rooms.findById(req.params.id, function (err, rooms) {
+exports.destroy = function (roomId, userId, callback) {
+  Rooms.findById(roomId, function (err, room) {
     if (err) {
-      return handleError(res, err);
+      //send error back to client
+      //return handleError(res, err);
+      callback(null, err);
     }
-    if (!rooms) {
-      return res.send(404);
+    if (!room) {
+      //send message to client that room does not exist
+      //return res.send(404);
+      callback(null, 'midup room does not exist');
+      return;
     }
-    rooms.remove(function (err) {
+    var roomUsers = room.users, usersObj = [];
+    for( var i = 0, len = roomUsers.length; i < len; i++ ) {
+      //iterate over users in room and get userIds from users memberOfRooms
+      usersObj.push(roomUsers[i]);
+    }
+    for( var j = 0, length = usersObj.length; j < length; j++ ) {
+      User.findById(usersObj[j].userId, function(err, user) {
+        if( err ) { console.log(err); }
+        if( !!user ) {
+          for( var k = 0; k < user.memberOfRooms.length; k++ ) {
+            if( user.memberOfRooms[k].roomId === roomId ) {
+              console.log(1555777, user.memberOfRooms[k]);
+              user.memberOfRooms.splice(k, 1);
+            }
+          }
+        }
+        user.save(function(err, newData) {
+          console.log('newData is ', newData);
+          if( !err) {
+            if( newData._id === userId ) {
+              callback(newData.memberOfRooms);
+            }
+          }
+        });
+      });
+    }
+    room.remove(function (err) {
       if (err) {
-        return handleError(res, err);
+        callback(null, err);
       }
-      return res.send(204);
+      //send back room was removed
+      callback('Midup was removed');
     });
   })
 };
 
-function handleError(res, err) {
-  return res.send(500, err);
-}
+exports.removeRoomFromUser = function(roomId, userId, callback) {
+  Rooms.findById(roomId, function (err, room) {
+    console.log('room is ', room);
+    if (err) {
+      //send error back to client
+      //return handleError(res, err);
+      callback(null, err);
+    }
+    if (!room) {
+      //send message to client that room does not exist
+      //return res.send(404);
+      callback(null, 'midup room does not exist');
+      return;
+    }
+    var roomUsers = room.users;
+    for( var i = 0, len = roomUsers.length; i < len; i++ ) {
+      //iterate over users in room and delete the user object
+      if( roomUsers[i].userId === userId ) {
+        roomUsers.splice(i, 1);
+        break;
+      }
+    }
+    room.users = roomUsers;
+    console.log('room.users is ', room.users);
+    room.save(function(err, room) {
+      if( err ) console.log(err);
+      User.findById(userId, function(err, user) {
+        if( err ) { console.log(err); }
+        if( !!user ) {
+          for( var k = 0; k < user.memberOfRooms.length; k++ ) {
+            if( user.memberOfRooms[k].roomId === roomId ) {
+              console.log(1555777, user.memberOfRooms[k]);
+              user.memberOfRooms.splice(k, 1);
+            }
+          }
+        }
+        user.save(function(err, newData) {
+          if( !err) {
+            console.log('newData is ', newData);
+            console.log('newData.memberOfRooms is ', newData.memberOfRooms);
+            callback(newData.memberOfRooms);
+          }
+        });
+      });
+    });
+  })
+};
 
 
 /**
@@ -191,7 +267,7 @@ exports.getRecentChatMessages = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log(err);
-    } else {
+    } else if ( !!room ) {
       var messages = room.messages.slice(0, 100);
       callback(messages, err);
     }
@@ -268,7 +344,7 @@ exports.getVotes = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log('getVotes Error:' + err);
-    } else {;
+    } else if ( !!room ) {;
       callback(room.locations);
     }
   });
@@ -493,9 +569,15 @@ exports.getVotes = function(roomId, callback) {
       else if( !query ) {
         Rooms.findById(roomId, function(err, room) {
           if( err) console.log('ERROR in findById inside addUserToRoomOrUpdateRoom ', err);
-          else if( !room ) { console.log('room does not exist in addUserToRoomOrUpdateRoom '); }
-          else {
+          else if( !room ) {
+            console.log('room does not exist in addUserToRoomOrUpdateRoom ');
+            console.log('cb is ', cb);
+            cb(null, null, null, 'midup does not exist or has been deleted');
+            return;
+          } else {
             roomName = room.name;
+            var roomInfo = room.info;
+            var createdAt = room.createdAt;
             room.users.push(update);
             room.save(function(err, data) {
               if(err) console.log('error in room.save in addUserToRoomOrUpdateRoom ', err);
@@ -520,7 +602,7 @@ exports.getVotes = function(roomId, callback) {
                       }
                     }
                     if(!flag) {
-                      user.memberOfRooms.push({roomId: roomId, name: roomName});
+                      user.memberOfRooms.push({roomId: roomId, name: roomName, roomInfo: room.info, createdAt: room.createdAt, owner: false });
                       user.save(function (err) {
                         if (err) {
                           console.log('err is ', err);

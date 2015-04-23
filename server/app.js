@@ -69,18 +69,20 @@ io.on('connection', function (socket) {
           latitude: data.coords.latitude,
           longitude: data.coords.longitude,
         },
-        owner: false
-      },
-      info: 'How awesome',
-      active: true
+        info: data.info,
+        active: true
+      }
     };
 
-    RoomsController.joinOrUpdateRoomViaSocket(userRoomObj, function (returnData, err, noUser) {
-      //console.log('returnData is ', returnData);
-      if (err) {
+    RoomsController.joinOrUpdateRoomViaSocket(userRoomObj, function(returnData, err, noUser, noRoomMsg) {
+      console.log('returnData is ', returnData);
+      if( err ) {
         socket.emit('error', err);
       } else if (noUser) {
         socket.emit('error', 'UserId was not sent with or was undefined in request');
+      } else if ( noRoomMsg ) {
+        console.log('noRoom error should be emitted: ', noRoomMsg);
+        socket.emit('error', noRoomMsg);
       } else {
         //socket.emit('join-room-reply',  returnData);
       }

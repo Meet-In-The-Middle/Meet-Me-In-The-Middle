@@ -251,4 +251,20 @@ select {
   min-width:50px;
 }
 
+.midup-nonexistent {
+  width: 300px;
+  height: auto;
+  /*margin: auto;*/
+  left: 40%;
+  top: 30%;
+  padding: 20px;
+  color: white;
+  background-color: #D9534F;
+  position: fixed;
+  -webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+  border-radius: 7px;
+}
+
 

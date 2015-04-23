@@ -25,7 +25,7 @@
     "mongoose": "~3.8.8",
     "morgan": "~1.0.0",
     "multer": "^0.1.8",
-    "passport": "~0.2.0",
+    "passport": "^0.2.1",
     "passport-facebook": "latest",
     "passport-google-oauth": "latest",
     "passport-local": "~0.1.6",

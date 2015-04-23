@@ -70,7 +70,7 @@
           {{placesNearby[m._id][2]}}<br>
           {{placesNearby[m._id][3]}}<br>
           {{placesNearby[m._id][4]}}<br>
-          <button ng-click="addToVote(m._id)">Add To Vote</button>
+          <!--<button ng-click="addToVote(m._id)">Add To Vote</button>-->
         </div>
       </ui-gmap-window>
      </ui-gmap-marker>
@@ -154,6 +154,10 @@
             <button class="btn-xs" ng-click="sendChat()">Submit</button>
           </div>
         </div>
+      <div class="midup-nonexistent" ng-show="roomNonExistest">
+        This Midup does not exist or has been deleted. You will be redirected to your Midups page.
+      </div>
+
     </div>
 
 
@@ -170,4 +174,6 @@
       <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
     </div>
   </div>
+  <!--Div below is for a popup for Error message if room has been deleted-->
+
 </div> <!-- MapsCtrl Ends -->

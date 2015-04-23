@@ -26,7 +26,8 @@ var RoomsSchema = new Schema({
   info: String,
   active: Boolean,
   messages: [],
-  locations: [Locations]
+  locations: [Locations],
+  createdAt: { type: Date, default: Date.now }
 });
 
 exports.Rooms = mongoose.model('Rooms', RoomsSchema);

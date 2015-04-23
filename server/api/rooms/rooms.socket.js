@@ -14,11 +14,15 @@ exports.roomSockets = function (socket) {
 
   socket.on('join-room', function (data) {
     roomId = data.roomId;
-    RoomsController.joinOrUpdateRoomViaSocket(data, function (returnData, err, noUser) {
-      if (err) {
+    RoomsController.joinOrUpdateRoomViaSocket(data, function(returnData, err, noUser, noRoomMsg) {
+      console.log('returnData is ', returnData);
+      if( err ) {
         socket.emit('error', err);
       } else if (noUser) {
         socket.emit('error', 'UserId was not sent with or was undefined in request');
+      } else if ( noRoomMsg ) {
+        console.log('noRoom error should be emitted: ', noRoomMsg);
+        socket.emit('error-msg', noRoomMsg);
       } else {
         socket.emit('join-room-reply', returnData);
       }
@@ -102,8 +106,29 @@ exports.roomSockets = function (socket) {
     });
   });
 
+  socket.on('delete-midup', function(roomId, userId) {
+    console.log('roomId in sockets is ', roomId);
+    console.log('userId in sockets is ', userId);
+    //call delete room function
+    RoomsController.destroy(roomId, userId, function(newMidupList, error) {
+      if( error ) {
+        socket.emit('delete-midup-reply', null, error);
+      } else if( !!newMidupList ) {
+        socket.emit('delete-midup-reply', newMidupList, error);
+      }
+    });
+  });
 
-
+  socket.on('leave-midup', function(roomId, userId) {
+    //remove midup or reload new data
+    RoomsController.removeRoomFromUser(roomId, userId, function(newMidupList, error) {
+      if( error ) {
+        socket.emit('delete-midup-reply', null, error);
+      } else if( !!newMidupList ) {
+        socket.emit('leave-midup-reply', newMidupList, error);
+      }
+    });
+  });
 
   socket.on('disconnect', function(data){
     socket.leave(roomId);

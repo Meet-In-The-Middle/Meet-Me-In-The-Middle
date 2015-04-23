@@ -2,8 +2,8 @@
 
 angular.module('meetMeInTheMiddleApp')
 
-.controller('midUpCtrl', ['$scope', '$http', '$location','Auth', 'MainFactory', 'SocketFactory',
-  function ($scope, $http, $location, Auth, MainFactory, SocketFactory) {
+.controller('midUpCtrl', ['$scope', '$timeout', '$http', '$location','Auth', 'MainFactory', 'SocketFactory',
+  function ($scope, $timeout, $http, $location, Auth, MainFactory, SocketFactory) {
 
     //Populate select box with the places nearby options
     $scope.places_Nearby = MainFactory.places_Nearby;
@@ -11,8 +11,16 @@ angular.module('meetMeInTheMiddleApp')
     $scope.possiblePlaces = [];
     $scope.selectedPlace = [];
     $scope.selectedPlaces = [];
-
-    console.log('cont', $scope.places_Nearby);
+    var user = Auth.getCurrentUser();
+    var userId = user._id;
+    var username = user.name;
+    var socket = SocketFactory.socket;
+    console.log('socket is ', socket);
+    $scope.user = {};
+    $scope.messages = [];
+    var url = $location.$$path.split('/');
+    var roomId = url[url.length - 1];
+    $scope.roomNonExistest = false;
 
 
     $scope.addPlace = function(string){
@@ -33,19 +41,6 @@ angular.module('meetMeInTheMiddleApp')
     };
 
 
-    //console.log('cont', $scope.places_Nearby);
-
-
-    var user = Auth.getCurrentUser();
-    var userId = user._id;
-    var username = user.name;
-    var socket = SocketFactory.socket;
-    console.log('socket is ', socket);
-    $scope.user = {};
-    $scope.messages = [];
-    var url = $location.$$path.split('/');
-    var roomId = url[url.length - 1];
-    //console.log('roomId is ', roomId);
 
     /**
      * init called when page loads
@@ -78,6 +73,18 @@ angular.module('meetMeInTheMiddleApp')
       $scope.$apply(function() {
         $scope.messages = $scope.messages.concat(messageObj);
       });
+    });
+
+    socket.on('error-msg', function(errMsg) {
+      console.log('errMsg is ', errMsg);
+      if( errMsg === 'midup does not exist or has been deleted') {
+        $scope.$apply(function() {
+          $scope.roomNonExistest = true;
+        });
+        $timeout(function() {
+          $location.path('/mymidups');
+        }, 5000);
+      }
     });
 
   }]);

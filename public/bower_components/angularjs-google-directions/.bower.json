@@ -1,0 +1,36 @@
+{
+  "name": "angularjs-google-directions",
+  "homepage": "https://github.com/dbaq/angularjs-google-directions",
+  "authors": [
+    "Didier BAQUIER <didier.baquier@gmail.com>"
+  ],
+  "description": "An angular.js wrapper around the Google Directions API",
+  "main": "src/angularjs-google-directions.js",
+  "keywords": [
+    "google directions",
+    "angular.js"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.x"
+  },
+  "devDependencies": {
+    "angular-mocks": "~1.x"
+  },
+  "_release": "1387b089ac",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "1387b089acd97edb05bd509249412cd545bafc8d"
+  },
+  "_source": "git://github.com/dbaq/angularjs-google-directions.git",
+  "_target": "*",
+  "_originalSource": "angularjs-google-directions"
+}

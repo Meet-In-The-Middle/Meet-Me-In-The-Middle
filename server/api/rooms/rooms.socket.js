@@ -72,7 +72,7 @@ exports.roomSockets = function (socket) {
       'You have been invited by ' + username + ' to be a part of this MidUp <a href="' + process.env.DOMAIN + '/mymidups/'+roomId+'">'+roomName+'</a><br><br>' +
       'MidUp helps you, your colleagues and your friends interactively find the perfect place to meet up in the middle.' + '<br><br>' +
       'If the link above does not work, copy and paste this link into a browser to join the MidUp:' + '<br><br>' +
-      'http://' + process.env.DOMAIN + '/mymidups/'+roomId  + '' + '<br><br>' +
+      '' + process.env.DOMAIN + '/mymidups/'+roomId  + '' + '<br><br>' +
       '- The MidUp Team'
 
     };

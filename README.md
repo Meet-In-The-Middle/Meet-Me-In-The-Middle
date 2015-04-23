@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/meet-in-the-middle/meet-me-in-the-middle.png?label=ready&title=Ready)](https://waffle.io/meet-in-the-middle/meet-me-in-the-middle)
 # Meet Me In The Middle
 
 > An application that locates the midpoint between two users using the Google Maps API.

@@ -72,13 +72,14 @@ angular.module('meetMeInTheMiddleApp')
         roomId: roomId,
         name: $scope.editableText,
         user: {
-          _id: user._id,
+          userId: user._id,
           name: user.name,
           coords: {
             latitude: "",
-            longitude: "",
+            longitude: ""
           },
-          owner: true
+          owner: true,
+          imageUrl: ""
         },
         info: 'How awesome',
         active: true

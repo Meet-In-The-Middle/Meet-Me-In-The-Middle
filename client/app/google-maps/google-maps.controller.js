@@ -34,10 +34,6 @@ angular.module('meetMeInTheMiddleApp')
 
   var places_Nearby;
 
-/*$scope.init = function() {
-      loadVotes();
-};*/
-
   $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
   $scope.options = {
     scrollwheel: false,
@@ -55,6 +51,7 @@ angular.module('meetMeInTheMiddleApp')
   $scope.likes;
   $scope.voteMarkers = {};
   $scope.votedPlacesNearby = {};
+  $scope.test;
  /* $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Cafe'},
@@ -149,15 +146,15 @@ $scope.circle.events = {
     newCenter.lat = center.k;
     newCenter.lng = center.D;
     circle.setCenter(newCenter);
-    // socket.emit('circle-move', $scope.circle.center, roomId);
+    socket.emit('circle-move', $scope.circle.center, roomId);
   },
   radius_changed:  function(circle){
     console.log(">>>>>>>>> radius changed");
     circleRadius = circle.getRadius();
     $scope.circle.radius = circleRadius;
-    // socket.emit('circle-radius-change', $scope.circle.radius, roomId);
+    socket.emit('circle-radius-change', $scope.circle.radius, roomId);
   }
-};
+}
 
 // $scope.circle.events = {
 //         dragend: function(circle){
@@ -178,53 +175,25 @@ $scope.circle.events = {
 //       }
 
   /////////////////TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY //////////////////
-  var user = Auth.getCurrentUser();
-  var userRoomObj = {
-    roomId: roomId,
-    user: {
-      _id: user._id,
-      name: user.name,
-      coords: {
-        latitude: "",  //if user already is in room and has coords, DB will ignore ""
-        longitude: ""
+  var createUserRoomObj = function() {
+    var user = Auth.getCurrentUser();
+    var userRoomObj = {
+      roomId: roomId,
+      user: {
+        _id: user._id,
+        name: user.name,
+        coords: {
+          latitude: "",  //if user already is in room and has coords, DB will ignore ""
+          longitude: ""
+        },
+        owner: false
       },
-      owner: false
-    },
-    info: 'How awesome',
-    active: true
+      info: 'How awesome',
+      active: true
+    };
+    console.log('userRoomObj is ', userRoomObj);
+    return userRoomObj;
   };
-
-
-  //Comment or Uncomment addUserToRoom function to test HTTP vs Socket.IO
-  //var addUserToRoom = function(userRoomObjToSend, cb) {
-  //
-  //  console.log('called addUserToRoom');
-  //  $http.post('api/rooms/adduser', userRoomObjToSend)
-  //    .success(function(userData) {
-  //      console.log('TTTTTTT data coming back from addUserToRoom http ', userData);
-  //      for(var marker in userData) {
-  //        // if(userData[marker]._id === Auth.getCurrentUser()._id){
-  //        //   userInfo = userData[marker];
-  //        // }
-  //
-  //        console.log(123);
-  //        // console.log('latitude is ', Number(userData[marker].coords.latitude));
-  //        // console.log('longitude is ', Number(userData[marker].coords.longitude));
-  //        if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
-  //          addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
-  //        }
-  //      }
-  //    })
-  //    .error(function(error) {
-  //      console.log('there was an error adding User to Room ', error);
-  //    });
-  //};
-
-  ////////////////////////// END NEW CODE FOR TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY ////////////////
-/*
-  Comment or Uncomment all code below up to END (while doing oppososite to addUserToRoom above)
-*/
-  //socket.emit('join-room', userRoomObj);
 
   socket.on('join-room-reply', function(userData) {
     console.log('>>>>>>>>>JOIN ROOM REPLY<<<<<<<<<<');
@@ -239,7 +208,7 @@ $scope.circle.events = {
       // console.log('latitude is ', Number(userData[marker].coords.latitude));
       // console.log('longitude is ', Number(userData[marker].coords.longitude));
       if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
-        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
+        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker].userId);
       }
     }
   });
@@ -270,7 +239,7 @@ $scope.circle.events = {
     //after map has rendered, get data from DB for user markers
     //addUserToRoom is the HTTP post method which has issues showing midpoint and route, 'join-room' is socket.io method to accomplish same thing
       //addUserToRoom(userRoomObj);
-      socket.emit('join-room', userRoomObj);
+      socket.emit('join-room', createUserRoomObj());
     });
   });
 
@@ -320,7 +289,6 @@ $scope.circle.events = {
       }
       if($scope.markers[Auth.getCurrentUser()._id]){
         calculateCenter();
-        calcCircleCenter();
         calcRoute();
       }
     }
@@ -346,7 +314,7 @@ $scope.circle.events = {
    //  $scope.$apply();
    // });
 
-  socket.on('addLoc-reply', function(locData) {
+/*  socket.on('addLoc-reply', function(locData) {
     $scope.voteLocations[locData.id] = locData;
     var found = 0;
     for(var x = 0; x < $scope.voteLocationArr.length; x++){
@@ -386,13 +354,27 @@ $scope.circle.events = {
         $scope.voteLocations[locData[x].id] = locData[x];
         $scope.voteMarkers[locData[x].id] = JSON.parse($scope.voteLocations[locData[x].id].marker);
         $scope.voteMarkers[locData[x].id].showWindow = false;
-        $scope.votedPlacesNearby[locData[x].id] = locData[x].locInfo;  
+        $scope.votedPlacesNearby[locData[x].id] = locData[x].locInfo;
       }
       //showWindow: false
       $scope.voteLocationArr = locData;
       console.log('loadedVotes,', locData);
       $scope.$apply();
-    });
+    });*/
+
+   socket.on('circle-move-replay', function(center){
+    $scope.circle.center = center;
+    console.dir('circle moved emit received  ' + JSON.stringify(center));
+    $scope.$apply();
+   });
+
+   socket.on('circle-radius-change-reply', function(radius){
+    $scope.circle.radius = radius;
+    console.dir('circle radius changed emit received  ' + radius);
+    $scope.$apply();
+   });
+
+
 
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
   $scope.placeSearch = function () {
@@ -428,8 +410,19 @@ $scope.circle.events = {
       }
 
       console.log('place search request: ', request);
-      // socket.emit('place-search', request, roomId);
-      service.nearbySearch(request, function (results, status) {
+      socket.emit('place-search', request, roomId);
+      return;
+    }
+    else{
+      alert('Error! No marker set on Map. Please add at least one marker to the map.');
+      return;
+    }
+  };
+
+  socket.on('place-search-reply', function(request){
+   //var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
+   console.log('socket request: ', request);
+    service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
         places_Nearby = {};
@@ -439,14 +432,7 @@ $scope.circle.events = {
           //console.log(results[i]);
           //Update places object
            updatePlaces(results[i], results[i].id);
-          // console.log(results[i]);
-          // if(results[i].photos){
-          //   console.log(results[i].photos[0].getUrl);
-          //   //console.log(results[i].photos[0].getUrl());
-          //   var test = results[i].photos[0].getUrl;
-          //   console.log(test());
-          // }
-          //console.log(results[i]);
+
           // if(i === 0){ placeDetails(results[i].id); }
           addPlace(results[i]);
           // $scope.$apply();
@@ -460,21 +446,10 @@ $scope.circle.events = {
         alert("directions response " +status);
       }
     });
-    }
-    else{
-      alert('Error! No marker set on Map. Please add at least one marker to the map.');
-      return;
-    }
-  };
-
-  // socket.on('place-search-reply', function(request){
-  //  //var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
-  //  console.log('socket request: ', request); 
-  // });
+  });
 
   var addPlace = function (place) {
     //Format the icon to be displayed
-
      var icon = {
        url: place.icon,
        origin: new google.maps.Point(0,0),
@@ -553,7 +528,7 @@ $scope.circle.events = {
 
   $scope.addToVote = function (locKey) {
     console.log("addToVote called with:" + locKey);
-    
+
     var userId = Auth.getCurrentUser()._id;
     console.log(userId);
     if($scope.voteLocations[locKey] !== undefined){
@@ -565,8 +540,8 @@ $scope.circle.events = {
     } else {
       console.log('new location');
 
-      var locData = 
-        { 
+      var locData =
+        {
           id: locKey,
           name: $scope.placesNearby[locKey][0],
           votes: 1,

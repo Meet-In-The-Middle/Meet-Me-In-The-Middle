@@ -39,7 +39,11 @@ exports.index = function(req, res) {
 exports.create = function (req, res, next) {
   console.log('req.body is ', req.body);
   if( !req.body.name ) {
+<<<<<<< HEAD
     return res.send(500, err);
+=======
+    return res.send(500);
+>>>>>>> (fix) fix websocket errors on refresh (in deployed version) and refresh not loading marker data properly.
   }
   var newUser = new User(req.body);
   newUser.provider = 'local';
@@ -145,8 +149,11 @@ exports.uploadUserImage = function(userId, imageName, cb) {
  * @param url
  */
 exports.updateImageUrl = function(userId, url) {
+<<<<<<< HEAD
   var userId = userId;
   var url = url;
+=======
+>>>>>>> (fix) fix websocket errors on refresh (in deployed version) and refresh not loading marker data properly.
   User
     .findOne({
       _id: userId

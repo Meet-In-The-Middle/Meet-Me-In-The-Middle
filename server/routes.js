@@ -46,9 +46,6 @@ module.exports = function(app) {
       return userId + '001';
     },
     onFileSizeLimit: function (file) {
-      res.json({
-        uploadError: 'Upload failed. File must be less than 500 KB'
-      });
       isFileTooLarge = true;
     },
     onFileUploadStart: function (file) {
@@ -70,7 +67,15 @@ module.exports = function(app) {
       }
     }
   }),
-    function(req, res) { }]);
+    function(req, res) {
+      if( isFileTooLarge ) {
+        console.log('123321 error');
+        res.json({
+          uploadError: 'Upload failed. File must be less than 500 KB'
+        });
+        isFileTooLarge = false;
+      }
+    }]);
 
 
   app.use('/auth', require('./auth'));

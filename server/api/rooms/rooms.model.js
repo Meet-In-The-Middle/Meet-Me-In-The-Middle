@@ -3,6 +3,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+<<<<<<< HEAD
 var Locations = new Schema({
   id: String,
   name : String,
@@ -23,6 +24,35 @@ var RoomsSchema = new Schema({
 
 
 module.exports = mongoose.model('Rooms', RoomsSchema);
+=======
+var RoomUserShema = new Schema({
+  owner: Boolean,
+  coords: {},
+  name: String,
+  userId: String,
+  imageUrl: String
+});
+
+var RoomsSchema = new Schema({
+  name: String,
+  users: [RoomUserShema],
+  info: String,
+  active: Boolean,
+  messages: []
+});
+
+//var RoomsSchema = new Schema({
+//  name: String,
+//  users: [],
+//  info: String,
+//  active: Boolean,
+//  messages: []
+//});
+//module.exports = mongoose.model('Rooms', RoomsSchema);
+
+exports.Rooms = mongoose.model('Rooms', RoomsSchema);
+exports.RoomUser = mongoose.model('RoomUser', RoomUserShema);
+>>>>>>> (fix) fix websocket errors on refresh (in deployed version) and refresh not loading marker data properly.
 
 /*userObj = {
  _id

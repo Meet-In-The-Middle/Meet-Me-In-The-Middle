@@ -39,6 +39,7 @@ exports.roomSockets = function (socket) {
       }
     });
 
+<<<<<<< HEAD
     RoomsController.getVotes(roomId, function(locData, err) {
       if(err) {
         console.log('getVotes socket error:', err);
@@ -50,6 +51,8 @@ exports.roomSockets = function (socket) {
 
 
 
+=======
+>>>>>>> (fix) fix websocket errors on refresh (in deployed version) and refresh not loading marker data properly.
      // listen for client emitting to event 'roomId' which segregates room
     socket.on(roomId, function(userId, username, message){
       //console.log('####################### in socket.on', userId, username, message);
@@ -83,6 +86,7 @@ exports.roomSockets = function (socket) {
     socket.emit('email-invites-reply', data);
   });
 
+<<<<<<< HEAD
   socket.on('addLoc', function(roomId, locData, userId){ 
     console.log('updating the db',roomId);
     RoomsController.addLoc(roomId, locData, userId, function(locData) {
@@ -100,6 +104,8 @@ exports.roomSockets = function (socket) {
 
 
 
+=======
+>>>>>>> (fix) fix websocket errors on refresh (in deployed version) and refresh not loading marker data properly.
   socket.on('disconnect', function(data){
     socket.leave(roomId);
   });

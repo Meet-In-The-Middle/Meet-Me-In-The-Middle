@@ -42,7 +42,7 @@ io.on('connection', function (socket) {
   // });
 
 
-  socket.on('move-pin', function(data){
+  socket.on('move-pin', function(data) {
     // If it's new socket.id
     // dataCollection[data.roomId] = {};
     // dataCollection[data.roomId][data._id] = data;
@@ -52,47 +52,32 @@ io.on('connection', function (socket) {
 
     //dataCollection[data._id] = data;
 
-    if(dataCollection[data.roomId] === undefined){
+    if (dataCollection[data.roomId] === undefined) {
       dataCollection[data.roomId] = {};
       dataCollection[data.roomId][data._id] = data;
     }
-    else{
+    else {
       dataCollection[data.roomId][data._id] = data;
     }
 
-
-    //console.log('dataCollection: ', dataCollection);
-    // console.log('server socket', socket.id);
-    // console.log(data);
-    // console.log('server data received: ', data);
-    // console.log('data collection: ', dataCollection);
-
     var userRoomObj = {
-        roomId: data.roomId,
-        user: {
-          _id: data._id,
-          name: data.name,
-          coords: {
-            latitude: data.coords.latitude,
-            longitude: data.coords.longitude,
-          },
-          owner: false
+      roomId: data.roomId,
+      user: {
+        _id: data._id,
+        name: data.name,
+        coords: {
+          latitude: data.coords.latitude,
+          longitude: data.coords.longitude,
         },
-        info: 'How awesome',
-        active: true
-      };
+        owner: false
+      },
+      info: 'How awesome',
+      active: true
+    };
 
-    //console.log('User Room Obj:', userRoomObj);
-    //Update Database with new info (coords) but don't send data back
-    //Data will be sent back from Data Cache for performance reasons
-
-    //RoomsController.addUserToRoomOrUpdate(userRoomObj, function(usersData) {
-    //   console.log('UPDATE ROOM - USRS DATA: ', usersData);
-    //   //do something with usersData maybe
-    //});
-    RoomsController.joinOrUpdateRoomViaSocket(userRoomObj, function(returnData, err, noUser) {
+    RoomsController.joinOrUpdateRoomViaSocket(userRoomObj, function (returnData, err, noUser) {
       //console.log('returnData is ', returnData);
-      if( err ) {
+      if (err) {
         socket.emit('error', err);
       } else if (noUser) {
         socket.emit('error', 'UserId was not sent with or was undefined in request');
@@ -109,51 +94,32 @@ io.on('connection', function (socket) {
     // io.emit('move-pin-reply', dataCollection[data.roomId]);
     io.sockets.in(data.roomId).emit('move-pin-reply', dataCollection[data.roomId]);
     // socket.on(data.roomId)
-
-
-    // Testing
-    //socket.emit('move-pin', data);
-    // console.log('TESTING SOCKET.IO' + socket.id);
-    // console.dir(dataCollection);
-    });
-
-    // socket.on('circle-move', function(center, room){
-    //   // io.emit('circle-move-replay', center);
-    //   io.sockets.in(room).emit('circle-move-replay', center);
-    // });
-
-    // socket.on('circle-radius-change', function(radius, room){
-    //   // io.emit('circle-radius-change-reply', radius);
-    //   io.sockets.in(room).emit('circle-radius-change-reply', radius);
-    // });
-
-    // socket.on('place-search', function(request, room){
-    //   // io.emit('place-search-reply', request);
-    //   io.sockets.in(room).emit('place-search-reply', request);
-    // });
+  });
 
     socket.on('vote', function(locKey, userId, room){
       io.sockets.in(room).emit('vote-reply', locKey, userId);
     });
 
-    socket.on('remove-vote', function(locKey, userId, room){
+    socket.on('remove-vote', function(locKey, userId, room) {
       io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
     });
 
+    socket.on('circle-move', function(center, room){
+      // io.emit('circle-move-replay', center);
+      io.sockets.in(room).emit('circle-move-replay', center);
+    });
 
-  //socket.on('updateMap', function(data) {
-  //   console.log('data is ', data);
-  //   var userRoomObj = {
-  //     roomId: data.roomId,
-  //     userId: data._id
-  //   };
-  // RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
-  // //return object of objects indexed by userId
-  // console.log('!!!!!!USERS DATA for ALL IN ROOM!!! ', usersData);
-  //   io.emit('updateMapReply', usersData);
-  // });
-  //
-  //});
+    socket.on('circle-radius-change', function(radius, room){
+      // io.emit('circle-radius-change-reply', radius);
+      io.sockets.in(room).emit('circle-radius-change-reply', radius);
+    });
+
+    socket.on('place-search', function(request, room){
+      // io.emit('place-search-reply', request);
+      io.sockets.in(room).emit('place-search-reply', request);
+
+    });
+
 
   // Delete the data after disconnecting.
   socket.on('disconnect', function(data){
@@ -163,13 +129,6 @@ io.on('connection', function (socket) {
 
   var roomSockets = require('./api/rooms/rooms.socket.js')
   roomSockets.roomSockets(socket);
-});
-
-io.on('connection', function(socket) {
-  socket.on('chat', function() {})
-
-
-  socket.on('fdlkjalkjdasfljadf', function() {})
 });
 
 

@@ -467,7 +467,7 @@ exports.getRecentChatMessages = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log(err);
-    } else {
+    } else if ( !!room ) {
       var messages = room.messages.slice(0, 100);
       callback(messages, err);
     }
@@ -548,8 +548,9 @@ exports.getVotes = function(roomId, callback) {
       callback(room.locations);
     }
   });
-}
+};
 
+function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
   //console.log('123 ', userRoomObj);
   //console.log('userId is ', userId);
   var roomName;
@@ -645,9 +646,9 @@ exports.getVotes = function(roomId, callback) {
             console.log('UPDATE data is ', data);
             //create Object of user objects to send to client to populate map markers
             var usersObj = data.users.reduce(function (a, b) {
-                a[b.userId] = b;
-                return a;
-              }, {});
+              a[b.userId] = b;
+              return a;
+            }, {});
             //console.log('usersObj in query.save is ', usersObj);
             cb(usersObj);
           }
@@ -655,6 +656,4 @@ exports.getVotes = function(roomId, callback) {
       }
     }
   );
-};
-
-
+}

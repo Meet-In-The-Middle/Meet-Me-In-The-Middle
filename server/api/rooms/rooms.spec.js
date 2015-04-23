@@ -1,16 +1,14 @@
 'use strict';
 
 var should = require('should');
-<<<<<<< HEAD
-var app = require('../../app');
-var request = require('supertest');
-
-describe('GET /api/rooms', function() {
-
-  it('should respond with JSON array', function(done) {
-    request(app)
-      .get('/api/rooms')
-=======
+//var app = require('../../app');
+//var request = require('supertest');
+//
+//describe('GET /api/rooms', function() {
+//
+//  it('should respond with JSON array', function(done) {
+//    request(app)
+//      .get('/api/rooms')
 //var request = require('supertest');
 
 var http = require('http');
@@ -32,7 +30,6 @@ describe('POST /api/rooms/adduser', function() {
   it('should respond with JSON object', function(done) {
     request(server)
       .post('/api/rooms/adduser')
->>>>>>> (fix) fix websocket errors on refresh (in deployed version) and refresh not loading marker data properly.
       .expect(200)
       .expect('Content-Type', /json/)
       .end(function(err, res) {
@@ -41,8 +38,4 @@ describe('POST /api/rooms/adduser', function() {
         done();
       });
   });
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> (fix) fix websocket errors on refresh (in deployed version) and refresh not loading marker data properly.

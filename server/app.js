@@ -36,13 +36,9 @@ var RoomsController = require('./api/rooms/rooms.controller');
 
 var dataCollection = {};
 io.on('connection', function (socket) {
-  // socket.emit('news', { hello: 'world' });
-  // socket.on('my other event', function (data) {
-  //   console.log('inside socket connection ', data);
-  // });
 
 
-  socket.on('move-pin', function(data) {
+  socket.on('move-pin', function(data){
     // If it's new socket.id
     // dataCollection[data.roomId] = {};
     // dataCollection[data.roomId][data._id] = data;
@@ -52,13 +48,14 @@ io.on('connection', function (socket) {
 
     //dataCollection[data._id] = data;
 
-    if (dataCollection[data.roomId] === undefined) {
+    if(dataCollection[data.roomId] === undefined){
       dataCollection[data.roomId] = {};
       dataCollection[data.roomId][data._id] = data;
     }
-    else {
+    else{
       dataCollection[data.roomId][data._id] = data;
     }
+
 
     var userRoomObj = {
       roomId: data.roomId,
@@ -69,11 +66,20 @@ io.on('connection', function (socket) {
           latitude: data.coords.latitude,
           longitude: data.coords.longitude,
         },
-        info: data.info,
-        active: true
-      }
+        owner: false
+      },
+      info: 'How awesome',
+      active: true
     };
 
+    //console.log('User Room Obj:', userRoomObj);
+    //Update Database with new info (coords) but don't send data back
+    //Data will be sent back from Data Cache for performance reasons
+
+    //RoomsController.addUserToRoomOrUpdate(userRoomObj, function(usersData) {
+    //   console.log('UPDATE ROOM - USRS DATA: ', usersData);
+    //   //do something with usersData maybe
+    //});
     RoomsController.joinOrUpdateRoomViaSocket(userRoomObj, function(returnData, err, noUser, noRoomMsg) {
       console.log('returnData is ', returnData);
       if( err ) {
@@ -96,55 +102,61 @@ io.on('connection', function (socket) {
     // io.emit('move-pin-reply', dataCollection[data.roomId]);
     io.sockets.in(data.roomId).emit('move-pin-reply', dataCollection[data.roomId]);
     // socket.on(data.roomId)
+
   });
 
-    socket.on('vote', function(locKey, userId, room){
-      io.sockets.in(room).emit('vote-reply', locKey, userId);
-    });
+  // socket.on('circle-move', function(center, room){
+  //   // io.emit('circle-move-replay', center);
+  //   io.sockets.in(room).emit('circle-move-replay', center);
+  // });
 
-    socket.on('remove-vote', function(locKey, userId, room) {
-      io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
-    });
+  // socket.on('circle-radius-change', function(radius, room){
+  //   // io.emit('circle-radius-change-reply', radius);
+  //   io.sockets.in(room).emit('circle-radius-change-reply', radius);
+  // });
 
-    // socket.on('circle-move', function(center, room){
-    //   // io.emit('circle-move-replay', center);
-    //   io.sockets.in(room).emit('circle-move-replay', center);
-    // });
+  // socket.on('place-search', function(request, room){
+  //   // io.emit('place-search-reply', request);
+  //   io.sockets.in(room).emit('place-search-reply', request);
+  // });
 
-    // socket.on('circle-radius-change', function(radius, room){
-    //   // io.emit('circle-radius-change-reply', radius);
-    //   io.sockets.in(room).emit('circle-radius-change-reply', radius);
-    // });
+  socket.on('vote', function(locKey, userId, room){
+    io.sockets.in(room).emit('vote-reply', locKey, userId);
+  });
 
-    // socket.on('place-search', function(request, room){
-    //   // io.emit('place-search-reply', request);
-    //   io.sockets.in(room).emit('place-search-reply', request);
-    // });
+  socket.on('remove-vote', function(locKey, userId, room) {
+    io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
+  });
 
-    socket.on('vote', function(locKey, userId, room){
-      io.sockets.in(room).emit('vote-reply', locKey, userId);
-    });
+  socket.on('circle-move', function(center, room){
+    // io.emit('circle-move-replay', center);
+    io.sockets.in(room).emit('circle-move-replay', center);
+  });
 
-    socket.on('remove-vote', function(locKey, userId, room) {
-      io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
-    });
+  socket.on('circle-radius-change', function(radius, room){
+    // io.emit('circle-radius-change-reply', radius);
+    io.sockets.in(room).emit('circle-radius-change-reply', radius);
+  });
 
-    socket.on('circle-move', function(center, room){
-      // io.emit('circle-move-replay', center);
-      io.sockets.in(room).emit('circle-move-replay', center);
-    });
+  socket.on('place-search', function(request, room){
+    // io.emit('place-search-reply', request);
+    io.sockets.in(room).emit('place-search-reply', request);
+  });
 
-    socket.on('circle-radius-change', function(radius, room){
-      // io.emit('circle-radius-change-reply', radius);
-      io.sockets.in(room).emit('circle-radius-change-reply', radius);
-    });
 
-    socket.on('place-search', function(request, room){
-      // io.emit('place-search-reply', request);
-      io.sockets.in(room).emit('place-search-reply', request);
-
-    });
-
+  //socket.on('updateMap', function(data) {
+  //   console.log('data is ', data);
+  //   var userRoomObj = {
+  //     roomId: data.roomId,
+  //     userId: data._id
+  //   };
+  // RoomsController.getUsersForRoom(userRoomObj, function(usersData) {
+  // //return object of objects indexed by userId
+  // console.log('!!!!!!USERS DATA for ALL IN ROOM!!! ', usersData);
+  //   io.emit('updateMapReply', usersData);
+  // });
+  //
+  //});
 
   // Delete the data after disconnecting.
   socket.on('disconnect', function(data){
@@ -155,6 +167,8 @@ io.on('connection', function (socket) {
   var roomSockets = require('./api/rooms/rooms.socket.js')
   roomSockets.roomSockets(socket);
 });
+
+
 
 require('./config/express')(app);
 require('./routes')(app);

@@ -61,7 +61,8 @@ exports.createRoom = function (req, res) {
 // Will add user to room if not already part of room
 exports.joinRoomHTTP = function (req, res) {
   console.log('req.body is ', req.body);
-  var userId = req.body.user._id;
+  var userId = req.body.userId;
+  //var userId = req.body.user._id;
   var roomId = req.body.roomId;
   var userRoomObj = req.body;
   var usersInRoom = addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, function(data) {
@@ -199,6 +200,8 @@ exports.getUsersForRoom = function (data, cb) {
  * @param cb -- callback used to send data back to client
  */
 exports.joinOrUpdateRoomViaSocket = function (userRoomObj, cb) {
+  //console.log('called addUserToRoom');
+  //console.log('userRoomObj', userRoomObj);
   var userId = userRoomObj.user._id;
   var roomId = userRoomObj.roomId;
   addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb);
@@ -276,206 +279,6 @@ exports.getRecentChatMessages = function(roomId, callback) {
 
 exports.updateVote = function(roomId, likeType, userId, locData, callback){
   Rooms.findById(roomId, function(err, room) {
-      if(err){
-        console.log('updateVote Error:' + err);
-      } else {
-        var locations = room.locations;
-        var returnloc = {};
-        locations.forEach(function(x){
-          if(x.id === locData.id) {
-            if(!(_.contains(x.voters, userId)) || likeType === -1) {
-              console.log('found record', x.name, likeType, x.votes + likeType);
-              x.votes = x.votes + likeType;
-              console.log('result', x.votes);
-              if(likeType === 1){
-                console.log('adding to record');
-                x.voters.push(userId);
-              } else {
-                x.voters = _.without(x.voters, userId);
-              }
-            }
-            returnloc = x;
-          }
-        });
-        room.locations = locations;
-        room.save();
-        console.log('room ',room.locations);
-
-        console.log('update vote');
-        callback(returnloc);
-      }
-
-    });
-};
-
-exports.addLoc = function (roomId, locData, userId, callback){
-   console.log('roomId', roomId);
-   var found = 0;
-   Rooms.findById(roomId, function(err, room) {
-    if(err){
-      console.log('addLoc Error:' + err);
-    } else {
-      for(var x = 0; x < room.locations.length; x++){
-        if(room.locations[x].id === locData.id){
-          console.log('found id call updateVote');
-          exports.updateVote(roomId, 1, userId, locData, callback);
-          found = 1;
-          break;
-        }
-      }
-      if(!found){
-        Rooms.update(
-        { "_id": roomId },
-        { "$push": {"locations": locData }},
-        function(err, numAffected){
-          if(err){
-            console.log('updateVotes error:' + err);
-          } else {
-            console.log('updateVotes numAffected:' + numAffected);
-            callback(locData);
-          }
-        });
-      }
-    }
-  });
-};
-
-exports.getVotes = function(roomId, callback) {
-  Rooms.findById(roomId, function(err, room) {
-    if(err){
-      console.log('getVotes Error:' + err);
-    } else if ( !!room ) {;
-      callback(room.locations);
-    }
-  });
-}
-
-function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
-  console.log(123);
-  var roomName, usersInRoom;
-  var result;
-  Rooms.findById(roomId, function (err, room) {
-    //console.log('room is ', room);
-    if (err) {
-      return cb(_, err);
-    }
-    if (!room) {
-      return cb(_, err);
-    }
-    roomName = room.name;
-    room.info = "changed to not awesome";
-    var preExistingUser = false;
-    usersInRoom = room.users;
-    for (var j = 0, len = usersInRoom.length; j < len; j++) {
-      //console.log('got here Jonah');
-      if (usersInRoom[j]._id === userId) {
-        if (userRoomObj.user.coords.latitude !== "") {
-          usersInRoom[j].coords.latitude = userRoomObj.user.coords.latitude;
-        }
-        if (userRoomObj.user.coords.longitude !== "") {
-          usersInRoom[j].coords.longitude = userRoomObj.user.coords.longitude;
-        }
-        usersInRoom[j].name = userRoomObj.user.name;
-        //add user profile imageUrl to the user in the room so we can return imageUrl for markers
-        User.findById(userId, function (err, user) {
-          if (err) {
-            console.log('err in User.findById is ', err);
-          } else {
-            //usersInRoom[j].imageUrl = user.imageUrl;
-          }
-        });
-        preExistingUser = true;
-        break;
-      }
-    }
-    if (!preExistingUser) {
-      // if( userRoomObj.user.coords.latitude !== "" || userRoomObj.user.coords.longitude !== "" ) {
-      usersInRoom.push(userRoomObj.user);
-      // }
-    }
-    //console.log('usersInRoom ', usersInRoom);
-    Rooms.findById(roomId, function (err, room) {
-      if (!err) {
-        room.users = usersInRoom;
-        room.save();
-        User.findById(userId, function (err, user) {
-          if (err) {
-            return cb(_, err);
-          } else if (user === null || user === undefined) {
-            //return cb(_, _, true);
-          }
-          else {
-            var flag = false;
-            var userInRooms = user.memberOfRooms;
-            for (var i = 0, len = userInRooms.length; i < len; i++) {
-              if (user.memberOfRooms[i].roomId === roomId) {
-                //console.log('user already a member of this room');
-                flag = true;
-                break;
-              }
-
-            }
-            if (!flag) {
-              user.memberOfRooms.push({roomId: roomId, name: roomName});
-            }
-            user.save(function (err) {
-              if (err) return cb(_, err);
-            });
-            //callback for sending data back to client
-            Rooms.findById(roomId, function (err, room) {
-              //console.log('+++++++ROOM: ', room);
-              var usersObj = room.users.reduce(function (a, b) {
-                a[b._id] = b;
-                return a;
-              }, {});
-              console.log('usersObj is ', usersObj);
-              //use callback to send useObj object of user objects back to client
-              cb(usersObj);
-            });
-          }
-        });
-      }
-    });
-  });
-};
-
-
-exports.updateRoomChats = function(roomId, userId, username, message, callback){
-  //Create the message object
-  var chatObj = {
-    userId: userId,
-    username: username,
-    message: message,
-    date: new Date()
-  };
-  //push new chat message to MidUp room messages array
-  Rooms.update(
-    { "_id": roomId },
-    { "$push": {"messages": chatObj }},
-    function(err, numAffected){
-      if(err){
-        console.log('updateRoomChats error:' + err);
-      } else {
-        console.log('updateRoomChats numAffected:' + numAffected);
-        callback(chatObj);
-      }
-    }
-  );
-};
-
-exports.getRecentChatMessages = function(roomId, callback) {
-  Rooms.findById(roomId, function(err, room) {
-    if(err){
-      console.log(err);
-    } else if ( !!room ) {
-      var messages = room.messages.slice(0, 100);
-      callback(messages, err);
-    }
-  });
-};
-
-exports.updateVote = function(roomId, likeType, userId, locData, callback){
-Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log('updateVote Error:' + err);
     } else {
@@ -509,9 +312,9 @@ Rooms.findById(roomId, function(err, room) {
 };
 
 exports.addLoc = function (roomId, locData, userId, callback){
-   console.log('roomId', roomId);
-   var found = 0;
-   Rooms.findById(roomId, function(err, room) {
+  console.log('roomId', roomId);
+  var found = 0;
+  Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log('addLoc Error:' + err);
     } else {
@@ -525,16 +328,16 @@ exports.addLoc = function (roomId, locData, userId, callback){
       }
       if(!found){
         Rooms.update(
-        { "_id": roomId },
-        { "$push": {"locations": locData }},
-        function(err, numAffected){
-          if(err){
-            console.log('updateVotes error:' + err);
-          } else {
-            console.log('updateVotes numAffected:' + numAffected);
-            callback(locData);
-          }
-        });
+          { "_id": roomId },
+          { "$push": {"locations": locData }},
+          function(err, numAffected){
+            if(err){
+              console.log('updateVotes error:' + err);
+            } else {
+              console.log('updateVotes numAffected:' + numAffected);
+              callback(locData);
+            }
+          });
       }
     }
   });
@@ -544,11 +347,11 @@ exports.getVotes = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log('getVotes Error:' + err);
-    } else {;
+    } else if ( !!room ) {;
       callback(room.locations);
     }
   });
-};
+}
 
 function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
   //console.log('123 ', userRoomObj);
@@ -657,3 +460,4 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
     }
   );
 }
+

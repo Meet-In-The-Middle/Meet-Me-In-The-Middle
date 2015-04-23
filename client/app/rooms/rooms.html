@@ -10,12 +10,19 @@
         <div class="all-rooms">
           <h4>Enter One of Your MidUps</h4>
 
-          <div class="room" ng-repeat="room in rooms" ng-mouseover="">
-            <a class="midup-links" href="/mymidups/{{::room.roomId}}">{{::room.name}}</a>
-
-            <span class="invite-people" ng-hide="inviteEnabled(room.roomId)">
-              <button class="btn btn-default" ng-click="enableInvite(room.roomId)">Invite People</button>
+          <div class="room" ng-repeat="room in rooms | orderBy: 'createdAt': true track by $index" ng-hide="remove">
+            <p class="midup-titles">{{room.name}}</p>
+            <div class="midup-options">
+              <span class="invite-people" ng-hide="inviteEnabled(room.roomId)">
+                <a class="invite-people" ng-click="enableInvite(room.roomId)">Invite People</a>
+              </span><br>
+              <a class="leave-delete" ng-if="room.owner" ng-click="deleteMidup(room.roomId, $index)">Delete Midup</a>
+              <a class="leave-delete" ng-if="!room.owner" ng-click="leaveMidup(room.roomId, $index)">Leave Midup</a>
+            </div>
+            <span class="invite-people">
+              <a class="btn btn-default btn-midup" href="/mymidups/{{::room.roomId}}">Enter MidUp</a>
             </span>
+            <p>{{::room.info}}</p>
             <div ng-show="inviteEnabled(room.roomId)">
               <form name="emailCaptureForm" role="form" ng-submit="emailCaptureForm.$valid && sendEmailInvites(room.roomId, room.name)" novalidate>
                 <span class="instructions-emails">Input a comma-separated list of emails to invite to this MidUp</span>
@@ -42,7 +49,7 @@
               <!--</div>-->
 
             </div>
-            <hr>
+            <hr class="spacer-hr">
           </div>
         </div>
 
@@ -55,7 +62,8 @@
           <button class="btn btn-default" ng-click="enableEditor()">Create MidUp</button>
         </div>
         <div ng-show="editorEnabled">
-          <input ng-model="editableText" ng-show="editorEnabled" cols="15" rows="1"><br>
+          <input ng-model="editableText" ng-show="editorEnabled" cols="15" rows="1" placeholder="Midup Name"><br>
+          <textarea ng-model="roomInfo" ng-show="editorEnabled" cols="20" rows="4" placeholder="Give a brief description including expected date/time"></textarea><br>
           <a href="#" ng-click="createRoom()">Save</a>
           or
           <a href="#" ng-click="disableEditor()">Cancel</a>

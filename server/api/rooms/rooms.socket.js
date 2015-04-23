@@ -7,18 +7,22 @@
 var Rooms = require('./rooms.model');
 var RoomsController = require('./rooms.controller');
 var io = require('../../app').io;
-var sendgrid  = require('sendgrid')('midup', '7hZW0cRLUm1K8inC');
+var sendgrid  = require('sendgrid')(process.env.SEND_GRID_ACCOUNT, process.env.SEND_GRID_PASSWORD);
 
 exports.roomSockets = function (socket) {
   var roomId;
 
   socket.on('join-room', function (data) {
     roomId = data.roomId;
-    RoomsController.joinOrUpdateRoomViaSocket(data, function (returnData, err, noUser) {
-      if (err) {
+    RoomsController.joinOrUpdateRoomViaSocket(data, function(returnData, err, noUser, noRoomMsg) {
+      console.log('returnData is ', returnData);
+      if( err ) {
         socket.emit('error', err);
       } else if (noUser) {
         socket.emit('error', 'UserId was not sent with or was undefined in request');
+      } else if ( noRoomMsg ) {
+        console.log('noRoom error should be emitted: ', noRoomMsg);
+        socket.emit('error-msg', noRoomMsg);
       } else {
         socket.emit('join-room-reply', returnData);
       }
@@ -48,8 +52,6 @@ exports.roomSockets = function (socket) {
       }
     });
 
-
-
      // listen for client emitting to event 'roomId' which segregates room
     socket.on(roomId, function(userId, username, message){
       //console.log('####################### in socket.on', userId, username, message);
@@ -65,8 +67,14 @@ exports.roomSockets = function (socket) {
     var params = {
       //to: 'jsnisenson@gmail.com',
       from: 'jsnisenson@gmail.com',
-      subject: 'Jonah Testing Sendgrid Email',
-      html: 'You have been invited by ' + username + ' to be a part of this MidUp <a href="http://jn.ngrok.com/mymidups/'+roomId+'">'+roomName+'</a>'
+      subject: 'Invitation to MidUp',
+      html: 'Hello, <br><br> ' +
+      'You have been invited by ' + username + ' to be a part of this MidUp <a href="' + process.env.DOMAIN + '/mymidups/'+roomId+'">'+roomName+'</a><br><br>' +
+      'MidUp helps you, your colleagues and your friends interactively find the perfect place to meet up in the middle.' + '<br><br>' +
+      'If the link above does not work, copy and paste this link into a browser to join the MidUp:' + '<br><br>' +
+      'http://' + process.env.DOMAIN + '/mymidups/'+roomId  + '' + '<br><br>' +
+      '- The MidUp Team'
+
     };
     var email = new sendgrid.Email(params);
     //addTo sends email to everyone in the array but independently (i.e. user won't see other users emails)
@@ -83,45 +91,50 @@ exports.roomSockets = function (socket) {
     socket.emit('email-invites-reply', data);
   });
 
-  socket.on('addLoc', function(roomId, locData, userId){ 
+  socket.on('addLoc', function(roomId, locData, userId){
     console.log('updating the db',roomId);
     RoomsController.addLoc(roomId, locData, userId, function(locData) {
       console.log('notifying room of locData');
-      io.sockets.in(roomId).emit('addLoc-reply', locData); 
+      io.sockets.in(roomId).emit('addLoc-reply', locData);
     });
   });
 
   socket.on('vote', function(roomId, likeType, userId, locData){
     console.log('updating the db like',roomId);
     RoomsController.updateVote(roomId, likeType, userId, locData, function(locData) {
-      io.sockets.in(roomId).emit('vote-reply', locData); 
-    });  
+      io.sockets.in(roomId).emit('vote-reply', locData);
+    });
   });
 
+  socket.on('delete-midup', function(roomId, userId) {
+    console.log('roomId in sockets is ', roomId);
+    console.log('userId in sockets is ', userId);
+    //call delete room function
+    RoomsController.destroy(roomId, userId, function(newMidupList, error) {
+      if( error ) {
+        socket.emit('delete-midup-reply', null, error);
+      } else if( !!newMidupList ) {
+        socket.emit('delete-midup-reply', newMidupList, error);
+      }
+    });
+  });
 
+  socket.on('leave-midup', function(roomId, userId) {
+    //remove midup or reload new data
+    RoomsController.removeRoomFromUser(roomId, userId, function(newMidupList, error) {
+      if( error ) {
+        socket.emit('delete-midup-reply', null, error);
+      } else if( !!newMidupList ) {
+        socket.emit('leave-midup-reply', newMidupList, error);
+      }
+    });
+  });
 
   socket.on('disconnect', function(data){
     socket.leave(roomId);
   });
 
-
 };
 
 
-//exports.register = function(socket) {
-//  Rooms.schema.post('save', function (doc) {
-//    onSave(socket, doc);
-//  });
-//  Rooms.schema.post('remove', function (doc) {
-//    onRemove(socket, doc);
-//  });
-//}
-//
-//function onSave(socket, doc, cb) {
-//  socket.emit('rooms:save', doc);
-//}
-//
-//function onRemove(socket, doc, cb) {
-//  socket.emit('rooms:remove', doc);
-//}
 

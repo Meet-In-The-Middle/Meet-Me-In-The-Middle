@@ -1,49 +1,49 @@
 <!-- <div id="gmap-nav" ng-include="'components/navbar/navbar.html'" class="navBar"></div> -->
 
 <nav id="gmap-nav" role="navigation" ng-controller="NavbarCtrl">
-        <!-- LOGO CONTAINER -->
+  <!-- LOGO CONTAINER -->
   <div class="gmap-logo">
-          <a href="/"><!-- SCROLLS TO TOP OF THE PAGE -->
+    <a href="/"><!-- SCROLLS TO TOP OF THE PAGE -->
 
-              <!--PLACE URL OF YOUR LOGO BELOW-->
-              <img src="assets/images/logoMidUp.jpg" width=150 height=30>
+      <!--PLACE URL OF YOUR LOGO BELOW-->
+      <img src="assets/images/logoMidUp.jpg" width=150 height=30>
 
-          </a>
+    </a>
 
   </div>
 
   <!-- MAIN MENU BUTTONS CONTAINER -->
   <div class="gmap-button-group">
-      <span ng-show="isLoggedIn()" ng-class="{active: isActive('/logout')}"><a href="" ng-click="logout()" class="in-button" >Logout</a></li></span>
+    <span ng-show="isLoggedIn()" ng-class="{active: isActive('/logout')}"><a href="" ng-click="logout()" class="in-button" >Logout</a></li></span>
 
-      <span ng-show="isLoggedIn()" ng-class="{active: isActive('/settings')}"><a href="/settings" class="gmap-cog"><span class="fa fa-cog"></span></a></span>
+    <span ng-show="isLoggedIn()" ng-class="{active: isActive('/settings')}"><a href="/settings" class="gmap-cog"><span class="fa fa-cog"></span></a></span>
 
-      <span ng-show="isLoggedIn()"><p>Hello {{ getCurrentUser().name }}</p> </span>
+    <span ng-show="isLoggedIn()"><p>Hello {{ getCurrentUser().name }}</p> </span>
 
-      <span ng-show="isAdmin()" ng-class="{active: isActive('/admin')}"><a class="in-button" href="/admin">Admin</a></span>
+    <span ng-show="isAdmin()" ng-class="{active: isActive('/admin')}"><a class="in-button" href="/admin">Admin</a></span>
 
-      <!-- data-toggle="modal" data-target="#joinUs" -->
-      <span ng-hide="isLoggedIn()" ng-class="{active: isActive('/login')}"><a class="in-button"  href="/login">Login</a></span>
+    <!-- data-toggle="modal" data-target="#joinUs" -->
+    <span ng-hide="isLoggedIn()" ng-class="{active: isActive('/login')}"><a class="in-button"  href="/login">Login</a></span>
 
 
 
-      <!-- DOWNLOAD BUTTON - PLACE LINK TO YOUR APP HERE -->
-      <span ng-hide="isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup" class="in-button" style="color:white;">Sign up</a></span>
+    <!-- DOWNLOAD BUTTON - PLACE LINK TO YOUR APP HERE -->
+    <span ng-hide="isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup" class="in-button" style="color:white;">Sign up</a></span>
 
   </div>
 
   <!-- MAIN MENU CONTAINER -->
   <div>
     <div class="navbar-right">
-        <!-- MAIN MENU POSITIONS -->
-        <div ng-hide="!isLoggedIn()"><a href="/mymidups" >My MidUps</a></div>
-        <div ng-hide="!isLoggedIn()"><a href="/profile" >Profile</a></div>
+      <!-- MAIN MENU POSITIONS -->
+      <div ng-hide="!isLoggedIn()"><a href="/mymidups" >My MidUps</a></div>
+      <div ng-hide="!isLoggedIn()"><a href="/profile" >Profile</a></div>
     </div>
-      <div class="navbar-right">
-              <!-- MAIN MENU POSITIONS -->
-        <div><a href="" ng-click="linkTo('/#about')">About</a></div>
-        <div><a href="" ng-click="linkTo('/#team')">Team</a></div>
-      </div>
+    <div class="navbar-right">
+      <!-- MAIN MENU POSITIONS -->
+      <div><a href="" ng-click="linkTo('/#about')">About</a></div>
+      <div><a href="" ng-click="linkTo('/#team')">Team</a></div>
+    </div>
   </div>
 
 </nav>
@@ -70,11 +70,11 @@
           {{placesNearby[m._id][2]}}<br>
           {{placesNearby[m._id][3]}}<br>
           {{placesNearby[m._id][4]}}<br>
-          <button ng-click="addToVote(m._id)">Add To Vote</button>
+          <!--<button ng-click="addToVote(m._id)">Add To Vote</button>-->
         </div>
       </ui-gmap-window>
-     </ui-gmap-marker>
-        <ui-gmap-marker ng-repeat="m in voteMarkers" coords="m.coords" idkey="m._id" options="m.options" events="m.events"
+    </ui-gmap-marker>
+    <ui-gmap-marker ng-repeat="m in voteMarkers" coords="m.coords" idkey="m._id" options="m.options" events="m.events"
                     icon="m.icon" click="onMarkerClick(m)">
       <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl"
                       templateParameter="m.templateParameter">
@@ -120,40 +120,44 @@
       <div class="all-rooms">
         <h6 class="title space-top">Possible MidUps</h6>
 
-          <!--<p class="label-style"></p>-->
-            <select class="form-control" size="3" ng-model="possibleMidup">
-              <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[possibleMidup])">{{value[0]}}</option>
-            </select>
-            <div class="btn-group btn-group-sm space-top">
-              <button class="btn btn-primary" ng-click="addToVote(possibleMidup)">Add To Vote</button>
-            </div>
-            <br>
-             <h6 class="title space-top">MidUps To Vote On</h6>
-            <select class="form-control" size="3" ng-model="likes">
-              <option  ng-repeat="value in voteLocationArr | orderBy:'-votes'" value="{{value.id}}" ng-click="onMarkerClick(voteMarkers[likes])">
-                {{value.name}} -> Votes: {{value.votes}}
-              </option>
-            </select>
-            <div class="btn-group btn-group-sm space-top">
-              <button class="btn btn-primary" ng-click="vote(likes, 1)">Like</button>
-              <button class="btn btn-primary" ng-click="vote(likes, -1)">Unlike</button>
-            </div>
-            <br>
+        <!--<p class="label-style"></p>-->
+        <select class="form-control" size="3" ng-model="possibleMidup">
+          <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[possibleMidup])">{{value[0]}}</option>
+        </select>
+        <div class="btn-group btn-group-sm space-top">
+          <button class="btn btn-primary" ng-click="addToVote(possibleMidup)">Add To Vote</button>
+        </div>
+        <br>
+        <h6 class="title space-top">MidUps To Vote On</h6>
+        <select class="form-control" size="3" ng-model="likes">
+          <option  ng-repeat="value in voteLocationArr | orderBy:'-votes'" value="{{value.id}}" ng-click="onMarkerClick(voteMarkers[likes])">
+            {{value.name}} -> Votes: {{value.votes}}
+          </option>
+        </select>
+        <div class="btn-group btn-group-sm space-top">
+          <button class="btn btn-primary" ng-click="vote(likes, 1)">Like</button>
+          <button class="btn btn-primary" ng-click="vote(likes, -1)">Unlike</button>
+        </div>
+        <br>
       </div>
-     <!-- <h6 class="no-top-margin title">Chat About MidUp</h6>-->
-        <h6 class="title space-top">Chat About MidUp</h6>
-        <div class="chat-box" scroll-glue>
-          <div ng-repeat="message in messages">
-            <span class="chatUserName">{{message.username}}:    </span>
-            <span class="message">{{message.message}} </span>
-          </div>
+      <!-- <h6 class="no-top-margin title">Chat About MidUp</h6>-->
+      <h6 class="title space-top">Chat About MidUp</h6>
+      <div class="chat-box" scroll-glue>
+        <div ng-repeat="message in messages">
+          <span class="chatUserName">{{message.username}}:    </span>
+          <span class="message">{{message.message}} </span>
         </div>
-        <div class="chat-input-submit">
-          <textarea ng-model="userMessage"></textarea>
-          <div class="btn-group btn-group-sm reverse-margin">
-            <button class="btn-xs" ng-click="sendChat()">Submit</button>
-          </div>
+      </div>
+      <div class="chat-input-submit">
+        <textarea ng-model="userMessage"></textarea>
+        <div class="btn-group btn-group-sm reverse-margin">
+          <button class="btn-xs" ng-click="sendChat()">Submit</button>
         </div>
+      </div>
+      <div class="midup-nonexistent" ng-show="roomNonExistest">
+        This Midup does not exist or has been deleted. You will be redirected to your Midups page.
+      </div>
+
     </div>
 
 
@@ -170,4 +174,6 @@
       <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
     </div>
   </div>
+  <!--Div below is for a popup for Error message if room has been deleted-->
+
 </div> <!-- MapsCtrl Ends -->

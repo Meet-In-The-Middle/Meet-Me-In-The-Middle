@@ -55,6 +55,7 @@ angular.module('meetMeInTheMiddleApp')
   $scope.likes;
   $scope.voteMarkers = {};
   $scope.votedPlacesNearby = {};
+  $scope.test;
  /* $scope.places = [
     { id: 1, name: 'Restaurants'},
     { id: 2, name: 'Cafe'},
@@ -149,76 +150,34 @@ $scope.circle.events = {
     newCenter.lat = center.k;
     newCenter.lng = center.D;
     circle.setCenter(newCenter);
-    // socket.emit('circle-move', $scope.circle.center, roomId);
   },
   radius_changed:  function(circle){
     console.log(">>>>>>>>> radius changed");
     circleRadius = circle.getRadius();
     $scope.circle.radius = circleRadius;
-    // socket.emit('circle-radius-change', $scope.circle.radius, roomId);
   }
-};
-
-// $scope.circle.events = {
-//         dragend: function(circle){
-//           console.log(">>>>>>>>> circle dragend");
-//           var center = circle.getCenter();
-//           var newCenter = {};
-//           newCenter.lat = center.k;
-//           newCenter.lng = center.D;
-//           circle.setCenter(newCenter);
-//           socket.emit('circle-move', $scope.circle.center);
-//         },
-//         radius_changed:  function(circle){
-//           console.log(">>>>>>>>> radius changed");
-//           circleRadius = circle.getRadius();
-//           $scope.circle.radius = circleRadius;
-//           socket.emit('circle-radius-change', $scope.circle.radius);
-//         }
-//       }
+}
 
   /////////////////TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY //////////////////
-  var user = Auth.getCurrentUser();
-  var userRoomObj = {
-    roomId: roomId,
-    user: {
-      _id: user._id,
-      name: user.name,
-      coords: {
-        latitude: "",  //if user already is in room and has coords, DB will ignore ""
-        longitude: ""
+  var createUserRoomObj = function() {
+    var user = Auth.getCurrentUser();
+    var userRoomObj = {
+      roomId: roomId,
+      user: {
+        _id: user._id,
+        name: user.name,
+        coords: {
+          latitude: "",  //if user already is in room and has coords, DB will ignore ""
+          longitude: ""
+        },
+        owner: false
       },
-      owner: false
-    },
-    info: 'How awesome',
-    active: true
+      info: 'How awesome',
+      active: true
+    };
+    console.log('userRoomObj is ', userRoomObj);
+    return userRoomObj;
   };
-
-
-  //Comment or Uncomment addUserToRoom function to test HTTP vs Socket.IO
-  //var addUserToRoom = function(userRoomObjToSend, cb) {
-  //
-  //  console.log('called addUserToRoom');
-  //  $http.post('api/rooms/adduser', userRoomObjToSend)
-  //    .success(function(userData) {
-  //      console.log('TTTTTTT data coming back from addUserToRoom http ', userData);
-  //      for(var marker in userData) {
-  //        // if(userData[marker]._id === Auth.getCurrentUser()._id){
-  //        //   userInfo = userData[marker];
-  //        // }
-  //
-  //        console.log(123);
-  //        // console.log('latitude is ', Number(userData[marker].coords.latitude));
-  //        // console.log('longitude is ', Number(userData[marker].coords.longitude));
-  //        if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
-  //          addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
-  //        }
-  //      }
-  //    })
-  //    .error(function(error) {
-  //      console.log('there was an error adding User to Room ', error);
-  //    });
-  //};
 
   ////////////////////////// END NEW CODE FOR TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY ////////////////
 /*
@@ -239,7 +198,7 @@ $scope.circle.events = {
       // console.log('latitude is ', Number(userData[marker].coords.latitude));
       // console.log('longitude is ', Number(userData[marker].coords.longitude));
       if( userData[marker].coords.latitude !== "" && userData[marker].coords.longitude !== "" ) {
-        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker]._id);
+        addMarker(Number(userData[marker].coords.latitude), Number(userData[marker].coords.longitude), userData[marker].userId);
       }
     }
   });
@@ -270,7 +229,7 @@ $scope.circle.events = {
     //after map has rendered, get data from DB for user markers
     //addUserToRoom is the HTTP post method which has issues showing midpoint and route, 'join-room' is socket.io method to accomplish same thing
       //addUserToRoom(userRoomObj);
-      socket.emit('join-room', userRoomObj);
+      socket.emit('join-room', createUserRoomObj());
     });
   });
 
@@ -333,37 +292,36 @@ $scope.circle.events = {
     // }
   });
 
-
-   // socket.on('circle-move-replay', function(center){
-   //  $scope.circle.center = center;
-   //  console.dir('circle moved emit received  ' + JSON.stringify(center));
-   //  $scope.$apply();
-   // });
-
-   // socket.on('circle-radius-change-reply', function(radius){
-   //  $scope.circle.radius = radius;
-   //  console.dir('circle radius changed emit received  ' + radius);
-   //  $scope.$apply();
-   // });
-
-  socket.on('addLoc-reply', function(locData) {
+  socket.on('vote-reply', function(locData) {
+    console.log('locData', locData);
     $scope.voteLocations[locData.id] = locData;
-    var found = 0;
     for(var x = 0; x < $scope.voteLocationArr.length; x++){
+      console.log('array:', $scope.voteLocationArr[x].name, $scope.voteLocationArr[x].id);
       if($scope.voteLocationArr[x].id === locData.id){
-        found = 1;
+        console.log('updating array');
+        $scope.voteLocationArr[x] = locData;
       }
     }
-    if(!found){
-      $scope.voteLocationArr.push($scope.voteLocations[locData.id]);
-      if($scope.markers[locData.id]  !== undefined){
-        delete $scope.markers[locData.id];
+    console.log($scope.voteLocationArr[x]);
+    $scope.$apply();
+  });
+
+    socket.on('vote-data', function(locData){
+      for(var x = 0; x < locData.length; x++){
+        $scope.voteLocations[locData[x].id] = locData[x];
+        $scope.voteMarkers[locData[x].id] = JSON.parse($scope.voteLocations[locData[x].id].marker);
+        $scope.voteMarkers[locData[x].id].showWindow = false;
+        $scope.votedPlacesNearby[locData[x].id] = locData[x].locInfo;
       }
-      $scope.voteMarkers[locData.id] = JSON.parse($scope.voteLocations[locData.id].marker);
-      $scope.votedPlacesNearby[locData.id] = $scope.voteLocations[locData.id].locInfo;
-    }
-    console.log('someone has added a location');
-    console.log($scope.voteLocationArr);
+      //showWindow: false
+      $scope.voteLocationArr = locData;
+      console.log('loadedVotes,', locData);
+      $scope.$apply();
+    });
+
+   socket.on('circle-move-replay', function(center){
+    $scope.circle.center = center;
+    console.dir('circle moved emit received  ' + JSON.stringify(center));
     $scope.$apply();
   });
 
@@ -386,7 +344,7 @@ $scope.circle.events = {
         $scope.voteLocations[locData[x].id] = locData[x];
         $scope.voteMarkers[locData[x].id] = JSON.parse($scope.voteLocations[locData[x].id].marker);
         $scope.voteMarkers[locData[x].id].showWindow = false;
-        $scope.votedPlacesNearby[locData[x].id] = locData[x].locInfo;  
+        $scope.votedPlacesNearby[locData[x].id] = locData[x].locInfo;
       }
       //showWindow: false
       $scope.voteLocationArr = locData;
@@ -394,16 +352,18 @@ $scope.circle.events = {
       $scope.$apply();
     });
 
+
+
   ///////////////////////////////////////////////Functions///////////////////////////////////////////////
   $scope.placeSearch = function () {
     var place = $scope.place;
     console.log("!!!!place: ", $scope.place);
-    if(!isNaN(Number(place.radius)) && Number(place.radius) > 0){
+    if (!isNaN(Number(place.radius)) && Number(place.radius) > 0) {
       console.log("RADIUS: ", place.radius);
       $scope.circle.radius = Number(place.radius);
-     // return;
+      // return;
     }
-    if($scope.circle.center){
+    if ($scope.circle.center) {
       var request = {
         location: {
           lat: $scope.circle.center.latitude,
@@ -411,9 +371,9 @@ $scope.circle.events = {
         },
         radius: $scope.circle.radius
       };
-      if(place.types.length){
+      if (place.types.length) {
         var types = [];
-        place.types.forEach(function(x){
+        place.types.forEach(function (x) {
           console.log('x:' + x);
           console.log('x.type:' + x.type);
           types.push(x.type);
@@ -421,15 +381,51 @@ $scope.circle.events = {
         console.log('!!!!!!!!!types!!!!!!!!');
         request.types = types;
       }
-      else if(place.keywords){
+      else if (place.keywords) {
         console.log('!!!!!!!!!category name!!!!!!!!');
         request.keyword = [place.keywords.toLowerCase()];
         //request.types.push(place.category.name.toLowerCase());//.toString()];
       }
 
       console.log('place search request: ', request);
-      // socket.emit('place-search', request, roomId);
       service.nearbySearch(request, function (results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          //Reset the places object
+          places_Nearby = {};
+          //places_Nearby = [];
+          console.log('place results: ', results);
+          for (var i = 0; i < results.length; i++) {
+            //console.log(results[i]);
+            //Update places object
+            updatePlaces(results[i], results[i].id);
+            // console.log(results[i]);
+            // if(results[i].photos){
+            //   console.log(results[i].photos[0].getUrl);
+            //   //console.log(results[i].photos[0].getUrl());
+            //   var test = results[i].photos[0].getUrl;
+            //   console.log(test());
+            // }
+            //console.log(results[i]);
+            // if(i === 0){ placeDetails(results[i].id); }
+            addPlace(results[i]);
+            // $scope.$apply();
+          }
+          //console.log(places_Nearby);
+          $scope.placesNearby = places_Nearby;
+          console.log("!@#$%^^&*: " + $scope.placesNearby);
+          $scope.$apply();
+        }
+        else {
+          alert("directions response " + status);
+        }
+      });
+    }
+  };
+
+  socket.on('place-search-reply', function(request){
+   //var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
+   console.log('socket request: ', request);
+    service.nearbySearch(request, function (results, status) {
       if (status == google.maps.places.PlacesServiceStatus.OK) {
         //Reset the places object
         places_Nearby = {};
@@ -439,14 +435,7 @@ $scope.circle.events = {
           //console.log(results[i]);
           //Update places object
            updatePlaces(results[i], results[i].id);
-          // console.log(results[i]);
-          // if(results[i].photos){
-          //   console.log(results[i].photos[0].getUrl);
-          //   //console.log(results[i].photos[0].getUrl());
-          //   var test = results[i].photos[0].getUrl;
-          //   console.log(test());
-          // }
-          //console.log(results[i]);
+
           // if(i === 0){ placeDetails(results[i].id); }
           addPlace(results[i]);
           // $scope.$apply();
@@ -460,21 +449,10 @@ $scope.circle.events = {
         alert("directions response " +status);
       }
     });
-    }
-    else{
-      alert('Error! No marker set on Map. Please add at least one marker to the map.');
-      return;
-    }
-  };
-
-  // socket.on('place-search-reply', function(request){
-  //  //var request = { location: { lat: latitude, lng: longitude }, radius: radius, types: place };
-  //  console.log('socket request: ', request); 
-  // });
+  });
 
   var addPlace = function (place) {
     //Format the icon to be displayed
-
      var icon = {
        url: place.icon,
        origin: new google.maps.Point(0,0),
@@ -495,7 +473,7 @@ $scope.circle.events = {
       name: place.name,
     };
     $scope.$apply();
-  }
+  };
 
   var updatePlaces = function(place, id){
     //Information to be collected about a place
@@ -535,7 +513,50 @@ $scope.circle.events = {
         }
       }
     }
-  }
+  };
+
+  $scope.vote = function (locKey, likeType) {
+    console.log('in Vote');
+    var userId = Auth.getCurrentUser()._id;
+    //if(likeType === -1 && _.contains($scope.voteLocations[locKey].voters, userId)){
+      console.log('user has voted');
+      socket.emit('vote', roomId, likeType, userId, $scope.voteLocations[locKey]);
+    //} else if(likeType === 1 && !(_.contains($scope.voteLocations[locKey].voters,
+    //  userId))){
+     console.log('user is voting');
+    //  socket.emit('vote', roomId, likeType, userId, $scope.voteLocations[locKey]);
+    //}
+    //console.log('failed all tests');
+  };
+
+  $scope.addToVote = function (locKey) {
+    console.log("addToVote called with:" + locKey);
+
+    var userId = Auth.getCurrentUser()._id;
+    console.log(userId);
+    if($scope.voteLocations[locKey] !== undefined){
+      console.log('already exists');
+      if(!(_.contains($scope.voteLocations[locKey].voters,userId))){
+        console.log('user has not voted on');
+        socket.emit('vote', roomId, 1, userId, $scope.voteLocations[locKey]);
+      }
+    } else {
+      console.log('new location');
+
+      var locData =
+        {
+          id: locKey,
+          name: $scope.placesNearby[locKey][0],
+          votes: 1,
+          voters: [userId],
+          marker: JSON.stringify($scope.markers[locKey]),
+          locInfo: $scope.placesNearby[locKey]
+        };
+        console.log('addLoc');
+        console.log('roomId', roomId);
+      socket.emit('addLoc', roomId, locData, userId);
+    }
+  };
 
   $scope.vote = function (locKey, likeType) {
     console.log('in Vote');
@@ -553,7 +574,7 @@ $scope.circle.events = {
 
   $scope.addToVote = function (locKey) {
     console.log("addToVote called with:" + locKey);
-    
+
     var userId = Auth.getCurrentUser()._id;
     console.log(userId);
     if($scope.voteLocations[locKey] !== undefined){
@@ -565,8 +586,8 @@ $scope.circle.events = {
     } else {
       console.log('new location');
 
-      var locData = 
-        { 
+      var locData =
+        {
           id: locKey,
           name: $scope.placesNearby[locKey][0],
           votes: 1,
@@ -608,7 +629,7 @@ $scope.circle.events = {
 
   $scope.viewMap = function(){
     changeMapView(40.1451, -99.6680, 4);
-  }
+  };
 
 
   var placeDetails = function(placeId){
@@ -627,13 +648,13 @@ $scope.circle.events = {
       }
       console.log('getDetailsafter: ', place);
     });
-  }
+  };
 
   var extendBounds = function(latitude, longitude){
     var coord = new google.maps.LatLng(latitude, longitude);
     bounds.extend(coord);
     center = bounds.getCenter();
-  }
+  };
 
   var calcCircleCenter = function(){
     var circleCenter = {};
@@ -642,7 +663,7 @@ $scope.circle.events = {
     $scope.circle.center = circleCenter;
     $scope.circle.visible = true;
     $scope.$apply();
-  }
+  };
 
   var calculateCenter = function(){
     bounds = new google.maps.LatLngBounds();
@@ -651,7 +672,7 @@ $scope.circle.events = {
       bounds.extend(coord);
     }
     center = bounds.getCenter();
-  }
+  };
 
   var calcRoute = function(){
     var request = {
@@ -668,7 +689,7 @@ $scope.circle.events = {
         alert("directions response "+status);
       }
     });
-  }
+  };
 
   var calcRoute2Users = function(start, end){
     polyline.setPath([]);
@@ -709,7 +730,7 @@ $scope.circle.events = {
         alert("directions response " +status);
       }
     });
-  }
+  };
   var userImage = {
     url: '../../assets/images/skoPic.PNG',
     scaledSize : new google.maps.Size(40, 40),
@@ -797,7 +818,7 @@ $scope.circle.events = {
     removeAllMarkers();
     removeDirections();
     removePolylines();
-  }
+  };
 
   var addAllMarkers = function (data) {
     for(var marker in data){

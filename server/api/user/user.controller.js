@@ -39,7 +39,7 @@ exports.index = function(req, res) {
 exports.create = function (req, res, next) {
   console.log('req.body is ', req.body);
   if( !req.body.name ) {
-    return res.send(500, err);
+    return res.send(500);
   }
   var newUser = new User(req.body);
   newUser.provider = 'local';
@@ -145,8 +145,6 @@ exports.uploadUserImage = function(userId, imageName, cb) {
  * @param url
  */
 exports.updateImageUrl = function(userId, url) {
-  var userId = userId;
-  var url = url;
   User
     .findOne({
       _id: userId

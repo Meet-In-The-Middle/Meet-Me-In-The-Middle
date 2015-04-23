@@ -66,8 +66,10 @@
   display:none;
 }
 
-.midup-links {
+.midup-titles {
   font-size: 1.4em;
+  color: #b82818;
+  display: inline-block;
 }
 
 .email-input {
@@ -107,4 +109,26 @@
 .ng-message-sent {
   color: blue;
   font-size: 0.9em;
+}
+
+.btn-midup {
+  display: inline-block;
+  margin: 0px 20px 0px 0;
+}
+
+.btn-midup:hover {
+  cursor: pointer;
+}
+
+.spacer-hr {
+  margin-top: 7px;
+}
+
+.midup-options {
+  display: inline;
+  float: right;
+}
+
+.leave-delete:hover, .invite-people:hover {
+  cursor: pointer;
 }

@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-.controller('roomsCtrl', ['$scope', '$http', '$location', '$q', 'Auth', 'MainFactory', 'SocketFactory',
-  function ($scope, $http, $location, $q,  Auth, MainFactory, SocketFactory) {
+.controller('roomsCtrl', ['$scope', '$http', '$window', '$location', '$q', 'Auth', 'MainFactory', 'SocketFactory',
+  function ($scope, $http, $window, $location, $q,  Auth, MainFactory, SocketFactory) {
 
     //profile controller methods
     var user = Auth.getCurrentUser();
@@ -12,6 +12,7 @@ angular.module('meetMeInTheMiddleApp')
     $scope.user = {};
     $scope.inviteEmails = {};
     $scope.clickedFlag = false;
+    $scope.remove = false;
     var url = $location.$$path.split('/');
     var roomId = url[url.length - 1];
     var socket = io();
@@ -72,23 +73,26 @@ angular.module('meetMeInTheMiddleApp')
         roomId: roomId,
         name: $scope.editableText,
         user: {
-          _id: user._id,
+          userId: user._id,
           name: user.name,
           coords: {
             latitude: "",
-            longitude: "",
+            longitude: ""
           },
-          owner: true
+          owner: true,
+          imageUrl: ""
         },
-        info: 'How awesome',
+        info: $scope.roomInfo || '',
         active: true
       };
 
 
       MainFactory.createRoom(userRoomObj, function() {
+        console.log('userRoomObj is ', userRoomObj);
         getRooms();
       });
       $scope.disableEditor();
+      $scope.remove = false;
     };
 
     /////////Handle email invitations//////////
@@ -126,8 +130,54 @@ angular.module('meetMeInTheMiddleApp')
       socket.on('email-invites-reply', function(message) {
         console.log('email-invite-reply ', message);
       });
-
     };
+
+    var midUpIndex;
+    $scope.deleteMidup = function(roomId, index) {
+      midUpIndex = index;
+      console.log('midUpIndex is ', midUpIndex);
+      var result = $window.confirm('Are you certain you want to DELETE this MidUp? Changes cannot be recovered.\n\n' +
+      'Click OK to Delete or Cancel');
+      if( result === true ) {
+        socket.emit('delete-midup', roomId, userId);
+      }
+    };
+
+    $scope.leaveMidup = function(roomId, index) {
+      midUpIndex = index;
+      console.log('midUpIndex is ', midUpIndex);
+      var result = $window.confirm('Are you certain you want to LEAVE this MidUp?\n\n' +
+      'Click OK to Delete or Cancel');
+      if( result === true ) {
+        socket.emit('leave-midup', roomId, userId);
+      }
+    };
+
+    socket.on('delete-midup-reply', function(data) {
+      console.log('data is ', data);
+      if( data === 'Midup was removed' ) {
+        $scope.$apply(function() {
+          $scope.remove = true;
+        });
+      } else if( !!data ) {
+        $scope.$apply(function() {
+          $scope.rooms = data;
+        });
+      }
+    });
+
+    socket.on('leave-midup-reply', function(data) {
+      console.log('data is ', data);
+      if( !!data ) {
+        $scope.$apply(function() {
+          if( data.length === 0 ) { $scope.remove = true; }
+          else {
+            $scope.remove = false;
+            $scope.rooms = data;
+          }
+        });
+      }
+    });
 
   }]);
 

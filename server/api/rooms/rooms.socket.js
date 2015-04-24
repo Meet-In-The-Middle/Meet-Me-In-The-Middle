@@ -11,7 +11,7 @@ var sendgrid  = require('sendgrid')(process.env.SEND_GRID_ACCOUNT, process.env.S
 
 exports.roomSockets = function (socket) {
   var roomId;
-
+  //listener for when client joins room (midup)
   socket.on('join-room', function (data) {
     roomId = data.roomId;
     RoomsController.joinOrUpdateRoomViaSocket(data, function(returnData, err, noUser, noRoomMsg) {
@@ -28,12 +28,6 @@ exports.roomSockets = function (socket) {
       }
     });
     socket.join(roomId);
-    /*
-        // echo to client they've connected
-        socket.emit('serversend', 'SERVER, you have connected to ' + roomId);
-        //broadcast to room members (other than this client) that new user
-        socket.broadcast.to(roomId).emit('serversend', 'jonah', '5555 everyone in room EXCEPT client should see this');
-    */
     //get most recent messages for a room and send to client in JSON array
     RoomsController.getRecentChatMessages(roomId, function(messageData, err) {
       if(err) {
@@ -54,14 +48,13 @@ exports.roomSockets = function (socket) {
 
      // listen for client emitting to event 'roomId' which segregates room
     socket.on(roomId, function(userId, username, message){
-      //console.log('####################### in socket.on', userId, username, message);
       //Call method in rooms.controller.js (which interacts with rooms.model.js)
       RoomsController.updateRoomChats(roomId, userId, username, message, function( messageObj ) {
           io.sockets.in(roomId).emit('server-chat-response', messageObj);
       });
     });
   });
-
+  //listener for submitting emails to invite to join midup
   socket.on('email-invites', function(data, roomId, username, roomName) {
     console.log('999email invite data is ', data, roomId, username, roomName);
     var params = {
@@ -87,10 +80,10 @@ exports.roomSockets = function (socket) {
       console.log('////////sendgrid json ', json);
     });
 
-
+    //send response back to client of success or error
     socket.emit('email-invites-reply', data);
   });
-
+  //listener for adding possible location
   socket.on('addLoc', function(roomId, locData, userId){
     console.log('updating the db',roomId);
     RoomsController.addLoc(roomId, locData, userId, function(locData) {
@@ -98,14 +91,14 @@ exports.roomSockets = function (socket) {
       io.sockets.in(roomId).emit('addLoc-reply', locData);
     });
   });
-
+  //listener for voting on a possible location
   socket.on('vote', function(roomId, likeType, userId, locData){
     console.log('updating the db like',roomId);
     RoomsController.updateVote(roomId, likeType, userId, locData, function(locData) {
       io.sockets.in(roomId).emit('vote-reply', locData);
     });
   });
-
+  //listener for deleting a midup (if owner)
   socket.on('delete-midup', function(roomId, userId) {
     console.log('roomId in sockets is ', roomId);
     console.log('userId in sockets is ', userId);
@@ -118,7 +111,7 @@ exports.roomSockets = function (socket) {
       }
     });
   });
-
+  //listener for client leaving a midup (not the owner)
   socket.on('leave-midup', function(roomId, userId) {
     //remove midup or reload new data
     RoomsController.removeRoomFromUser(roomId, userId, function(newMidupList, error) {

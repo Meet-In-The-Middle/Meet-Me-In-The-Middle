@@ -461,7 +461,7 @@ angular.module('meetMeInTheMiddleApp')
           },
           //icon: icon,
           showWindow: false,
-          name: place.name,
+          name: place.name
         };
         $scope.$apply();
       };

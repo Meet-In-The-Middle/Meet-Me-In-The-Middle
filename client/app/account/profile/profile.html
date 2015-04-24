@@ -1,6 +1,6 @@
 <div ng-include="'components/navbar/navbar.html'"></div>
 
-<div class="container" data-ng-controller="profileCtrl" data-ng-init="init()">
+<div class="container" ng-controller="profileCtrl" ng-init="init()">
   <div class="profile-margin-top"></div>
   <div class="row carousel-team owl-carousel owl-theme owl-responsive-1200 owl-loaded profile-top">
     <div class="row">
@@ -8,8 +8,8 @@
 
       <div class="col-sm-3">
         <div class="profile-image-div">
-          <img ng-hide="spinner" src="./assets/images/spinner.gif" class="spinner-img">
-          <img ng-show="spinner" ng-src="{{user.image}}" class="profile-user-image">
+          <!--<img ng-if="false" ng-src="./assets/images/spinner.gif" class="spinner-img">-->
+          <img ng-show="true" ng-src="{{user.image}}" class="profile-user-image">
         </div>
         <div style="text-align: center;">
           <button class="btn btn-default" ng-file-select ng-file-change="upload($files)" ng-multiple="multiple">

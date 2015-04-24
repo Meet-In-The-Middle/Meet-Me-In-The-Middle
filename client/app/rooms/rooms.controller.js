@@ -17,7 +17,7 @@ angular.module('meetMeInTheMiddleApp')
       var roomId = url[url.length - 1];
       var socket = io();
       /**
-       * initial page on load to show rooms user belongs to
+       * @desc initial page on load to show rooms user belongs to
        * and to set $scope elements for editable text box to create new room (midup)
        */
       $scope.init = function () {
@@ -28,8 +28,8 @@ angular.module('meetMeInTheMiddleApp')
 
       //load rooms the user is in, ie query DB for users rooms (rooms)
       /**
-       *
-       * @param Id
+       * @desc  Async call to get all rooms (midups) a user belongs to
+       * @param Id String (roomId)
        * @returns {*}
        */
       var asyncGetRooms = function(Id) {
@@ -44,7 +44,7 @@ angular.module('meetMeInTheMiddleApp')
         });
       };
       /**
-       *
+       * @desc use promise to load rooms async
        * @type {*}
        */
       var promise = asyncGetRooms(Auth.getCurrentUser());
@@ -74,7 +74,7 @@ angular.module('meetMeInTheMiddleApp')
         };
       };
       /**
-       * User creates new room which will be sent to DB and then re-populate rooms list
+       * @desc User creates new room which will be sent to DB and then re-populate rooms list
        */
       $scope.createRoom = function() {
         var userRoomObj = {
@@ -104,13 +104,13 @@ angular.module('meetMeInTheMiddleApp')
       };
 
       /**
-       *
+       * set inviteEnabled to false
        * */
       var emailInviteInit = function() {
         $scope.inviteEnabled = false;
       };
       /**
-       *
+       * @desc logic for enabling only the email invite input for the desired room (that was clicked on)
        * */
       $scope.enableInvite = function(roomId) {
         console.log('roomId ', roomId);
@@ -120,25 +120,25 @@ angular.module('meetMeInTheMiddleApp')
         //$scope.inviteEmails = $scope.emails;
       };
       /**
-       *
+       * @desc disable
        * */
       $scope.disableInvite = function() {
         $scope.inviteEnabled = false;
       };
       /**
-       *
+       * @desc logic for email invite input box
        * */
       $scope.clicked = function() {
         console.log('clicked was called');
         $scope.clickedFlag = true;
       }
-      /**
+      /** @desc logic for email invite input box
        * */
       $scope.keyUp = function() {
         $scope.clickedFlag = false;
       };
       /**
-       *
+       * @desc Get and send emails to server that will be invited to room (midup)
        * */
       $scope.sendEmailInvites = function(roomId, roomName) {
         console.log('sendEmailInvites called', $scope.inviteEmails);
@@ -153,7 +153,7 @@ angular.module('meetMeInTheMiddleApp')
 
       var midUpIndex;
       /**
-       *
+       * @desc Delete midup if owner
        * @param roomId
        * @param index
        */
@@ -167,7 +167,7 @@ angular.module('meetMeInTheMiddleApp')
         }
       };
       /**
-       *
+       * @desc Leave midup if not owner
        * @param roomId
        * @param index
        */
@@ -181,7 +181,7 @@ angular.module('meetMeInTheMiddleApp')
         }
       };
       /**
-       *
+       * listener for data returned
        */
       socket.on('delete-midup-reply', function(data) {
         console.log('data is ', data);
@@ -196,7 +196,7 @@ angular.module('meetMeInTheMiddleApp')
         }
       });
       /**
-       *
+       * listener for data returned from server
        */
       socket.on('leave-midup-reply', function(data) {
         console.log('data is ', data);

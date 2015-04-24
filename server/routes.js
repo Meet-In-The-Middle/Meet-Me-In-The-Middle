@@ -13,27 +13,23 @@ module.exports = function(app) {
 
   // Insert routes below
   app.use('/api/rooms', require('./api/rooms'));
-  //app.use('/userimage', require('./api/user'));
-  app.use('/api/gmaps', require('./api/gmaps'));
   app.use('/api/things', require('./api/thing'));
   app.use('/api/users', require('./api/user'));
-  app.use('/api/gmaps', require('./api/gmaps'));
   app.use('api/rooms', require('./api/rooms'));
 
 
   app.post('/userimage',  function(req, res) {
-    console.log(123);
     userCtrl.updateImageUrl(req, res);
   });
   app.get('/userimage/*',  function(req, res) {
-    console.log(123);
     userCtrl.getImageUrl(req, res);
   });
 
 
 
 
-
+  //user image file upload using multer middleware; image is checked for size (500kb),
+  //then uploaded to Azure blob storage and the url for location on blob storage returned to client
   var isFileTooLarge;
   app.post('/user/image', [multer({
     dest: './server/uploads/',
@@ -77,7 +73,7 @@ module.exports = function(app) {
       }
     }]);
 
-
+  //route for authorization
   app.use('/auth', require('./auth'));
 
 

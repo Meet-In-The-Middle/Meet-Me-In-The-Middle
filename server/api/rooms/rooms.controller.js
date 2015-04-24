@@ -25,6 +25,12 @@ exports.show = function (req, res) {
 
 // Creates a new room in the Rooms Collection and also adds the room to 'memberOfRooms' property
 // in for user in User Collection
+/**
+ * @desc  Creates a new room in the Rooms Collection and also adds the room to 'memberOfRooms' property
+ *  in for user in User Collection
+ * @param req
+ * @param res
+ */
 exports.createRoom = function (req, res) {
   console.log('req.body.user is ', req.body.user);
   var newRoom = {
@@ -71,6 +77,12 @@ exports.joinRoomHTTP = function (req, res) {
 };
 
 // Deletes a rooms from the DB.
+/**
+ *
+ * @param roomId
+ * @param userId
+ * @param callback
+ */
 exports.destroy = function (roomId, userId, callback) {
   Rooms.findById(roomId, function (err, room) {
     if (err) {
@@ -120,6 +132,12 @@ exports.destroy = function (roomId, userId, callback) {
   })
 };
 
+/**
+ *
+ * @param roomId
+ * @param userId
+ * @param callback
+ */
 exports.removeRoomFromUser = function(roomId, userId, callback) {
   Rooms.findById(roomId, function (err, room) {
     console.log('room is ', room);
@@ -206,7 +224,14 @@ exports.joinOrUpdateRoomViaSocket = function (userRoomObj, cb) {
   var roomId = userRoomObj.roomId;
   addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb);
 };
-
+/**
+ *
+ * @param roomId
+ * @param userId
+ * @param username
+ * @param message
+ * @param callback
+ */
 exports.updateRoomChats = function (roomId, userId, username, message, callback) {
   //Create the message object
   var chatObj = {
@@ -229,7 +254,11 @@ exports.updateRoomChats = function (roomId, userId, username, message, callback)
     }
   );
 };
-
+/**
+ *
+ * @param roomId
+ * @param callback
+ */
 exports.getRecentChatMessages = function (roomId, callback) {
   Rooms.findById(roomId, function (err, room) {
     if (err) {
@@ -242,7 +271,14 @@ exports.getRecentChatMessages = function (roomId, callback) {
     }
   });
 };
-
+/**
+ *
+ * @param roomId
+ * @param userId
+ * @param username
+ * @param message
+ * @param callback
+ */
 exports.updateRoomChats = function(roomId, userId, username, message, callback){
   //Create the message object
   var chatObj = {
@@ -265,7 +301,11 @@ exports.updateRoomChats = function(roomId, userId, username, message, callback){
     }
   );
 };
-
+/**
+ *
+ * @param roomId
+ * @param callback
+ */
 exports.getRecentChatMessages = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
     if(err){
@@ -276,7 +316,14 @@ exports.getRecentChatMessages = function(roomId, callback) {
     }
   });
 };
-
+/**
+ *
+ * @param roomId
+ * @param likeType
+ * @param userId
+ * @param locData
+ * @param callback
+ */
 exports.updateVote = function(roomId, likeType, userId, locData, callback){
   Rooms.findById(roomId, function(err, room) {
     if(err){
@@ -310,7 +357,13 @@ exports.updateVote = function(roomId, likeType, userId, locData, callback){
 
   });
 };
-
+/**
+ *
+ * @param roomId
+ * @param locData
+ * @param userId
+ * @param callback
+ */
 exports.addLoc = function (roomId, locData, userId, callback){
   console.log('roomId', roomId);
   var found = 0;
@@ -342,7 +395,11 @@ exports.addLoc = function (roomId, locData, userId, callback){
     }
   });
 };
-
+/**
+ *
+ * @param roomId
+ * @param callback
+ */
 exports.getVotes = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
     if(err){
@@ -351,8 +408,15 @@ exports.getVotes = function(roomId, callback) {
       callback(room.locations);
     }
   });
-}
+};
 
+/**
+ * @desc
+ * @param userId string
+ * @param roomId string
+ * @param userRoomObj obj
+ * @param cb  callback function
+ */
 function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
   //console.log('123 ', userRoomObj);
   //console.log('userId is ', userId);

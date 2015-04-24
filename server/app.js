@@ -35,6 +35,10 @@ var RoomsController = require('./api/rooms/rooms.controller');
 
 
 var dataCollection = {};
+
+/**
+ *
+ */
 io.on('connection', function (socket) {
 
 

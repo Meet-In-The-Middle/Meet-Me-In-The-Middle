@@ -12,7 +12,6 @@ angular.module('meetMeInTheMiddleApp')
 
   .controller('MapsCtrl', ['$scope', '$q', '$http', '$location', 'Auth','uiGmapGoogleMapApi', 'uiGmapIsReady', 'MainFactory', 'SocketFactory',
     function ($scope, $q, $http, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, MainFactory, SocketFactory) {
-      
       var socket = io();
       SocketFactory.socket = socket;
       var geolocationAvailable;
@@ -27,20 +26,10 @@ angular.module('meetMeInTheMiddleApp')
       var polyline;
       var infowindow;
       var service;
-      //var user = Auth.getCurrentUser();
-      //var userId = user._id;
-      //Auth.getCurrentUser()._id
       var url = $location.$$path.split('/');
       var roomId = url[url.length - 1];
       var places_Nearby;
 
-
-      $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
-      $scope.options = {
-        scrollwheel: false,
-        scaleControl: true,
-        mapTypeControl: false
-      };
       $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
       $scope.options = {scrollwheel: false, scaleControl: true};
       $scope.markers = {};
@@ -53,7 +42,6 @@ angular.module('meetMeInTheMiddleApp')
       $scope.voteMarkers = {};
       $scope.votedPlacesNearby = {};
       $scope.test;
-
       $scope.scrollSettings = {
         scrollableHeight: '300px',
         scrollable: true,
@@ -62,7 +50,6 @@ angular.module('meetMeInTheMiddleApp')
         externalIdProp: 'type',
         buttonClasses: 'btn-sm'
       };
-
       $scope.places = [
         { id: 1, type: 'amusement_park', label: 'Amusement Park'},
         { id: 2, type: 'art_gallery', label: 'Art Gallery'},
@@ -87,14 +74,8 @@ angular.module('meetMeInTheMiddleApp')
         { id: 21, type: 'train_station', label: 'Train Station'},
         { id: 22, type: 'zoo', label: 'Zoo'}
       ];
-
-
       $scope.circle = {
         id: 1,
-        // center: {         // dont need a default center???
-        //     latitude: 44,
-        //     longitude: -108
-        // },
         radius: 1000, // need a default radius???
         stroke: {
           color: '#08B21F',
@@ -110,12 +91,10 @@ angular.module('meetMeInTheMiddleApp')
         visible: false, // optional: defaults to true
         control: {}
       };
-
       $scope.circle.draggable = true;
       $scope.circle.editable = true;
       $scope.circle.events = {
         dragend: function(circle){
-          console.log(">>>>>>>>> circle dragend");
           var center = circle.getCenter();
           var newCenter = {};
           newCenter.lat = center.k;
@@ -123,13 +102,11 @@ angular.module('meetMeInTheMiddleApp')
           circle.setCenter(newCenter);
         },
         radius_changed:  function(circle){
-          console.log(">>>>>>>>> radius changed");
           circleRadius = circle.getRadius();
           $scope.circle.radius = circleRadius;
         }
       }
 
-      /////////////////TESTING HTTP VS SOCKET.IO FOR JOIN-ROOM REPLY //////////////////
       /**
        *
        * @returns {{roomId: *, user: {_id: *, name: *, coords: {latitude: string, longitude: string}, owner: boolean}, info: string, active: boolean}}

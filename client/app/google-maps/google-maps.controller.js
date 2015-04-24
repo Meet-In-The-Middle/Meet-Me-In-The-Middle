@@ -12,6 +12,7 @@ angular.module('meetMeInTheMiddleApp')
 
   .controller('MapsCtrl', ['$scope', '$q', '$http', '$location', 'Auth','uiGmapGoogleMapApi', 'uiGmapIsReady', 'MainFactory', 'SocketFactory',
     function ($scope, $q, $http, $location, Auth, uiGmapGoogleMapApi, uiGmapIsReady, MainFactory, SocketFactory) {
+<<<<<<< HEAD
       var socket = io();
       SocketFactory.socket = socket;
       var geolocationAvailable;
@@ -90,6 +91,105 @@ angular.module('meetMeInTheMiddleApp')
         { id: 21, type: 'train_station', label: 'Train Station'},
         { id: 22, type: 'zoo', label: 'Zoo'}
       ];
+=======
+  var socket = io();
+  SocketFactory.socket = socket;
+  var geolocationAvailable;
+  var center;
+  var circleRadius;
+  var bounds;
+  var instanceMap;
+  var userInfo;
+  var maps;
+  var directionsService;
+  var directionsDisplay;
+  var polyline;
+  var infowindow;
+  var service;
+  //var user = Auth.getCurrentUser();
+  //var userId = user._id;
+  //Auth.getCurrentUser()._id
+  var url = $location.$$path.split('/');
+  var roomId = url[url.length - 1];
+
+  var places_Nearby;
+  var windowVote = {};
+
+/*$scope.init = function() {
+      loadVotes();
+};*/
+
+  $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
+  $scope.options = {
+    scrollwheel: false,
+    scaleControl: true,
+    mapTypeControl: false
+  };
+  $scope.map = { control: {}, center: { latitude: 40.1451, longitude: -99.6680 }, zoom: 4 };
+  $scope.options = {scrollwheel: false, scaleControl: true};
+  $scope.markers = {};
+  $scope.place = {types:[], keywords:'', radius: ''};
+  $scope.placesNearby = {};
+  $scope.possibleMidup;
+  $scope.voteLocations = {};
+  $scope.voteLocationArr = [];
+  $scope.likes;
+  $scope.voteMarkers = {};
+  $scope.votedPlacesNearby = {};
+ /* $scope.places = [
+    { id: 1, name: 'Restaurants'},
+    { id: 2, name: 'Cafe'},
+    { id: 3, name: 'Italian'},
+    { id: 4, name: 'Pizza'},
+    { id: 5, name: 'Sandwiches'},
+    { id: 6, name: 'Bar'},
+    { id: 7, name: 'Buffet'},
+    { id: 8, name: 'Fast Food'},
+    { id: 9, name: 'Coffee'},
+    { id: 10, name: 'Ice Cream'},
+    { id: 11, name: 'Hotels'},
+    { id: 12, name: 'Movie Theaters'},
+    { id: 13, name: 'Shopping'},
+    { id: 14, name: 'Parks'},
+    { id: 15, name: 'Fun'},
+    { id: 16, name: 'Entertainment'},
+    { id: 17, name: 'Golf'}
+  ];*/
+
+$scope.scrollSettings = {
+    scrollableHeight: '300px',
+    scrollable: true,
+    displayProp: 'label',
+    idProp: 'type',
+    externalIdProp: 'type',
+    buttonClasses: 'btn-sm'
+};
+
+$scope.places = [
+    { id: 1, type: 'amusement_park', label: 'Amusement Park'},
+    { id: 2, type: 'art_gallery', label: 'Art Gallery'},
+    { id: 3, type: 'aquarium', label: 'Aquarium'},
+    { id: 4, type: 'bar', label: 'Bar'},
+    { id: 5, type: 'bowling_alley', label: 'Bowling Alley'},
+    { id: 6, type: 'bus_station', label: 'Bus Station'},
+    { id: 7, type: 'cafe', label: 'Cafe'},
+    { id: 8, type: 'casino', label: 'Casino'},
+    { id: 9, type: 'food', label: 'Food'},
+    { id: 10, type: 'hotel', label: 'Hotel'},
+    { id: 11, type: 'restaurant', label: 'Restaurant'},
+    { id: 12, type: 'library', label: 'Library'},
+    { id: 13, type: 'movie', label: 'Movie Theater'},
+    { id: 14, type: 'museum', label: 'Museum'},
+    { id: 15, type: 'night_club', label: 'Night Club'},
+    { id: 16, type: 'park', label: 'Park'},
+    { id: 17, type: 'shopping_mall', label: 'Shopping Mall'},
+    { id: 18, type: 'spa', label: 'Spa'},
+    { id: 19, type: 'subway_station', label: 'Subway Station'},
+    { id: 20, type: 'taxi_stand', label: 'Taxi Stand'},
+    { id: 21, type: 'train_station', label: 'Train Station'},
+    { id: 22, type: 'zoo', label: 'Zoo'}
+  ];
+>>>>>>> Saving comments.
 //$scope.test = [];
       /*$scope.places = [
        { id: 1, label: 'Amusement Park'},
@@ -448,7 +548,56 @@ angular.module('meetMeInTheMiddleApp')
           url: place.icon,
           origin: new google.maps.Point(0,0),
           anchor: new google.maps.Point(0, 0),
-          scaledSize: new google.maps.Size(20, 20)
+      }
+    }
+  }
+
+  $scope.vote = function (locKey, likeType) {
+    console.log('in Vote');
+    var userId = Auth.getCurrentUser()._id;
+    //if(likeType === -1 && _.contains($scope.voteLocations[locKey].voters, userId)){
+      console.log('user has voted');
+      socket.emit('vote', roomId, likeType, userId, $scope.voteLocations[locKey]);
+    //} else if(likeType === 1 && !(_.contains($scope.voteLocations[locKey].voters,
+    //  userId))){
+     console.log('user is voting');
+    //  socket.emit('vote', roomId, likeType, userId, $scope.voteLocations[locKey]);
+    //}
+    //console.log('failed all tests');
+  }
+  
+  $scope.addToVoteWindow = function (locKey) {
+    if(windowVote[locKey] === undefined){
+      windowVote[locKey] = 1;
+    } else {
+      $scope.addToVote(locKey);
+    }
+
+  }
+  
+
+  $scope.addToVote = function (locKey) {
+    console.log("addToVote called with:" + locKey);
+    
+    var userId = Auth.getCurrentUser()._id;
+    console.log(userId);
+    if($scope.voteLocations[locKey] !== undefined){
+      console.log('already exists');
+      if(!(_.contains($scope.voteLocations[locKey].voters,userId))){
+        console.log('user has not voted on');
+        socket.emit('vote', roomId, 1, userId, $scope.voteLocations[locKey]);
+      }
+    } else {
+      console.log('new location');
+
+      var locData = 
+        { 
+          id: locKey,
+          name: $scope.placesNearby[locKey][0],
+          votes: 1,
+          voters: [userId],
+          marker: JSON.stringify($scope.markers[locKey]),
+          locInfo: $scope.placesNearby[locKey]
         };
 
         //Define the marker

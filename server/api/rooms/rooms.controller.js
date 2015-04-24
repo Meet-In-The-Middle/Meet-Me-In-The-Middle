@@ -5,12 +5,16 @@ var Rooms = require('./rooms.model').Rooms;
 var RoomUser = require('./rooms.model').RoomUser;
 var User = require('../user/user.model')
 
-// Get list of rooms
+// Get list of rooms. Not currently used
 exports.index = function (req, res) {
   console.log('got into index');
 };
 
-// Get a single rooms' user objects
+/**
+ * @desc  Find all the rooms (midups) that a user is a part of.
+ * @param req
+ * @param res
+ */
 exports.show = function (req, res) {
   User.findById(req.params.id, function (err, user) {
     if (!err) {
@@ -23,8 +27,6 @@ exports.show = function (req, res) {
 
 };
 
-// Creates a new room in the Rooms Collection and also adds the room to 'memberOfRooms' property
-// in for user in User Collection
 /**
  * @desc  Creates a new room in the Rooms Collection and also adds the room to 'memberOfRooms' property
  *  in for user in User Collection
@@ -62,26 +64,14 @@ exports.createRoom = function (req, res) {
     return res.json(201, room);
   });
 };
-//REPLACED BY addUserToRoomOrUpdate (keep until we sure not using http requests. originally called by http request)
-// Updates an existing room in the DB. Called when a user joins a room in 'midup.controller.js'
-// Will add user to room if not already part of room
-exports.joinRoomHTTP = function (req, res) {
-  console.log('req.body is ', req.body);
-  var userId = req.body.userId;
-  //var userId = req.body.user._id;
-  var roomId = req.body.roomId;
-  var userRoomObj = req.body;
-  var usersInRoom = addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, function(data) {
-    res.json(200, data);
-  });
-};
+
 
 // Deletes a rooms from the DB.
 /**
- *
- * @param roomId
- * @param userId
- * @param callback
+ * @desc  Delete a room (midup)
+ * @param roomId String
+ * @param userId String
+ * @param callback Send data back to client that room deleted
  */
 exports.destroy = function (roomId, userId, callback) {
   Rooms.findById(roomId, function (err, room) {
@@ -133,10 +123,10 @@ exports.destroy = function (roomId, userId, callback) {
 };
 
 /**
- *
- * @param roomId
- * @param userId
- * @param callback
+ * @decs  Remove a room from the rooms a member is a user in in the User Collection
+ * @param roomId String
+ * @param userId String
+ * @param callback send data back to user
  */
 exports.removeRoomFromUser = function(roomId, userId, callback) {
   Rooms.findById(roomId, function (err, room) {
@@ -189,7 +179,7 @@ exports.removeRoomFromUser = function(roomId, userId, callback) {
 
 /**
  * Function is called by socket.io listener to get users for a Room (with all data)
- * @param data
+ * @param data Object
  * @param cb
  */
 exports.getUsersForRoom = function (data, cb) {
@@ -225,58 +215,11 @@ exports.joinOrUpdateRoomViaSocket = function (userRoomObj, cb) {
   addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb);
 };
 /**
- *
- * @param roomId
- * @param userId
- * @param username
- * @param message
- * @param callback
- */
-exports.updateRoomChats = function (roomId, userId, username, message, callback) {
-  //Create the message object
-  var chatObj = {
-    userId: userId,
-    username: username,
-    message: message,
-    date: new Date()
-  };
-  //push new chat message to MidUp room messages array
-  Rooms.update(
-    {"_id": roomId},
-    {"$push": {"messages": chatObj}},
-    function (err, numAffected) {
-      if (err) {
-        console.log('updateRoomChats error:' + err);
-      } else {
-        //console.log('updateRoomChats numAffected:' + numAffected);
-        callback(chatObj);
-      }
-    }
-  );
-};
-/**
- *
- * @param roomId
- * @param callback
- */
-exports.getRecentChatMessages = function (roomId, callback) {
-  Rooms.findById(roomId, function (err, room) {
-    if (err) {
-      console.log(err);
-    } else if ( !room ) {
-      console.log('room does not exist in getRecentChatMessages');
-    } else {
-      var messages = room.messages.slice(0, 100);
-      callback(messages, err);
-    }
-  });
-};
-/**
- *
- * @param roomId
- * @param userId
- * @param username
- * @param message
+ * @desc  Save room (midup) chats to database per room
+ * @param roomId STring
+ * @param userId String
+ * @param username String
+ * @param message String
  * @param callback
  */
 exports.updateRoomChats = function(roomId, userId, username, message, callback){
@@ -302,9 +245,9 @@ exports.updateRoomChats = function(roomId, userId, username, message, callback){
   );
 };
 /**
- *
- * @param roomId
- * @param callback
+ * @desc  Get most recent 100 chat messages for a room
+ * @param roomId String
+ * @param callback: send data back to server
  */
 exports.getRecentChatMessages = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
@@ -317,12 +260,12 @@ exports.getRecentChatMessages = function(roomId, callback) {
   });
 };
 /**
- *
- * @param roomId
- * @param likeType
- * @param userId
+ * @desc Change or update vote for location to meet up
+ * @param roomId String
+ * @param likeType String
+ * @param userId String
  * @param locData
- * @param callback
+ * @param callback send data back to client
  */
 exports.updateVote = function(roomId, likeType, userId, locData, callback){
   Rooms.findById(roomId, function(err, room) {
@@ -354,15 +297,14 @@ exports.updateVote = function(roomId, likeType, userId, locData, callback){
       console.log('update vote');
       callback(returnloc);
     }
-
   });
 };
 /**
- *
- * @param roomId
- * @param locData
- * @param userId
- * @param callback
+ * @desc  Add possible location to meet
+ * @param roomId String
+ * @param locData Obj
+ * @param userId String
+ * @param callback  Send data back to client
  */
 exports.addLoc = function (roomId, locData, userId, callback){
   console.log('roomId', roomId);
@@ -396,9 +338,9 @@ exports.addLoc = function (roomId, locData, userId, callback){
   });
 };
 /**
- *
- * @param roomId
- * @param callback
+ * @desc  Get votes for locations per Room
+ * @param roomId String
+ * @param callback Send data back to client
  */
 exports.getVotes = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
@@ -411,7 +353,7 @@ exports.getVotes = function(roomId, callback) {
 };
 
 /**
- * @desc
+ * @desc  When user loads a room (midup) check to see if already a user, if not add. Update user data including location coords
  * @param userId string
  * @param roomId string
  * @param userRoomObj obj

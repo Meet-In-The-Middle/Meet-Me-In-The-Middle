@@ -5,9 +5,9 @@ angular.module('meetMeInTheMiddleApp')
 
     var imageStore = {};
     /**
-     *
-     * @param userId
-     * @param cb
+     *@desc   load user thumbnail on profile page
+     * @param userId string
+     * @param cb load the image once it comes back from server
      */
     var loadUserImage = function(userId, cb) {
       if (imageStore[userId]) {
@@ -24,9 +24,9 @@ angular.module('meetMeInTheMiddleApp')
       }
     };
     /**
-     *
-     * @param roomObj
-     * @param cb
+     * @desc  create new midup (room)
+     * @param roomObj Object
+     * @param cb callback to load data once returned from server
      */
     var createRoom = function(roomObj, cb) {
       $http.post('api/rooms', roomObj)
@@ -40,9 +40,9 @@ angular.module('meetMeInTheMiddleApp')
 
     };
     /**
-     *
-     * @param userId
-     * @param cb
+     * @desc  get all midups (rooms) that a user is a part of
+     * @param userId String
+     * @param cb callback to load data when returned from server
      */
     var getRoomsForUser = function(userId, cb) {
       $http.get('api/rooms/' + userId)
@@ -63,6 +63,7 @@ angular.module('meetMeInTheMiddleApp')
     };
   }
   ])
+  //allow access to socket.io socket from any contoller. Needed b/c we use two controllers on midups pages
   .factory('SocketFactory', [function() {
     var socket;
     return {

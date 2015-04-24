@@ -23,7 +23,7 @@ angular.module('meetMeInTheMiddleApp')
       $scope.roomNonExistest = false;
 
       /**
-       *
+       * @desc  add a location (place) to the possible locations
        * @param string
        */
       $scope.addPlace = function(string){
@@ -34,7 +34,7 @@ angular.module('meetMeInTheMiddleApp')
         console.log('running');
       };
       /**
-       *
+       * @desc remove a location as possible meeting place
        */
       $scope.removePlace = function(){
         var tempArr = $scope.selectedPlaces;
@@ -56,7 +56,7 @@ angular.module('meetMeInTheMiddleApp')
         loadChatMessages();
       };
       /**
-       *
+       * @desc load most recent 100 chat messages
        */
       var loadChatMessages = function() {
         socket.on('chat-messages', function(data) {
@@ -67,7 +67,7 @@ angular.module('meetMeInTheMiddleApp')
       };
 
       /**
-       * send chat message by emitting to roomId (which means only that room will receive message)
+       * @desc send chat message by emitting to roomId (which means only that room will receive message)
        */
       $scope.sendChat = function() {
         var message = $scope.userMessage;
@@ -77,7 +77,7 @@ angular.module('meetMeInTheMiddleApp')
         $scope.userMessage = "";
       };
       /**
-       *
+       * listner for chat messages being updated from server
        */
       socket.on('server-chat-response', function(messageObj) {
         $scope.$apply(function() {
@@ -85,7 +85,7 @@ angular.module('meetMeInTheMiddleApp')
         });
       });
       /**
-       *
+       * listener for error message if user tries to join a midup (room) that no longer exists
        */
       socket.on('error-msg', function(errMsg) {
         console.log('errMsg is ', errMsg);

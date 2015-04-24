@@ -62,7 +62,7 @@
     </ui-gmap-circle>
     <ui-gmap-marker ng-repeat="m in markers" coords="m.coords" idkey="m._id" options="m.options" events="m.events"
                     icon="m.icon" click="onMarkerClick(m)">
-      <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="m.templateUrl"
+      <ui-gmap-window show="m.showWindow" closeClick="closeClick(m)" templateUrl="infowindow.tpl.html"
                       templateParameter="m.templateParameter">
         <div>
           <b>{{placesNearby[m._id][0]}}</b><br>
@@ -70,7 +70,9 @@
           {{placesNearby[m._id][2]}}<br>
           {{placesNearby[m._id][3]}}<br>
           {{placesNearby[m._id][4]}}<br>
+          
           <!--<button ng-click="addToVote(m._id)">Add To Vote</button>-->
+
         </div>
       </ui-gmap-window>
     </ui-gmap-marker>

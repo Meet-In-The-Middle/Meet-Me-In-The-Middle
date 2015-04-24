@@ -215,11 +215,57 @@ exports.joinOrUpdateRoomViaSocket = function (userRoomObj, cb) {
   addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb);
 };
 /**
+
  * @desc  Save room (midup) chats to database per room
  * @param roomId STring
  * @param userId String
  * @param username String
  * @param message String
+ */
+exports.updateRoomChats = function (roomId, userId, username, message, callback) {
+  //Create the message object
+  var chatObj = {
+    userId: userId,
+    username: username,
+    message: message,
+    date: new Date()
+  };
+  //push new chat message to MidUp room messages array
+  Rooms.update(
+    {"_id": roomId},
+    {"$push": {"messages": chatObj}},
+    function (err, numAffected) {
+      if (err) {
+        console.log('updateRoomChats error:' + err);
+      } else {
+        callback(chatObj);
+      }
+    }
+  );
+};
+/**
+ *
+ * @param roomId
+ * @param callback
+ */
+exports.getRecentChatMessages = function (roomId, callback) {
+  Rooms.findById(roomId, function (err, room) {
+    if (err) {
+      console.log(err);
+    } else if ( !room ) {
+      console.log('room does not exist in getRecentChatMessages');
+    } else {
+      var messages = room.messages.slice(0, 100);
+      callback(messages, err);
+    }
+  });
+};
+/**
+ *
+ * @param roomId
+ * @param userId
+ * @param username
+ * @param message
  * @param callback
  */
 exports.updateRoomChats = function(roomId, userId, username, message, callback){
@@ -259,29 +305,33 @@ exports.getRecentChatMessages = function(roomId, callback) {
     }
   });
 };
+
 /**
- * @desc Change or update vote for location to meet up
- * @param roomId String
- * @param likeType String
- * @param userId String
- * @param locData
- * @param callback send data back to client
+ * @desc Funtion called to update votes on locations
+ * @param roomId   String    Room/midup where the voting is taking place
+ * @param likeType Number    1 for Like, -1 for Unlike vote
+ * @param userId   String    Id for user casting the vote
+ * @param locData  Object    Data for the object being updated
+ * @param callback Function  Info passed back if update is successful
  */
 exports.updateVote = function(roomId, likeType, userId, locData, callback){
+  //Find the room
   Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log('updateVote Error:' + err);
     } else {
+      //Get the locations up for vote in the room
       var locations = room.locations;
       var returnloc = {};
       locations.forEach(function(x){
+        //Find the location being voted on
         if(x.id === locData.id) {
+          //Check to see that the user is not double voting or down voting
+          //something that they have not voted on yet
           if(!(_.contains(x.voters, userId)) || likeType === -1) {
-            console.log('found record', x.name, likeType, x.votes + likeType);
+            //Update the votes
             x.votes = x.votes + likeType;
-            console.log('result', x.votes);
             if(likeType === 1){
-              console.log('adding to record');
               x.voters.push(userId);
             } else {
               x.voters = _.without(x.voters, userId);
@@ -290,37 +340,39 @@ exports.updateVote = function(roomId, likeType, userId, locData, callback){
           returnloc = x;
         }
       });
+      //Save any changes 
       room.locations = locations;
       room.save();
-      console.log('room ',room.locations);
 
-      console.log('update vote');
+      //Return the updated location data
       callback(returnloc);
     }
   });
 };
-/**
- * @desc  Add possible location to meet
- * @param roomId String
- * @param locData Obj
- * @param userId String
- * @param callback  Send data back to client
+
+/*
+ * @desc Function to add a location to be voted on
+ * @param roomId   String   Room/midup where the add is taking place
+ * @param locData  Object   Data for the object being updated
+ * @param userId   String   Id for user adding the place and casting the vote
+ * @param callback Function  Info passed back if update is successful
  */
 exports.addLoc = function (roomId, locData, userId, callback){
-  console.log('roomId', roomId);
   var found = 0;
   Rooms.findById(roomId, function(err, room) {
     if(err){
       console.log('addLoc Error:' + err);
     } else {
+      //Loop through the locations datay
       for(var x = 0; x < room.locations.length; x++){
+        //If the room has already been added, count that add as a vote and call UpdateVotes
         if(room.locations[x].id === locData.id){
-          console.log('found id call updateVote');
           exports.updateVote(roomId, 1, userId, locData, callback);
           found = 1;
           break;
         }
       }
+      //Otherwise add the locaton
       if(!found){
         Rooms.update(
           { "_id": roomId },
@@ -338,9 +390,9 @@ exports.addLoc = function (roomId, locData, userId, callback){
   });
 };
 /**
- * @desc  Get votes for locations per Room
- * @param roomId String
- * @param callback Send data back to client
+ * @desc Function called when a user first enters a room/MidUp that passes back the voting data
+ * @param roomId   String   Room/midup where the add is taking place
+ * @param locData  Object   Data for locations
  */
 exports.getVotes = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {

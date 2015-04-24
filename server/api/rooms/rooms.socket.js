@@ -83,18 +83,23 @@ exports.roomSockets = function (socket) {
     //send response back to client of success or error
     socket.emit('email-invites-reply', data);
   });
-  //listener for adding possible location
+
+
+  //Listener for Add to Vote (adding a possible location)
   socket.on('addLoc', function(roomId, locData, userId){
-    console.log('updating the db',roomId);
+    //Update the data base with the new location
     RoomsController.addLoc(roomId, locData, userId, function(locData) {
-      console.log('notifying room of locData');
+      //Notify room of new location
       io.sockets.in(roomId).emit('addLoc-reply', locData);
     });
   });
-  //listener for voting on a possible location
+
+
+  //Listener for Like and UnLike (voting on a possible location)
   socket.on('vote', function(roomId, likeType, userId, locData){
-    console.log('updating the db like',roomId);
+    //Update database with the new vote
     RoomsController.updateVote(roomId, likeType, userId, locData, function(locData) {
+      //Notify room of the new vote
       io.sockets.in(roomId).emit('vote-reply', locData);
     });
   });

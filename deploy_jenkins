@@ -1,0 +1,12 @@
+#!/bin/sh
+
+ssh jjrk@104.42.168.124 <<EOF  
+  cd ~/Meet-Me-In-The-Middle
+  git pull
+  npm install
+  bower install
+  grunt --force
+  cp -r ~/Meet-Me-In-The-Middle/client/assets/* ~/Meet-Me-In-The-Middle/dist/public/assets
+  forever restartall
+  exit
+EOF  

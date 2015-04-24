@@ -57,7 +57,6 @@ angular.module('meetMeInTheMiddleApp')
       $scope.votedPlacesNearby = {};
       $scope.test;
 
-
       $scope.scrollSettings = {
         scrollableHeight: '300px',
         scrollable: true,
@@ -283,43 +282,25 @@ angular.module('meetMeInTheMiddleApp')
         //   calcRoute2Users(userId, end);
         // }
       });
-      /**
-       *
-       */
-      socket.on('vote-reply', function(locData) {
-        console.log('locData', locData);
+
+      socket.on('addLoc-reply', function(locData) {
         $scope.voteLocations[locData.id] = locData;
+        var found = 0;
         for(var x = 0; x < $scope.voteLocationArr.length; x++){
-          console.log('array:', $scope.voteLocationArr[x].name, $scope.voteLocationArr[x].id);
           if($scope.voteLocationArr[x].id === locData.id){
-            console.log('updating array');
-            $scope.voteLocationArr[x] = locData;
+            found = 1;
           }
         }
-        console.log($scope.voteLocationArr[x]);
-        $scope.$apply();
-      });
-      /**
-       *
-       */
-      socket.on('vote-data', function(locData){
-        for(var x = 0; x < locData.length; x++){
-          $scope.voteLocations[locData[x].id] = locData[x];
-          $scope.voteMarkers[locData[x].id] = JSON.parse($scope.voteLocations[locData[x].id].marker);
-          $scope.voteMarkers[locData[x].id].showWindow = false;
-          $scope.votedPlacesNearby[locData[x].id] = locData[x].locInfo;
+        if(!found){
+          $scope.voteLocationArr.push($scope.voteLocations[locData.id]);
+          if($scope.markers[locData.id]  !== undefined){
+            delete $scope.markers[locData.id];
+          }
+          $scope.voteMarkers[locData.id] = JSON.parse($scope.voteLocations[locData.id].marker);
+          $scope.votedPlacesNearby[locData.id] = $scope.voteLocations[locData.id].locInfo;
         }
-        //showWindow: false
-        $scope.voteLocationArr = locData;
-        console.log('loadedVotes,', locData);
-        $scope.$apply();
-      });
-      /**
-       *
-       */
-      socket.on('circle-move-replay', function(center){
-        $scope.circle.center = center;
-        console.dir('circle moved emit received  ' + JSON.stringify(center));
+        console.log('someone has added a location');
+        console.log($scope.voteLocationArr);
         $scope.$apply();
       });
       /**

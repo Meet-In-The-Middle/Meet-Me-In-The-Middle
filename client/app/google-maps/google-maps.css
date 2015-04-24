@@ -65,8 +65,11 @@ body {
   top: 0; left: 0;
   width: 20%;
   padding: 1%;
-  background: #B3D1FF;
-  border: 1px solid black;
+  /*background: #B3D1FF;*/
+  background: #D9D9D9;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
   height: 100%;
   transition: left 1s;
 }
@@ -108,7 +111,8 @@ input {
 }
 
 .reverse-margin {
-  margin-top: -23px;
+  margin: 0 0 30px 0;
+  float:right;
 }
 
 /* Chat style */
@@ -267,4 +271,11 @@ select {
   border-radius: 7px;
 }
 
+.midup-choices {
+  height: 100px !important;
+}
+
+.gray-background {
+  z-index: -1; position: fixed; width: 100%; height:100vh; background-color: #D9D9D9;
+}
 

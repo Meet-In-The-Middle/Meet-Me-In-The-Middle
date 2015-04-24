@@ -121,7 +121,8 @@
         <h6 class="title space-top">Possible MidUps</h6>
 
         <!--<p class="label-style"></p>-->
-        <select class="form-control" size="3" ng-model="possibleMidup">
+
+        <select class="form-control midup-choices" size="3" ng-model="possibleMidup">
           <option  ng-repeat="(key, value) in placesNearby" value="{{key}}" ng-click="onMarkerClick(markers[possibleMidup])">{{value[0]}}</option>
         </select>
         <div class="btn-group btn-group-sm space-top">
@@ -129,7 +130,7 @@
         </div>
         <br>
         <h6 class="title space-top">MidUps To Vote On</h6>
-        <select class="form-control" size="3" ng-model="likes">
+        <select class="form-control midup-choices" size="3" ng-model="likes">
           <option  ng-repeat="value in voteLocationArr | orderBy:'-votes'" value="{{value.id}}" ng-click="onMarkerClick(voteMarkers[likes])">
             {{value.name}} -> Votes: {{value.votes}}
           </option>
@@ -151,7 +152,7 @@
       <div class="chat-input-submit">
         <textarea ng-model="userMessage"></textarea>
         <div class="btn-group btn-group-sm reverse-margin">
-          <button class="btn-xs" ng-click="sendChat()">Submit</button>
+          <button class="btn btn-default" ng-click="sendChat()">Submit</button>
         </div>
       </div>
       <div class="midup-nonexistent" ng-show="roomNonExistest">
@@ -174,6 +175,7 @@
       <button class="btn btn-submit" ng-click="viewMap()">View Map</button>
     </div>
   </div>
-  <!--Div below is for a popup for Error message if room has been deleted-->
 
 </div> <!-- MapsCtrl Ends -->
+<div class="gray-background">
+</div>

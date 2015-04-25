@@ -6,16 +6,13 @@ angular.module('meetMeInTheMiddleApp')
 
       //profile controller methods
       var user = Auth.getCurrentUser();
-      console.log('user is ', user);
       var userId = user._id;
-      console.log('userId is ', userId);
-      $scope.user = {};
-      $scope.inviteEmails = {};
-      $scope.clickedFlag = false;
-      $scope.remove = false;
       var url = $location.$$path.split('/');
       var roomId = url[url.length - 1];
       var socket = io();
+      $scope.user = {};
+      $scope.inviteEmails = {};
+      $scope.clickedFlag = false;
       /**
        * @desc initial page on load to show rooms user belongs to
        * and to set $scope elements for editable text box to create new room (midup)
@@ -35,31 +32,25 @@ angular.module('meetMeInTheMiddleApp')
       var asyncGetRooms = function(Id) {
         return $q(function(resolve, reject) {
           setTimeout(function() {
-            console.log('got into setTimeout');
             if( Id ) {
-              console.log('Id is ', Id);
               resolve(Id);
             }
-          }, 500);
+          }, 700);
         });
       };
       /**
-       * @desc use promise to load rooms async
+       * @desc use promise to load list of rooms user belongs to asyncronously
        * @type {*}
        */
-      var promise = asyncGetRooms(Auth.getCurrentUser());
-      promise.then(function() {
-        console.log('got into promise.then');
-        getRooms();
-      });
       var getRooms = function() {
-        console.log('Auth.getCurrentUser()._id is ', Auth.getCurrentUser()._id);
         MainFactory.getRoomsForUser(Auth.getCurrentUser()._id, function(rooms) {
-          console.log('rooms for this user are ', rooms);
           $scope.rooms = rooms;
         });
-        //return an array of rooms
       };
+      var promise = asyncGetRooms(Auth.getCurrentUser());
+      promise.then(function() {
+        getRooms();
+      });
       /**
        * Set $scope elements for create room button to show input to get new room name
        */
@@ -97,10 +88,13 @@ angular.module('meetMeInTheMiddleApp')
 
         MainFactory.createRoom(userRoomObj, function() {
           console.log('userRoomObj is ', userRoomObj);
+          //getRooms is called after createRoom http request comes back with success from server
           getRooms();
         });
         $scope.disableEditor();
-        $scope.remove = false;
+        $scope.editableText = '';
+        $scope.roomInfo = '';
+        //$scope.remove = false;
       };
 
       /**
@@ -120,7 +114,7 @@ angular.module('meetMeInTheMiddleApp')
         //$scope.inviteEmails = $scope.emails;
       };
       /**
-       * @desc disable
+       * @desc disable email invite box
        * */
       $scope.disableInvite = function() {
         $scope.inviteEnabled = false;
@@ -129,7 +123,6 @@ angular.module('meetMeInTheMiddleApp')
        * @desc logic for email invite input box
        * */
       $scope.clicked = function() {
-        console.log('clicked was called');
         $scope.clickedFlag = true;
       }
       /** @desc logic for email invite input box
@@ -141,25 +134,22 @@ angular.module('meetMeInTheMiddleApp')
        * @desc Get and send emails to server that will be invited to room (midup)
        * */
       $scope.sendEmailInvites = function(roomId, roomName) {
-        console.log('sendEmailInvites called', $scope.inviteEmails);
         var pattern = /\s*[,;]\s*/;
         var emails = $scope.inviteEmails[roomId].split(pattern);
         //console.log('emails is ', emails);
         socket.emit('email-invites', emails, roomId, user.name, roomName);
         socket.on('email-invites-reply', function(message) {
-          console.log('email-invite-reply ', message);
         });
       };
 
       var midUpIndex;
       /**
-       * @desc Delete midup if owner
+       * @desc Delete midup (if user is owner)
        * @param roomId
        * @param index
        */
       $scope.deleteMidup = function(roomId, index) {
         midUpIndex = index;
-        console.log('midUpIndex is ', midUpIndex);
         var result = $window.confirm('Are you certain you want to DELETE this MidUp? Changes cannot be recovered.\n\n' +
         'Click OK to Delete or Cancel');
         if( result === true ) {
@@ -173,7 +163,6 @@ angular.module('meetMeInTheMiddleApp')
        */
       $scope.leaveMidup = function(roomId, index) {
         midUpIndex = index;
-        console.log('midUpIndex is ', midUpIndex);
         var result = $window.confirm('Are you certain you want to LEAVE this MidUp?\n\n' +
         'Click OK to Delete or Cancel');
         if( result === true ) {
@@ -183,30 +172,32 @@ angular.module('meetMeInTheMiddleApp')
       /**
        * listener for data returned
        */
-      socket.on('delete-midup-reply', function(data) {
-        console.log('data is ', data);
-        if( data === 'Midup was removed' ) {
-          $scope.$apply(function() {
-            $scope.remove = true;
-          });
+      socket.on('delete-midup-reply', function(data, err) {
+        //error handling
+        if( !!err ) {
+          //error handling would go here
         } else if( !!data ) {
-          $scope.$apply(function() {
-            $scope.rooms = data;
-          });
+          (function removeRoomFromDOM() {
+            var rooms = $scope.rooms;
+            for( var i = 0; i < rooms.length; i++ ) {
+              if( rooms[i].roomId === data ) {
+                rooms.splice(i,1);
+              } else {
+                //rooms[i].remove = false;
+              }
+            }
+          })();
+          //kick off digest cycle to remove room from DOM
+          $scope.$apply(function() { });
         }
       });
       /**
-       * listener for data returned from server
+       * listener for data returned from server after user clicks on Leave Midup
        */
       socket.on('leave-midup-reply', function(data) {
-        console.log('data is ', data);
         if( !!data ) {
           $scope.$apply(function() {
-            if( data.length === 0 ) { $scope.remove = true; }
-            else {
-              $scope.remove = false;
-              $scope.rooms = data;
-            }
+            $scope.rooms = data;
           });
         }
       });

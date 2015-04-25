@@ -328,7 +328,8 @@ exports.updateVote = function(roomId, likeType, userId, locData, callback){
         if(x.id === locData.id) {
           //Check to see that the user is not double voting or down voting
           //something that they have not voted on yet
-          if(!(_.contains(x.voters, userId)) || likeType === -1) {
+          if((!(_.contains(x.voters, userId)) && likeType === 1) ||  
+            (_.contains(x.voters, userId) && likeType === -1)) {
             //Update the votes
             x.votes = x.votes + likeType;
             if(likeType === 1){

@@ -265,7 +265,8 @@ exports.updateVote = function(roomId, likeType, userId, locData, callback){
       var returnloc = {};
       locations.forEach(function(x){
         if(x.id === locData.id) {
-          if(!(_.contains(x.voters, userId)) || likeType === -1) {
+          if((!(_.contains(x.voters, userId)) && likeType === 1) ||
+            (_.contains(x.voters, userId) && likeType === -1)) {
             x.votes = x.votes + likeType;
             if(likeType === 1){
               x.voters.push(userId);

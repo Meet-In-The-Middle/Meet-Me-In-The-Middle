@@ -3,6 +3,7 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
+//Schema for a location that has been voted on
 var Locations = new Schema({
   id: String,
   name : String,

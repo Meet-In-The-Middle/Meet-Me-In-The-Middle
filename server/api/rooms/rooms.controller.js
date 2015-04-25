@@ -5,12 +5,15 @@ var Rooms = require('./rooms.model').Rooms;
 var RoomUser = require('./rooms.model').RoomUser;
 var User = require('../user/user.model')
 
-// Get list of rooms
+// Get list of rooms. Not currently used
 exports.index = function (req, res) {
-  console.log('got into index');
 };
 
-// Get a single rooms' user objects
+/**
+ * @desc  Find all the rooms (midups) that a user is a part of.
+ * @param req
+ * @param res
+ */
 exports.show = function (req, res) {
   User.findById(req.params.id, function (err, user) {
     if (!err) {
@@ -23,8 +26,6 @@ exports.show = function (req, res) {
 
 };
 
-// Creates a new room in the Rooms Collection and also adds the room to 'memberOfRooms' property
-// in for user in User Collection
 /**
  * @desc  Creates a new room in the Rooms Collection and also adds the room to 'memberOfRooms' property
  *  in for user in User Collection
@@ -32,7 +33,6 @@ exports.show = function (req, res) {
  * @param res
  */
 exports.createRoom = function (req, res) {
-  console.log('req.body.user is ', req.body.user);
   var newRoom = {
     name: req.body.name,
     info: req.body.info,
@@ -41,7 +41,6 @@ exports.createRoom = function (req, res) {
   };
   //create new roomId to user data in user collection
   Rooms.create(newRoom, function (err, room) {
-    console.log('req.body.user._id ', req.body.user.userId);
     if (err) {
       return handleError(res, err);
     }
@@ -62,26 +61,14 @@ exports.createRoom = function (req, res) {
     return res.json(201, room);
   });
 };
-//REPLACED BY addUserToRoomOrUpdate (keep until we sure not using http requests. originally called by http request)
-// Updates an existing room in the DB. Called when a user joins a room in 'midup.controller.js'
-// Will add user to room if not already part of room
-exports.joinRoomHTTP = function (req, res) {
-  console.log('req.body is ', req.body);
-  var userId = req.body.userId;
-  //var userId = req.body.user._id;
-  var roomId = req.body.roomId;
-  var userRoomObj = req.body;
-  var usersInRoom = addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, function(data) {
-    res.json(200, data);
-  });
-};
+
 
 // Deletes a rooms from the DB.
 /**
- *
- * @param roomId
- * @param userId
- * @param callback
+ * @desc  Delete a room (midup)
+ * @param roomId String
+ * @param userId String
+ * @param callback Send data back to client that room deleted
  */
 exports.destroy = function (roomId, userId, callback) {
   Rooms.findById(roomId, function (err, room) {
@@ -107,16 +94,14 @@ exports.destroy = function (roomId, userId, callback) {
         if( !!user ) {
           for( var k = 0; k < user.memberOfRooms.length; k++ ) {
             if( user.memberOfRooms[k].roomId === roomId ) {
-              console.log(1555777, user.memberOfRooms[k]);
               user.memberOfRooms.splice(k, 1);
             }
           }
         }
         user.save(function(err, newData) {
-          console.log('newData is ', newData);
           if( !err) {
             if( newData._id === userId ) {
-              callback(newData.memberOfRooms);
+              //callback(newData.memberOfRooms);
             }
           }
         });
@@ -127,20 +112,22 @@ exports.destroy = function (roomId, userId, callback) {
         callback(null, err);
       }
       //send back room was removed
-      callback('Midup was removed');
+      //callback('Midup was removed');
+      else if (!err) {
+        callback(roomId);
+      }
     });
   })
 };
 
 /**
- *
- * @param roomId
- * @param userId
- * @param callback
+ * @decs  Remove a room from the rooms a member is a user in in the User Collection
+ * @param roomId String
+ * @param userId String
+ * @param callback send data back to user
  */
 exports.removeRoomFromUser = function(roomId, userId, callback) {
   Rooms.findById(roomId, function (err, room) {
-    console.log('room is ', room);
     if (err) {
       //send error back to client
       //return handleError(res, err);
@@ -161,7 +148,6 @@ exports.removeRoomFromUser = function(roomId, userId, callback) {
       }
     }
     room.users = roomUsers;
-    console.log('room.users is ', room.users);
     room.save(function(err, room) {
       if( err ) console.log(err);
       User.findById(userId, function(err, user) {
@@ -169,15 +155,12 @@ exports.removeRoomFromUser = function(roomId, userId, callback) {
         if( !!user ) {
           for( var k = 0; k < user.memberOfRooms.length; k++ ) {
             if( user.memberOfRooms[k].roomId === roomId ) {
-              console.log(1555777, user.memberOfRooms[k]);
               user.memberOfRooms.splice(k, 1);
             }
           }
         }
         user.save(function(err, newData) {
           if( !err) {
-            console.log('newData is ', newData);
-            console.log('newData.memberOfRooms is ', newData.memberOfRooms);
             callback(newData.memberOfRooms);
           }
         });
@@ -189,7 +172,7 @@ exports.removeRoomFromUser = function(roomId, userId, callback) {
 
 /**
  * Function is called by socket.io listener to get users for a Room (with all data)
- * @param data
+ * @param data Object
  * @param cb
  */
 exports.getUsersForRoom = function (data, cb) {
@@ -206,7 +189,6 @@ exports.getUsersForRoom = function (data, cb) {
       a[b._id] = b;
       return a;
     }, {});
-    console.log('USER OBJ!!!!!!!!!!', usersObj);
     cb(usersObj);
   });
 };
@@ -218,65 +200,16 @@ exports.getUsersForRoom = function (data, cb) {
  * @param cb -- callback used to send data back to client
  */
 exports.joinOrUpdateRoomViaSocket = function (userRoomObj, cb) {
-  //console.log('called addUserToRoom');
-  //console.log('userRoomObj', userRoomObj);
   var userId = userRoomObj.user._id;
   var roomId = userRoomObj.roomId;
   addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb);
 };
 /**
- *
- * @param roomId
- * @param userId
- * @param username
- * @param message
- * @param callback
- */
-exports.updateRoomChats = function (roomId, userId, username, message, callback) {
-  //Create the message object
-  var chatObj = {
-    userId: userId,
-    username: username,
-    message: message,
-    date: new Date()
-  };
-  //push new chat message to MidUp room messages array
-  Rooms.update(
-    {"_id": roomId},
-    {"$push": {"messages": chatObj}},
-    function (err, numAffected) {
-      if (err) {
-        console.log('updateRoomChats error:' + err);
-      } else {
-        //console.log('updateRoomChats numAffected:' + numAffected);
-        callback(chatObj);
-      }
-    }
-  );
-};
-/**
- *
- * @param roomId
- * @param callback
- */
-exports.getRecentChatMessages = function (roomId, callback) {
-  Rooms.findById(roomId, function (err, room) {
-    if (err) {
-      console.log(err);
-    } else if ( !room ) {
-      console.log('room does not exist in getRecentChatMessages');
-    } else {
-      var messages = room.messages.slice(0, 100);
-      callback(messages, err);
-    }
-  });
-};
-/**
- *
- * @param roomId
- * @param userId
- * @param username
- * @param message
+ * @desc  Save room (midup) chats to database per room
+ * @param roomId STring
+ * @param userId String
+ * @param username String
+ * @param message String
  * @param callback
  */
 exports.updateRoomChats = function(roomId, userId, username, message, callback){
@@ -295,16 +228,15 @@ exports.updateRoomChats = function(roomId, userId, username, message, callback){
       if(err){
         console.log('updateRoomChats error:' + err);
       } else {
-        console.log('updateRoomChats numAffected:' + numAffected);
         callback(chatObj);
       }
     }
   );
 };
 /**
- *
- * @param roomId
- * @param callback
+ * @desc  Get most recent 100 chat messages for a room
+ * @param roomId String
+ * @param callback: send data back to server
  */
 exports.getRecentChatMessages = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
@@ -317,12 +249,12 @@ exports.getRecentChatMessages = function(roomId, callback) {
   });
 };
 /**
- *
- * @param roomId
- * @param likeType
- * @param userId
+ * @desc Change or update vote for location to meet up
+ * @param roomId String
+ * @param likeType String
+ * @param userId String
  * @param locData
- * @param callback
+ * @param callback send data back to client
  */
 exports.updateVote = function(roomId, likeType, userId, locData, callback){
   Rooms.findById(roomId, function(err, room) {
@@ -333,12 +265,10 @@ exports.updateVote = function(roomId, likeType, userId, locData, callback){
       var returnloc = {};
       locations.forEach(function(x){
         if(x.id === locData.id) {
-          if(!(_.contains(x.voters, userId)) || likeType === -1) {
-            console.log('found record', x.name, likeType, x.votes + likeType);
+          if((!(_.contains(x.voters, userId)) && likeType === 1) ||
+            (_.contains(x.voters, userId) && likeType === -1)) {
             x.votes = x.votes + likeType;
-            console.log('result', x.votes);
             if(likeType === 1){
-              console.log('adding to record');
               x.voters.push(userId);
             } else {
               x.voters = _.without(x.voters, userId);
@@ -349,31 +279,24 @@ exports.updateVote = function(roomId, likeType, userId, locData, callback){
       });
       room.locations = locations;
       room.save();
-      console.log('room ',room.locations);
-
-      console.log('update vote');
       callback(returnloc);
     }
-
   });
 };
 /**
- *
- * @param roomId
- * @param locData
- * @param userId
- * @param callback
+ * @desc  Add possible location to meet
+ * @param roomId String
+ * @param locData Obj
+ * @param userId String
+ * @param callback  Send data back to client
  */
 exports.addLoc = function (roomId, locData, userId, callback){
-  console.log('roomId', roomId);
   var found = 0;
   Rooms.findById(roomId, function(err, room) {
     if(err){
-      console.log('addLoc Error:' + err);
     } else {
       for(var x = 0; x < room.locations.length; x++){
         if(room.locations[x].id === locData.id){
-          console.log('found id call updateVote');
           exports.updateVote(roomId, 1, userId, locData, callback);
           found = 1;
           break;
@@ -387,7 +310,6 @@ exports.addLoc = function (roomId, locData, userId, callback){
             if(err){
               console.log('updateVotes error:' + err);
             } else {
-              console.log('updateVotes numAffected:' + numAffected);
               callback(locData);
             }
           });
@@ -396,9 +318,9 @@ exports.addLoc = function (roomId, locData, userId, callback){
   });
 };
 /**
- *
- * @param roomId
- * @param callback
+ * @desc  Get votes for locations per Room
+ * @param roomId String
+ * @param callback Send data back to client
  */
 exports.getVotes = function(roomId, callback) {
   Rooms.findById(roomId, function(err, room) {
@@ -411,15 +333,13 @@ exports.getVotes = function(roomId, callback) {
 };
 
 /**
- * @desc
+ * @desc  When user loads a room (midup) check to see if already a user, if not add. Update user data including location coords
  * @param userId string
  * @param roomId string
  * @param userRoomObj obj
  * @param cb  callback function
  */
 function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
-  //console.log('123 ', userRoomObj);
-  //console.log('userId is ', userId);
   var roomName;
   var query = {'_id': roomId, 'users.userId': userId};
   var update = { 'userId': userId,
@@ -438,8 +358,6 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
         Rooms.findById(roomId, function(err, room) {
           if( err) console.log('ERROR in findById inside addUserToRoomOrUpdateRoom ', err);
           else if( !room ) {
-            console.log('room does not exist in addUserToRoomOrUpdateRoom ');
-            console.log('cb is ', cb);
             cb(null, null, null, 'midup does not exist or has been deleted');
             return;
           } else {
@@ -452,7 +370,6 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
               else {
                 //add room to user.isMemberOf in User Collection
                 User.findById(userId, function (err, user) {
-                  //console.log('USER got here');
                   if (err) {
                     console.log('error in updating User Coll. in  addUserToRoomOrUpdateRoom ', err);
                     return cb(_, err);
@@ -464,16 +381,14 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
                     var userInRooms = user.memberOfRooms;
                     for (var i = 0, len = userInRooms.length; i < len; i++) {
                       if (user.memberOfRooms[i].roomId === roomId) {
-                        //console.log('user already a member of this room');
                         flag = true;
                         break;
                       }
                     }
                     if(!flag) {
-                      user.memberOfRooms.push({roomId: roomId, name: roomName, roomInfo: room.info, createdAt: room.createdAt, owner: false });
+                      user.memberOfRooms.push({roomId: roomId, name: roomName, info: room.info, createdAt: room.createdAt, owner: false });
                       user.save(function (err) {
                         if (err) {
-                          console.log('err is ', err);
                           return cb(_, err);
                         }
                       });
@@ -485,7 +400,6 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
                   a[b.userId] = b;
                   return a;
                 }, {});
-                //console.log('usersObj in query.save is ', usersObj);
                 cb(usersObj);
               }
             });
@@ -494,7 +408,6 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
       }
       //else update user already in room
       else {
-        //console.log('query is ', query);
         var userArray = query.users;
         for(var i = 0, len = userArray.length; i < len; i++) {
           if(userArray[i].userId === userId) {
@@ -510,13 +423,11 @@ function addUserToRoomOrUpdateRoom(userId, roomId, userRoomObj, cb) {
         query.save(function(err, data) {
           if(err) console.log('error saving query.save in addUserToRoomOrUpdateRoom ', err);
           else {
-            console.log('UPDATE data is ', data);
             //create Object of user objects to send to client to populate map markers
             var usersObj = data.users.reduce(function (a, b) {
               a[b.userId] = b;
               return a;
             }, {});
-            //console.log('usersObj in query.save is ', usersObj);
             cb(usersObj);
           }
         });

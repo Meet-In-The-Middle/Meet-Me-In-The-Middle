@@ -7,33 +7,28 @@
 var Rooms = require('./rooms.model');
 var RoomsController = require('./rooms.controller');
 var io = require('../../app').io;
-var sendgrid  = require('sendgrid')(process.env.SEND_GRID_ACCOUNT, process.env.SEND_GRID_PASSWORD);
+//var sendgrid  = require('sendgrid')(process.env.SEND_GRID_ACCOUNT, process.env.SEND_GRID_PASSWORD);
+var sendgrid = require('../../components/send_grid_email/sendgrid.js');
+//data cache for Google Maps markers for all users
+var dataCollection = {};
 
 exports.roomSockets = function (socket) {
   var roomId;
-
+  //listener for when client joins room (midup)
   socket.on('join-room', function (data) {
     roomId = data.roomId;
     RoomsController.joinOrUpdateRoomViaSocket(data, function(returnData, err, noUser, noRoomMsg) {
-      console.log('returnData is ', returnData);
       if( err ) {
         socket.emit('error', err);
       } else if (noUser) {
         socket.emit('error', 'UserId was not sent with or was undefined in request');
       } else if ( noRoomMsg ) {
-        console.log('noRoom error should be emitted: ', noRoomMsg);
         socket.emit('error-msg', noRoomMsg);
       } else {
         socket.emit('join-room-reply', returnData);
       }
     });
     socket.join(roomId);
-    /*
-        // echo to client they've connected
-        socket.emit('serversend', 'SERVER, you have connected to ' + roomId);
-        //broadcast to room members (other than this client) that new user
-        socket.broadcast.to(roomId).emit('serversend', 'jonah', '5555 everyone in room EXCEPT client should see this');
-    */
     //get most recent messages for a room and send to client in JSON array
     RoomsController.getRecentChatMessages(roomId, function(messageData, err) {
       if(err) {
@@ -45,70 +40,40 @@ exports.roomSockets = function (socket) {
 
     RoomsController.getVotes(roomId, function(locData, err) {
       if(err) {
-        console.log('getVotes socket error:', err);
       } else {
-        console.log('no error:', locData);
         socket.emit('vote-data', locData);
       }
     });
 
      // listen for client emitting to event 'roomId' which segregates room
     socket.on(roomId, function(userId, username, message){
-      //console.log('####################### in socket.on', userId, username, message);
       //Call method in rooms.controller.js (which interacts with rooms.model.js)
       RoomsController.updateRoomChats(roomId, userId, username, message, function( messageObj ) {
           io.sockets.in(roomId).emit('server-chat-response', messageObj);
       });
     });
   });
-
+  //listener for submitting emails to invite to join midup
   socket.on('email-invites', function(data, roomId, username, roomName) {
-    console.log('999email invite data is ', data, roomId, username, roomName);
-    var params = {
-      //to: 'jsnisenson@gmail.com',
-      from: 'jsnisenson@gmail.com',
-      subject: 'Invitation to MidUp',
-      html: 'Hello, <br><br> ' +
-      'You have been invited by ' + username + ' to be a part of this MidUp <a href="' + process.env.DOMAIN + '/mymidups/'+roomId+'">'+roomName+'</a><br><br>' +
-      'MidUp helps you, your colleagues and your friends interactively find the perfect place to meet up in the middle.' + '<br><br>' +
-      'If the link above does not work, copy and paste this link into a browser to join the MidUp:' + '<br><br>' +
-      '' + process.env.DOMAIN + '/mymidups/'+roomId  + '' + '<br><br>' +
-      '- The MidUp Team'
-
-    };
-    var email = new sendgrid.Email(params);
-    //addTo sends email to everyone in the array but independently (i.e. user won't see other users emails)
-    email.addTo(data);
-    //send emails and send back to
-    sendgrid.send(email, function(err, json) {
-      if(err) {console.log('sendgrid error ', err); }
-      //Add user to DB as invited
-      //var invited =
-      console.log('////////sendgrid json ', json);
-    });
-
-
+    //use Send Grid service to send email invites
+    sendgrid.sendGridEmailInvite(data, roomId, username, roomName);
+    //send response back to client of success or error
     socket.emit('email-invites-reply', data);
   });
-
+  //listener for adding possible location
   socket.on('addLoc', function(roomId, locData, userId){
-    console.log('updating the db',roomId);
     RoomsController.addLoc(roomId, locData, userId, function(locData) {
-      console.log('notifying room of locData');
       io.sockets.in(roomId).emit('addLoc-reply', locData);
     });
   });
-
+  //listener for voting on a possible location
   socket.on('vote', function(roomId, likeType, userId, locData){
-    console.log('updating the db like',roomId);
     RoomsController.updateVote(roomId, likeType, userId, locData, function(locData) {
       io.sockets.in(roomId).emit('vote-reply', locData);
     });
   });
-
+  //listener for deleting a midup (if owner)
   socket.on('delete-midup', function(roomId, userId) {
-    console.log('roomId in sockets is ', roomId);
-    console.log('userId in sockets is ', userId);
     //call delete room function
     RoomsController.destroy(roomId, userId, function(newMidupList, error) {
       if( error ) {
@@ -118,7 +83,7 @@ exports.roomSockets = function (socket) {
       }
     });
   });
-
+  //listener for client leaving a midup (not the owner)
   socket.on('leave-midup', function(roomId, userId) {
     //remove midup or reload new data
     RoomsController.removeRoomFromUser(roomId, userId, function(newMidupList, error) {
@@ -129,7 +94,80 @@ exports.roomSockets = function (socket) {
       }
     });
   });
+/////////////////// LISTENERS FOR GOOGLE MAP MARKERS AND INTERACTION  //////////////
+  socket.on('move-pin', function(data){
 
+    if(dataCollection[data.roomId] === undefined){
+      dataCollection[data.roomId] = {};
+      dataCollection[data.roomId][data._id] = data;
+    }
+    else{
+      dataCollection[data.roomId][data._id] = data;
+    }
+
+    var userRoomObj = {
+      roomId: data.roomId,
+      user: {
+        _id: data._id,
+        name: data.name,
+        coords: {
+          latitude: data.coords.latitude,
+          longitude: data.coords.longitude,
+        },
+        owner: false
+      },
+      info: 'How awesome',
+      active: true
+    };
+    /**
+     * When user loads a MidUp map page (entering a room), add them to room or update their info in DB
+     */
+    RoomsController.joinOrUpdateRoomViaSocket(userRoomObj, function(returnData, err, noUser, noRoomMsg) {
+      if( err ) {
+        socket.emit('error', err);
+      } else if (noUser) {
+        socket.emit('error', 'UserId was not sent with or was undefined in request');
+      } else if ( noRoomMsg ) {
+        socket.emit('error', noRoomMsg);
+      } else {
+        //socket.emit('join-room-reply',  returnData);
+      }
+    });
+
+    io.sockets.in(data.roomId).emit('move-pin-reply', dataCollection[data.roomId]);
+
+  });
+  //listener for client voting on location
+  socket.on('vote', function(locKey, userId, room){
+    io.sockets.in(room).emit('vote-reply', locKey, userId);
+  });
+  //listener for client removing vote for location
+  socket.on('remove-vote', function(locKey, userId, room) {
+    io.sockets.in(room).emit('remove-vote-reply', locKey, userId);
+  });
+  //listener to move location search circle
+  socket.on('circle-move', function(center, room){
+    // io.emit('circle-move-replay', center);
+    io.sockets.in(room).emit('circle-move-replay', center);
+  });
+  //listener to change location search circle radius
+  socket.on('circle-radius-change', function(radius, room){
+    // io.emit('circle-radius-change-reply', radius);
+    io.sockets.in(room).emit('circle-radius-change-reply', radius);
+  });
+  //listener for client doing a place search
+  socket.on('place-search', function(request, room){
+    // io.emit('place-search-reply', request);
+    io.sockets.in(room).emit('place-search-reply', request);
+  });
+
+  // Delete the data after disconnecting.
+  socket.on('disconnect', function(data){
+    //delete dataCollection[socket.id];
+    //io.emit('move-pin-reply', dataCollection);
+  });
+
+///////////////////////////////
   socket.on('disconnect', function(data){
     socket.leave(roomId);
   });

@@ -10,7 +10,7 @@
         <div class="all-rooms">
           <h4>Enter One of Your MidUps</h4>
 
-          <div class="room" ng-repeat="room in rooms | orderBy: 'createdAt': true track by $index" ng-hide="remove">
+          <div class="room" ng-repeat="room in rooms | orderBy: 'createdAt': true track by $index">
             <p class="midup-titles">{{room.name}}</p>
             <div class="midup-options">
               <span class="invite-people" ng-hide="inviteEnabled(room.roomId)">
@@ -20,9 +20,9 @@
               <a class="leave-delete" ng-if="!room.owner" ng-click="leaveMidup(room.roomId, $index)">Leave Midup</a>
             </div>
             <span class="invite-people">
-              <a class="btn btn-default btn-midup" href="/mymidups/{{::room.roomId}}">Enter MidUp</a>
+              <a class="btn btn-default btn-midup" href="/mymidups/{{room.roomId}}">Enter MidUp</a>
             </span>
-            <p>{{::room.info}}</p>
+            <p>{{room.info}}</p>
             <div ng-show="inviteEnabled(room.roomId)">
               <form name="emailCaptureForm" role="form" ng-submit="emailCaptureForm.$valid && sendEmailInvites(room.roomId, room.name)" novalidate>
                 <span class="instructions-emails">Input a comma-separated list of emails to invite to this MidUp</span>
@@ -43,10 +43,6 @@
                 </ng-messages>
 
               </form>
-              <!--<div ng-if="errorOrResponse">-->
-                <!--Please make sure you have entered emails correctly and have a comma separating each one.-->
-                <!--&lt;!&ndash;error messages or "invitations successfully sent"&ndash;&gt;-->
-              <!--</div>-->
 
             </div>
             <hr class="spacer-hr">

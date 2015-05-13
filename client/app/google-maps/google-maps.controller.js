@@ -130,7 +130,7 @@ angular.module('meetMeInTheMiddleApp')
         return userRoomObj;
       };
 
-      
+
       // receives user data after joining room and populates map
       socket.on('join-room-reply', function(userData) {
         //userData is object of objects; Each user object has imageUrl property for thumbnail
@@ -293,7 +293,7 @@ angular.module('meetMeInTheMiddleApp')
                 //Add the icon to the map
                 addPlace(results[i]);
               }
-              
+
               //Save the place data to a scope variable
               $scope.placesNearby = places_Nearby;
               $scope.$apply();
@@ -342,7 +342,7 @@ angular.module('meetMeInTheMiddleApp')
         var placeInfo = ['name','photos', 'price_level', 'rating'];
         //Text that will be saved along with the data gathered from the place object
         var placeTags = ['','','Price Level: ','Rating: '];
-        //Check to see if the location information has already been saved 
+        //Check to see if the location information has already been saved
         if(places_Nearby[id] === undefined) {
           places_Nearby[id] = [];
           for(var x = 0; x < placeInfo.length ; x++){
@@ -356,7 +356,7 @@ angular.module('meetMeInTheMiddleApp')
                   y--;
                 }
                 places_Nearby[id].push(placeTags[x] + cost);
-              //Format the photo for the location 
+              //Format the photo for the location
               } else if(placeInfo[x] === 'photos') {
                 places_Nearby[id].push(place[placeInfo[x]][0].getUrl({'maxWidth': 100, 'maxHeight': 100}));
               //Save the location information
@@ -467,7 +467,7 @@ angular.module('meetMeInTheMiddleApp')
       };
 
       /**
-       * @desc 
+       * @desc
        * @param placeId
        */
       var placeDetails = function(placeId){
@@ -504,8 +504,8 @@ angular.module('meetMeInTheMiddleApp')
        */
       var calcCircleCenter = function(){
         var circleCenter = {};
-        circleCenter.latitude = center.k;
-        circleCenter.longitude = center.D;
+        circleCenter.latitude = center.A;
+        circleCenter.longitude = center.F;
         $scope.circle.center = circleCenter;
         $scope.circle.visible = true;
         $scope.$apply();
@@ -665,7 +665,7 @@ angular.module('meetMeInTheMiddleApp')
         directionsDisplay.setMap(null);
         directionsDisplay.setMap(instanceMap);
       };
-    
+
       /**
        * @desc removes polyline from map
        */

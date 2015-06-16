@@ -11,15 +11,18 @@ angular.module('meetMeInTheMiddleApp', [
   'luegg.directives',
   'angularjs-dropdown-multiselect'
 ])
-  .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+  .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider',
+    function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+
     $urlRouterProvider
       .otherwise('/');
 
     $locationProvider.html5Mode(true);
     $httpProvider.interceptors.push('authInterceptor');
-  })
+  }])
 
-  .factory('authInterceptor', function ($rootScope, $q, $cookieStore, $location) {
+  .factory('authInterceptor', ['$rootScope', '$q', '$cookieStore', '$location', 
+    function ($rootScope, $q, $cookieStore, $location) {
     return {
       // Add authorization token to headers
       request: function (config) {
@@ -43,8 +46,8 @@ angular.module('meetMeInTheMiddleApp', [
         }
       }
     };
-  })
-  .run(function ($rootScope, $location, Auth) {
+  }])
+  .run(['$rootScope', '$location', 'Auth', function ($rootScope, $location, Auth) {
     // Redirect to login if route requires auth and you're not logged in
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams) {
       Auth.isLoggedInAsync(function(loggedIn) {
@@ -55,4 +58,4 @@ angular.module('meetMeInTheMiddleApp', [
         }
       });
     });
-  });
+  }]);

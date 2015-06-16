@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .factory('User', function ($resource) {
+  .factory('User', ['$resource', function ($resource) {
     return $resource('/api/users/:id/:controller', {
       id: '@_id'
     },
@@ -19,4 +19,4 @@ angular.module('meetMeInTheMiddleApp')
         }
       }
 	  });
-  });
+  }]);

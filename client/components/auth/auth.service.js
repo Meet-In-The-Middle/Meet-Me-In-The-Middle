@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .factory('Auth', function Auth($location, $rootScope, $http, User, $cookieStore, $q) {
+  .factory('Auth', ['$location', '$rootScope', '$http', 'User', '$cookieStore', '$q',
+    function Auth($location, $rootScope, $http, User, $cookieStore, $q) {
     var currentUser = {};
     if($cookieStore.get('token')) {
       currentUser = User.get();
@@ -143,4 +144,4 @@ angular.module('meetMeInTheMiddleApp')
         return $cookieStore.get('token');
       }
     };
-  });
+  }]);

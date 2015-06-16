@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .controller('AdminCtrl', function ($scope, $http, Auth, User) {
+  .controller('AdminCtrl', ['$scope', '$http', 'Auth', 'User', 
+    function ($scope, $http, Auth, User) {
 
     // Use the User $resource to fetch all users
     $scope.users = User.query();
@@ -14,4 +15,4 @@ angular.module('meetMeInTheMiddleApp')
         }
       });
     };
-  });
+  }]);

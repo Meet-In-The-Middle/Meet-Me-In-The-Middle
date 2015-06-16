@@ -1,5 +1,6 @@
 'use strict';
 
 angular.module('meetMeInTheMiddleApp')
-  .controller('MainCtrl', function ($scope, $http) {
-  });
+  .controller('MainCtrl', ['$scope', '$http', 
+    function ($scope, $http) {
+  }]);
